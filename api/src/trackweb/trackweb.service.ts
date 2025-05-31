@@ -1,33 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateTrackwebDto } from './dto/update-trackweb.dto';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PageQueryDto } from './dto/page-query.dto';
+import { PrismaService } from 'prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 interface TrackingPayload {
   baseInfo?: Record<string, unknown>;
   eventInfo?: Record<string, unknown>;
-}
-
-function safeString(value: unknown): string {
-  return typeof value === 'string' ? value : '';
-}
-
-function safeNumber(value: unknown): number {
-  const num = Number(value);
-  return isNaN(num) ? 0 : num;
-}
-
-function safeBigInt(value: unknown): bigint {
-  if (typeof value === 'string' || typeof value === 'number') {
-    return BigInt(value);
-  }
-  return BigInt(0);
-}
-
-function safeJson(value: unknown): object | undefined {
-  if (value && typeof value === 'object') {
-    return value;
-  }
-  return undefined;
 }
 
 @Injectable()
@@ -36,127 +14,10 @@ export class TrackwebService {
 
   async create(createTrackwebDto: string) {
     try {
-      console.log('接收到的数据:', JSON.parse(createTrackwebDto));
-
-      // 解析JSON字符串
-      const data = JSON.parse(createTrackwebDto) as TrackingPayload;
-      const baseInfo = data.baseInfo || {};
-      const eventInfo = data.eventInfo || {};
-
-      // 准备存储到数据库的数据
-      const trackingData = {
-        // baseInfo 字段
-        clientHeight: safeNumber(baseInfo.clientHeight),
-        clientWidth: safeNumber(baseInfo.clientWidth),
-        colorDepth: safeNumber(baseInfo.colorDepth),
-        pixelDepth: safeNumber(baseInfo.pixelDepth),
-        deviceId: safeString(baseInfo.deviceId),
-        screenWidth: safeNumber(baseInfo.screenWidth),
-        screenHeight: safeNumber(baseInfo.screenHeight),
-        vendor: safeString(baseInfo.vendor),
-        platform: safeString(baseInfo.platform),
-        userUuid: safeString(baseInfo.userUuid),
-        sdkUserUuid: safeString(baseInfo.sdkUserUuid),
-        ext: safeJson(baseInfo.ext),
-        appName: safeString(baseInfo.appName),
-        appCode: safeString(baseInfo.appCode),
-        pageId: safeString(baseInfo.pageId),
-        sessionId: safeString(baseInfo.sessionId),
-        sdkVersion: safeString(baseInfo.sdkVersion),
-        ip: safeString(baseInfo.ip),
-        sendTime: safeBigInt(baseInfo.sendTime),
-
-        // eventInfo 字段
-        eventType: safeString(eventInfo.eventType),
-        eventId: safeString(eventInfo.eventId),
-        triggerPageUrl: safeString(eventInfo.triggerPageUrl) || null,
-        triggerTime: eventInfo.triggerTime
-          ? safeBigInt(eventInfo.triggerTime)
-          : null,
-        eventSendTime: eventInfo.eventSendTime
-          ? safeBigInt(eventInfo.eventSendTime)
-          : null,
-
-        // 页面浏览事件字段
-        referer: safeString(eventInfo.referer) || null,
-        title: safeString(eventInfo.title) || null,
-        action: safeString(eventInfo.action) || null,
-
-        // 性能事件字段
-        tti: eventInfo.tti ? safeNumber(eventInfo.tti) : null,
-        ready: eventInfo.ready ? safeNumber(eventInfo.ready) : null,
-        loadon: eventInfo.loadon ? safeNumber(eventInfo.loadon) : null,
-        firstbyte: eventInfo.firstbyte ? safeNumber(eventInfo.firstbyte) : null,
-        ttfb: eventInfo.ttfb ? safeNumber(eventInfo.ttfb) : null,
-        trans: eventInfo.trans ? safeNumber(eventInfo.trans) : null,
-        dom: eventInfo.dom ? safeNumber(eventInfo.dom) : null,
-        res: eventInfo.res ? safeNumber(eventInfo.res) : null,
-        ssllink: eventInfo.ssllink ? safeNumber(eventInfo.ssllink) : null,
-
-        // 资源加载事件字段
-        initiatorType: safeString(eventInfo.initiatorType) || null,
-        transferSize: eventInfo.transferSize
-          ? safeNumber(eventInfo.transferSize)
-          : null,
-        encodedBodySize: eventInfo.encodedBodySize
-          ? safeNumber(eventInfo.encodedBodySize)
-          : null,
-        decodedBodySize: eventInfo.decodedBodySize
-          ? safeNumber(eventInfo.decodedBodySize)
-          : null,
-        duration: eventInfo.duration ? safeNumber(eventInfo.duration) : null,
-        startTime: eventInfo.startTime ? safeNumber(eventInfo.startTime) : null,
-        fetchStart: eventInfo.fetchStart
-          ? safeNumber(eventInfo.fetchStart)
-          : null,
-        domainLookupStart: eventInfo.domainLookupStart
-          ? safeNumber(eventInfo.domainLookupStart)
-          : null,
-        domainLookupEnd: eventInfo.domainLookupEnd
-          ? safeNumber(eventInfo.domainLookupEnd)
-          : null,
-        connectStart: eventInfo.connectStart
-          ? safeNumber(eventInfo.connectStart)
-          : null,
-        connectEnd: eventInfo.connectEnd
-          ? safeNumber(eventInfo.connectEnd)
-          : null,
-        requestStart: eventInfo.requestStart
-          ? safeNumber(eventInfo.requestStart)
-          : null,
-        responseStart: eventInfo.responseStart
-          ? safeNumber(eventInfo.responseStart)
-          : null,
-        responseEnd: eventInfo.responseEnd
-          ? safeNumber(eventInfo.responseEnd)
-          : null,
-        requestUrl: safeString(eventInfo.requestUrl) || null,
-
-        // 错误事件字段
-        errorMessage: safeString(eventInfo.errorMessage) || null,
-        errorStack: safeString(eventInfo.errorStack) || null,
-        errorLine: eventInfo.errorLine ? safeNumber(eventInfo.errorLine) : null,
-        errorColumn: eventInfo.errorColumn
-          ? safeNumber(eventInfo.errorColumn)
-          : null,
-        errorFilename: safeString(eventInfo.errorFilename) || null,
-
-        // 用户行为事件字段
-        elementSelector: safeString(eventInfo.elementSelector) || null,
-        elementText: safeString(eventInfo.elementText) || null,
-        clickX: eventInfo.clickX ? safeNumber(eventInfo.clickX) : null,
-        clickY: eventInfo.clickY ? safeNumber(eventInfo.clickY) : null,
-      };
-
-      // 存储到数据库
-      const result = await this.prisma.trackingData.create({
-        data: trackingData,
-      });
-
-      console.log('数据已存储到数据库，ID:', result.id);
-
+      const data = this.parseTrackingData(createTrackwebDto);
+      const trackingData = this.transformToDbFormat(data);
+      const result = await this.saveToDatabase(trackingData);
       return {
-        success: true,
         id: result.id,
         message: '追踪数据已成功存储',
       };
@@ -166,20 +27,93 @@ export class TrackwebService {
     }
   }
 
-  findAll() {
-    return `This action returns all trackweb`;
+  private parseTrackingData(jsonString: string): TrackingPayload {
+    return JSON.parse(jsonString) as TrackingPayload;
+  }
+
+  private transformToDbFormat(data: TrackingPayload) {
+    const { baseInfo = {}, eventInfo = {} } = data;
+
+    return {
+      // 基础信息字段
+      ...this.mapBaseInfoFields(baseInfo),
+      // JSON 字段
+      ext: (baseInfo.ext as Prisma.InputJsonValue) || undefined,
+      eventInfo: (eventInfo as Prisma.InputJsonValue) || undefined,
+    };
+  }
+
+  private mapBaseInfoFields(baseInfo: Record<string, unknown>) {
+    return {
+      clientHeight: Number(baseInfo.clientHeight) || 0,
+      clientWidth: Number(baseInfo.clientWidth) || 0,
+      colorDepth: Number(baseInfo.colorDepth) || 0,
+      pixelDepth: Number(baseInfo.pixelDepth) || 0,
+      deviceId: this.safeString(baseInfo.deviceId),
+      screenWidth: Number(baseInfo.screenWidth) || 0,
+      screenHeight: Number(baseInfo.screenHeight) || 0,
+      vendor: this.safeString(baseInfo.vendor),
+      platform: this.safeString(baseInfo.platform),
+      userUuid: this.safeString(baseInfo.userUuid),
+      sdkUserUuid: this.safeString(baseInfo.sdkUserUuid),
+      appName: this.safeString(baseInfo.appName),
+      appCode: this.safeString(baseInfo.appCode),
+      pageId: this.safeString(baseInfo.pageId),
+      sessionId: this.safeString(baseInfo.sessionId),
+      sdkVersion: this.safeString(baseInfo.sdkVersion),
+      ip: this.safeString(baseInfo.ip),
+      sendTime: this.safeBigInt(baseInfo.sendTime),
+    };
+  }
+
+  private safeString(value: unknown): string {
+    return typeof value === 'string' ? value : '';
+  }
+
+  private safeBigInt(value: unknown): bigint {
+    if (value && (typeof value === 'string' || typeof value === 'number')) {
+      return BigInt(value);
+    }
+    return BigInt(Date.now());
+  }
+
+  private async saveToDatabase(trackingData: Prisma.TrackingDataCreateInput) {
+    return await this.prisma.trackingData.create({
+      data: trackingData,
+    });
+  }
+
+  async findAll(query: PageQueryDto) {
+    const { page = 1, limit = 10 } = query;
+    const skip = (page - 1) * limit;
+    // 构建查询条件
+    const where: Prisma.TrackingDataWhereInput = {};
+
+    // 查询数据和总数
+    const [data, total] = await Promise.all([
+      this.prisma.trackingData.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { sendTime: 'desc' },
+      }),
+      this.prisma.trackingData.count({ where }),
+    ]);
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: page < Math.ceil(total / limit),
+        hasPrev: page > 1,
+      },
+    };
   }
 
   findOne(id: number) {
     return `This action returns a #${id} trackweb`;
-  }
-
-  update(id: number, updateTrackwebDto: UpdateTrackwebDto) {
-    console.log('更新数据:', updateTrackwebDto);
-    return `This action updates a #${id} trackweb`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} trackweb`;
   }
 }

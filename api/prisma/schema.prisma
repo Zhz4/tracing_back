@@ -40,90 +40,26 @@ model TrackingData {
   userUuid     String @default("")
   // SDK用户UUID
   sdkUserUuid  String @default("")
-  // 扩展字段
-  ext          Json?
+
   // 应用名称
-  appName      String @default("")
+  appName    String @default("")
   // 应用代码
-  appCode      String @default("")
+  appCode    String @default("")
   // 页面ID
-  pageId       String @default("")
+  pageId     String @default("")
   // 会话ID
-  sessionId    String @default("")
+  sessionId  String @default("")
   // SDK版本
-  sdkVersion   String @default("")
+  sdkVersion String @default("")
   // IP地址
-  ip           String @default("")
+  ip         String @default("")
   // 发送时间
-  sendTime     BigInt @default(0)
+  sendTime   BigInt @default(0)
+  // 扩展字段
+  ext        Json?
+  eventInfo  Json?
 
-  // ========== eventInfo 字段 ==========
-  // 事件类型 (performance, pv, click, error 等)
-  eventType      String? @default("")
-  // 事件ID
-  eventId        String? @default("")
-  // 触发页面URL
-  triggerPageUrl String?
-  // 触发时间
-  triggerTime    BigInt?
-  // 事件发送时间
-  eventSendTime  BigInt?
-
-  // 页面浏览事件 (PV) 字段
-  referer String?
-  title   String?
-  action  String?
-
-  // 性能事件字段
-  tti       Float?
-  ready     Float?
-  loadon    Float?
-  firstbyte Float?
-  ttfb      Float?
-  trans     Float?
-  dom       Float?
-  res       Float?
-  ssllink   Float?
-
-  // 资源加载事件字段
-  initiatorType     String?
-  transferSize      Int?
-  encodedBodySize   Int?
-  decodedBodySize   Int?
-  duration          Float?
-  startTime         Float?
-  fetchStart        Float?
-  domainLookupStart Float?
-  domainLookupEnd   Float?
-  connectStart      Float?
-  connectEnd        Float?
-  requestStart      Float?
-  responseStart     Float?
-  responseEnd       Float?
-  requestUrl        String?
-
-  // 错误事件字段
-  errorMessage  String?
-  errorStack    String?
-  errorLine     Int?
-  errorColumn   Int?
-  errorFilename String?
-
-  // 用户行为事件字段
-  elementSelector String?
-  elementText     String?
-  clickX          Int?
-  clickY          Int?
-
-  // 时间戳
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // 索引优化
-  @@index([eventType])
-  @@index([sessionId])
-  @@index([userUuid])
-  @@index([triggerTime])
-  @@index([createdAt])
+  // 事件类型
+  @@index([id, sendTime])
   @@map("tracking_data")
 }

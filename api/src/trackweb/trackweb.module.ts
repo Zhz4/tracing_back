@@ -3,7 +3,7 @@ import { TrackwebService } from './trackweb.service';
 import { TrackwebController } from './trackweb.controller';
 
 @Module({
-  controllers: [TrackwebController],
   providers: [TrackwebService],
+  controllers: [TrackwebController],
 })
 export class TrackwebModule {}
