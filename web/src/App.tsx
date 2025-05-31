@@ -1,15 +1,14 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import Layout from "./layouts";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const App = () => {
-  const [count, setCount] = useState(0)
-
   return (
-    <div>
-      <h1>Count: {count}</h1>
-      <Button onClick={() => setCount(count + 1)}>Click me</Button>
-    </div>
-  )
-}
+    <ThemeProvider>
+      <Layout>
+        <h1>Hello</h1>
+      </Layout>
+    </ThemeProvider>
+  );
+};
 
-export default App
+export default App;
