@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "declaration": true,
+    "declarationDir": "./types",
+    "resolveJsonModule": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noUnusedLocals": true,
+    "paths": {
+      "@web-tracing/core": ["./packages/core/index.ts"],
+      // "@web-tracing/core/*": ["./packages/core/*"],
+      // "@web-tracing/component": ["./packages/component/index.ts"],
+    },
+    "types": [
+      // "vitest",
+      "vitest/globals",
+      "vitest/jsdom"
+      // "@types/web-bluetooth"
+    ]
+  },
+  "include": [
+    "global.d.ts",
+    "packages",
+    "packages/.vitepress/components/*.vue",
+    "packages/.vitepress/*.ts",
+    "meta",
+    "vitest.config.mts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/**/*.md",
+    "**/dist",
+    "packages/.test",
+    "packages/_docs"
+  ]
+}
