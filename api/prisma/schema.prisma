@@ -12,3 +12,118 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// 跟踪数据表 - 包含所有 baseInfo 和 eventInfo 字段
+model TrackingData {
+  id String @id @default(uuid())
+
+  // ========== baseInfo 字段 ==========
+  // 网页可见区高度
+  clientHeight Int    @default(0)
+  // 网页可见区宽度
+  clientWidth  Int    @default(0)
+  // 显示屏幕调色板的比特深度
+  colorDepth   Int    @default(0)
+  // 显示屏幕的颜色分辨率
+  pixelDepth   Int    @default(0)
+  // 设备ID
+  deviceId     String @default("")
+  // 显示屏幕的宽度
+  screenWidth  Int    @default(0)
+  // 显示屏幕的高度
+  screenHeight Int    @default(0)
+  // 浏览器厂商
+  vendor       String @default("")
+  // 平台信息
+  platform     String @default("")
+  // 用户UUID
+  userUuid     String @default("")
+  // SDK用户UUID
+  sdkUserUuid  String @default("")
+  // 扩展字段
+  ext          Json?
+  // 应用名称
+  appName      String @default("")
+  // 应用代码
+  appCode      String @default("")
+  // 页面ID
+  pageId       String @default("")
+  // 会话ID
+  sessionId    String @default("")
+  // SDK版本
+  sdkVersion   String @default("")
+  // IP地址
+  ip           String @default("")
+  // 发送时间
+  sendTime     BigInt @default(0)
+
+  // ========== eventInfo 字段 ==========
+  // 事件类型 (performance, pv, click, error 等)
+  eventType      String? @default("")
+  // 事件ID
+  eventId        String? @default("")
+  // 触发页面URL
+  triggerPageUrl String?
+  // 触发时间
+  triggerTime    BigInt?
+  // 事件发送时间
+  eventSendTime  BigInt?
+
+  // 页面浏览事件 (PV) 字段
+  referer String?
+  title   String?
+  action  String?
+
+  // 性能事件字段
+  tti       Float?
+  ready     Float?
+  loadon    Float?
+  firstbyte Float?
+  ttfb      Float?
+  trans     Float?
+  dom       Float?
+  res       Float?
+  ssllink   Float?
+
+  // 资源加载事件字段
+  initiatorType     String?
+  transferSize      Int?
+  encodedBodySize   Int?
+  decodedBodySize   Int?
+  duration          Float?
+  startTime         Float?
+  fetchStart        Float?
+  domainLookupStart Float?
+  domainLookupEnd   Float?
+  connectStart      Float?
+  connectEnd        Float?
+  requestStart      Float?
+  responseStart     Float?
+  responseEnd       Float?
+  requestUrl        String?
+
+  // 错误事件字段
+  errorMessage  String?
+  errorStack    String?
+  errorLine     Int?
+  errorColumn   Int?
+  errorFilename String?
+
+  // 用户行为事件字段
+  elementSelector String?
+  elementText     String?
+  clickX          Int?
+  clickY          Int?
+
+  // 时间戳
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 索引优化
+  @@index([eventType])
+  @@index([sessionId])
+  @@index([userUuid])
+  @@index([triggerTime])
+  @@index([createdAt])
+  @@map("tracking_data")
+}
