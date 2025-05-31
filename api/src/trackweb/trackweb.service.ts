@@ -55,6 +55,7 @@ export class TrackwebService {
       vendor: this.safeString(baseInfo.vendor),
       platform: this.safeString(baseInfo.platform),
       userUuid: this.safeString(baseInfo.userUuid),
+      userName: this.safeString(baseInfo.userName),
       sdkUserUuid: this.safeString(baseInfo.sdkUserUuid),
       appName: this.safeString(baseInfo.appName),
       appCode: this.safeString(baseInfo.appCode),
@@ -62,7 +63,7 @@ export class TrackwebService {
       sessionId: this.safeString(baseInfo.sessionId),
       sdkVersion: this.safeString(baseInfo.sdkVersion),
       ip: this.safeString(baseInfo.ip),
-      sendTime: this.safeBigInt(baseInfo.sendTime),
+      sendTime: this.safeString(baseInfo.sendTime),
     };
   }
 
