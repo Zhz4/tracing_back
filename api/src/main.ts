@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import * as bodyParser from 'body-parser';
 import { TransformInterceptor } from '@/common/interceptors/transform.interceptor';
 import { AllExceptionsFilter } from '@/common/filters/http-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,8 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true, // 自动转换数据类型
+      whitelist: true, // 过滤掉未定义的属性
+      forbidNonWhitelisted: true, // 如果存在未定义的属性，则抛出异常
     }),
   );
   // 启用全局拦截器
@@ -25,6 +28,15 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: false,
   });
+
+  // 启用 Swagger
+  const config = new DocumentBuilder()
+    .setTitle('前端埋点 API')
+    .setDescription('前端埋点 API 文档')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
 }
