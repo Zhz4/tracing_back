@@ -7,7 +7,7 @@ import { type PaginationState } from "@tanstack/react-table";
 
 const MonitorData = () => {
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
+    pageIndex: 1,
     pageSize: 10,
   });
 

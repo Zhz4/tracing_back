@@ -1,18 +1,7 @@
+import { MonitorData } from "@/api/monitor/type";
 import { Checkbox } from "@/components/ui/checkbox";
 import { type ColumnDef } from "@tanstack/react-table";
-
-export type MonitorData = {
-  id: string;
-  userName: string;
-  userId: string;
-  userIp: string;
-  userAgent: string;
-  userReferer: string;
-  userUrl: string;
-  userTime: string;
-  userStatus: string;
-  userType: string;
-};
+import dayjs from "dayjs";
 
 export const columns: ColumnDef<MonitorData>[] = [
   {
@@ -46,5 +35,34 @@ export const columns: ColumnDef<MonitorData>[] = [
   {
     accessorKey: "userName",
     header: "用户名",
+  },
+  {
+    accessorKey: "sendTime",
+    header: "发送时间",
+    cell: ({ row }) => {
+      return (
+        <div>
+          {row.original.sendTime
+            ? dayjs(row.original.sendTime).format("YYYY-MM-DD HH:mm:ss")
+            : "-"}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "vendor",
+    header: "浏览器厂商",
+  },
+  {
+    accessorKey: "platform",
+    header: "浏览器平台的环境",
+  },
+  {
+    accessorKey: "ip",
+    header: "IP地址",
+  },
+  {
+    accessorKey: "eventInfo",
+    header: "事件信息",
   },
 ];
