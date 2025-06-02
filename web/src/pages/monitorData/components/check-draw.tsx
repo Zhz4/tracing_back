@@ -21,7 +21,7 @@ const CheckDialog = () => {
   return (
     <Drawer open={open} onOpenChange={setOpen} direction="right">
       <DrawerContent className="w-[500px] rounded-2xl my-2 h-[98vh] overflow-y-auto">
-        <DrawerHeader className="sticky top-0 z-10 bg-white">
+        <DrawerHeader className="sticky top-0 z-10 bg-background">
           <DrawerTitle>查看操作事件</DrawerTitle>
           <DrawerDescription>查看用户操作事件详情</DrawerDescription>
         </DrawerHeader>
