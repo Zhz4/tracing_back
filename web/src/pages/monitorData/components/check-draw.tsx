@@ -6,9 +6,18 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useMonitorData } from "../context/monitor-data-context";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 
 const CheckDialog = () => {
   const { open, setOpen, currentRow } = useMonitorData();
+  const navigate = useNavigate();
+
+  const handleViewRecordscreen = (rowId: string) => {
+    navigate(`/recordscreen?rowId=${rowId}`);
+  };
+
   return (
     <Drawer open={open} onOpenChange={setOpen} direction="right">
       <DrawerContent className="w-[500px] rounded-2xl my-2 h-[98vh] overflow-y-auto">
@@ -24,7 +33,22 @@ const CheckDialog = () => {
               <div>发送时间: {item.sendTime}</div>
               <div>当前页面URL: {item.triggerPageUrl}</div>
               <div>页面标题：{item.title}</div>
-              <div>错误录屏信息：{JSON.stringify(item.recordscreen)}</div>
+              <div className="flex items-center gap-2">
+                错误录屏信息：
+                {item.recordscreen && currentRow?.id ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleViewRecordscreen(currentRow.id)}
+                    className="flex items-center gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    查看录屏回放
+                  </Button>
+                ) : (
+                  <span className="text-gray-500">无录屏数据</span>
+                )}
+              </div>
               <div>========================================</div>
             </div>
           ))}
