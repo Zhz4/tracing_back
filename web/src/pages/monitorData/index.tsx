@@ -4,6 +4,9 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getMonitorData, MonitorDataResponse } from "@/api/monitor";
 import { useState } from "react";
 import { type PaginationState } from "@tanstack/react-table";
+import Search from "./components/search";
+import MonitorDataProvider from "./context/monitor-data-context";
+import CheckDialog from "./components/check-dialog";
 
 const MonitorData = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -19,7 +22,16 @@ const MonitorData = () => {
   });
 
   return (
-    <>
+    <MonitorDataProvider>
+      <div className="mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">监控数据</h2>
+          <p className="text-muted-foreground">埋点监控数据展示列表</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Search />
+        </div>
+      </div>
       <DataTable
         columns={columns}
         data={data?.records || []}
@@ -27,7 +39,8 @@ const MonitorData = () => {
         setPagination={setPagination}
         totalCount={data?.pagination.total}
       />
-    </>
+      <CheckDialog />
+    </MonitorDataProvider>
   );
 };
 

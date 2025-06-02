@@ -2,6 +2,7 @@ import { MonitorData } from "@/api/monitor/type";
 import { Checkbox } from "@/components/ui/checkbox";
 import { type ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
+import { DataTableRowActions } from "./data-table-row-actions";
 
 export const columns: ColumnDef<MonitorData>[] = [
   {
@@ -62,7 +63,9 @@ export const columns: ColumnDef<MonitorData>[] = [
     header: "IP地址",
   },
   {
-    accessorKey: "eventInfo",
-    header: "事件信息",
+    id: "action",
+    cell: ({ row }) => <DataTableRowActions<MonitorData | null> row={row} />,
+    enableSorting: false,
+    enableHiding: false,
   },
 ];
