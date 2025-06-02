@@ -11,8 +11,14 @@ export class TrackwebController {
   @ApiOperation({ summary: '创建埋点数据' })
   @ApiResponse({ status: 200, description: '成功返回埋点数据' })
   @Post()
-  create(@Body() createTrackwebDto: string) {
-    return this.trackwebService.create(createTrackwebDto);
+  create(@Body() createTrackwebDto: any) {
+    // 如果接收到的是对象，将其转换为JSON字符串
+    const dataToProcess =
+      typeof createTrackwebDto === 'string'
+        ? createTrackwebDto
+        : JSON.stringify(createTrackwebDto);
+
+    return this.trackwebService.create(dataToProcess);
   }
 
   @ApiOperation({ summary: '分页查询埋点数据' })

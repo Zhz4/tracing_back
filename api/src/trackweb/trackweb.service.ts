@@ -12,7 +12,7 @@ interface TrackingPayload {
 export class TrackwebService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createTrackwebDto: string) {
+  async create(createTrackwebDto: string | object) {
     try {
       const data = this.parseTrackingData(createTrackwebDto);
       const trackingData = this.transformToDbFormat(data);
@@ -27,8 +27,20 @@ export class TrackwebService {
     }
   }
 
-  private parseTrackingData(jsonString: string): TrackingPayload {
-    return JSON.parse(jsonString) as TrackingPayload;
+  private parseTrackingData(jsonString: string | object): TrackingPayload {
+    try {
+      // 如果已经是对象，直接返回
+      if (typeof jsonString === 'object' && jsonString !== null) {
+        return jsonString as TrackingPayload;
+      }
+
+      // 如果是字符串，尝试解析JSON
+      return JSON.parse(jsonString) as TrackingPayload;
+    } catch (error) {
+      console.error('解析追踪数据失败:', error);
+      console.error('接收到的数据:', jsonString);
+      throw new Error(`数据格式错误: 无法解析追踪数据`);
+    }
   }
 
   private transformToDbFormat(data: TrackingPayload) {

@@ -8,8 +8,10 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // 添加对 text/plain 的支持
-  app.use(bodyParser.text({ type: 'text/plain' }));
+  // 配置请求体大小限制，支持大型埋点数据
+  app.use(bodyParser.json({ limit: '50mb' })); // JSON 请求体限制为 50MB
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true })); // URL 编码请求体限制为 50MB
+  app.use(bodyParser.text({ type: 'text/plain', limit: '50mb' })); // 文本请求体限制为 50MB
   // 启用全局验证管道，用于自动转换和验证请求数据
   app.useGlobalPipes(
     new ValidationPipe({
