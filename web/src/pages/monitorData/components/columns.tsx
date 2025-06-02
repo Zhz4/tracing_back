@@ -44,7 +44,7 @@ export const columns: ColumnDef<MonitorData>[] = [
       return (
         <div>
           {row.original.sendTime
-            ? dayjs(row.original.sendTime).format("YYYY-MM-DD HH:mm:ss")
+            ? dayjs(Number(row.original.sendTime)).format("YYYY-MM-DD HH:mm:ss")
             : "-"}
         </div>
       );
@@ -64,7 +64,7 @@ export const columns: ColumnDef<MonitorData>[] = [
   },
   {
     id: "action",
-    cell: ({ row }) => <DataTableRowActions<MonitorData | null> row={row} />,
+    cell: ({ row }) => <DataTableRowActions row={row} />,
     enableSorting: false,
     enableHiding: false,
   },

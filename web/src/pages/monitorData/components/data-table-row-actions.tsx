@@ -11,12 +11,12 @@ import { useMonitorData } from "../context/monitor-data-context";
 import { MonitorData } from "@/api/monitor/type";
 
 interface DataTableRowActionsProps<TData> {
-  row: Row<TData | null>;
+  row: Row<TData>;
 }
 
 export function DataTableRowActions<TData>({
   row,
-}: DataTableRowActionsProps<TData | null>) {
+}: DataTableRowActionsProps<TData>) {
   const { setOpen, setCurrentRow } = useMonitorData();
   return (
     <DropdownMenu modal={false}>

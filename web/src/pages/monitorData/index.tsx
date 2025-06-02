@@ -6,7 +6,7 @@ import { useState } from "react";
 import { type PaginationState } from "@tanstack/react-table";
 import Search from "./components/search";
 import MonitorDataProvider from "./context/monitor-data-context";
-import CheckDialog from "./components/check-dialog";
+import CheckDraw from "./components/check-draw";
 
 const MonitorData = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -39,7 +39,7 @@ const MonitorData = () => {
         setPagination={setPagination}
         totalCount={data?.pagination.total}
       />
-      <CheckDialog />
+      <CheckDraw />
     </MonitorDataProvider>
   );
 };

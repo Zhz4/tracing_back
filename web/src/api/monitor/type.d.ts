@@ -47,5 +47,5 @@ export type MonitorData = {
   // 扩展字段 (可选)
   ext?: Record<string, unknown> | null;
   // 事件信息 (可选)
-  eventInfo?: Record<string, unknown> | null;
+  eventInfo?: (EventClick | EventError | EventRoute | EventRequest)[];
 };

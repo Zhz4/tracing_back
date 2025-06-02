@@ -14,7 +14,7 @@ const App = () => {
         {import.meta.env.DEV && (
           <ReactQueryDevtools
             initialIsOpen={false}
-            buttonPosition="bottom-right"
+            buttonPosition="bottom-left"
           />
         )}
         <RouterProvider router={routes} />
