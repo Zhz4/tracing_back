@@ -10,7 +10,7 @@ import CheckDraw from "./components/check-draw";
 
 const MonitorData = () => {
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 1,
+    pageIndex: 0,
     pageSize: 10,
   });
 
