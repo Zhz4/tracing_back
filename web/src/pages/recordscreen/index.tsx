@@ -42,6 +42,30 @@ const RecordscreenPage: React.FC = () => {
   };
   const recordscreenData = getRecordscreenDataFromCache();
 
+  // 清理播放器的函数
+  const cleanupPlayer = () => {
+    if (playerRef.current) {
+      try {
+        // 获取播放器的 replayer 实例
+        const replayer = playerRef.current.getReplayer?.();
+        if (replayer) {
+          // 停止播放
+          replayer.pause();
+        }
+        // 清空引用
+        playerRef.current = null;
+      } catch (error) {
+        console.warn("清理播放器时出错:", error);
+        playerRef.current = null;
+      }
+    }
+    // 清理 DOM
+    const target = document.getElementById("recordscreen-player");
+    if (target) {
+      target.innerHTML = "";
+    }
+  };
+
   useLayoutEffect(() => {
     if (recordscreenData) {
       const timer = setTimeout(() => {
@@ -66,22 +90,44 @@ const RecordscreenPage: React.FC = () => {
           console.error("录屏回放失败", error);
         }
       }, 100);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        cleanupPlayer();
+      };
     }
   }, [recordscreenData]);
 
-  // 清理副作用
+  // 组件卸载时的清理
   useEffect(() => {
     return () => {
-      // 组件卸载时清理播放器DOM
-      const target = document.getElementById("recordscreen-player");
-      if (target) {
-        target.innerHTML = "";
+      cleanupPlayer();
+    };
+  }, []);
+
+  // 页面可见性变化时的处理
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && playerRef.current) {
+        try {
+          const replayer = playerRef.current.getReplayer?.();
+          if (replayer) {
+            replayer.pause();
+          }
+        } catch (error) {
+          console.warn("暂停播放器时出错:", error);
+        }
       }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
   const handleGoBack = () => {
+    // 返回前先清理播放器
+    cleanupPlayer();
     navigate(-1);
   };
 

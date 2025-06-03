@@ -21,8 +21,8 @@ const CheckDialog = () => {
           <DrawerDescription>查看用户操作事件详情</DrawerDescription>
         </DrawerHeader>
         <div className="p-4 w-full">
-          {currentRow?.eventInfo?.map((item) => (
-            <div key={item.eventId}>
+          {currentRow?.eventInfo?.map((item, index) => (
+            <div key={`${item.eventId}-${index}`}>
               {item.eventType === "click" && <EventClickPage event={item} />}
               {item.eventType === "error" && (
                 <EventErrorPage event={item} id={currentRow.id} />
