@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # 部署docker
-docker-compose up -d --build
+docker compose up -d --build
 echo "docker部署完成。"
 # 清理旧的镜像
 docker system prune -af
