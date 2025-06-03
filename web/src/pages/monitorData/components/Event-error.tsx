@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EventConst } from "@/constants";
 
 interface EventErrorProps {
   event: EventError;
@@ -30,7 +31,7 @@ const EventErrorPage = ({ event, id }: EventErrorProps) => {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-red-700">
           <AlertTriangle className="h-5 w-5" />
-          错误事件
+          {EventConst[event.eventType as keyof typeof EventConst]}
           <span className="ml-auto text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
             {event.eventType}
           </span>

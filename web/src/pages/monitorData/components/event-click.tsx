@@ -2,6 +2,7 @@ import { EventClick } from "@/types";
 import dayjs from "dayjs";
 import { MousePointer2, Clock, Globe, Target, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EventConst } from "@/constants";
 
 interface EventClickProps {
   event: EventClick;
@@ -13,7 +14,7 @@ const EventClickPage = ({ event }: EventClickProps) => {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-blue-700">
           <MousePointer2 className="h-5 w-5" />
-          点击事件
+          {EventConst[event.eventType as keyof typeof EventConst]}
           <span className="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
             {event.eventType}
           </span>

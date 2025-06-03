@@ -43,7 +43,8 @@ export type MonitorData = {
   ip: string;
   // 发送时间
   sendTime: string;
-
+  // 事件类型
+  eventTypeList: EventType[];
   // 扩展字段 (可选)
   ext?: Record<string, unknown> | null;
   // 事件信息 (可选)

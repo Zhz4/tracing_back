@@ -1,3 +1,5 @@
+import { EventConst } from "@/constants";
+
 export interface PaginationType {
   hasNext: boolean;
   hasPrev: boolean;
@@ -12,17 +14,13 @@ export interface TableData<T> {
   pagination: PaginationType;
 }
 
-interface EventBase {
+export type EventType = (typeof EventConst)[keyof typeof EventConst];
+
+export interface EventBase {
   // 事件ID
   eventId: string;
-  // 事件类型-click 等
-  eventType:
-    | "click"
-    | "error"
-    | "pv"
-    | "performance"
-    | "intersection"
-    | "server";
+  // 事件类型
+  eventType: EventType;
   // 事件发生时间
   triggerTime: number;
   // 发送时间
