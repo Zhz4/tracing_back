@@ -14,12 +14,20 @@ const MonitorData = () => {
     pageSize: 10,
   });
 
-  const { data } = useQuery<MonitorDataResponse>({
+  const { data, refetch, isFetching } = useQuery<MonitorDataResponse>({
     queryKey: ["monitorData", pagination],
     queryFn: () =>
       getMonitorData(pagination.pageIndex + 1, pagination.pageSize),
     placeholderData: keepPreviousData,
   });
+
+  const handleSearch = () => {
+    setPagination({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+    refetch();
+  };
 
   return (
     <MonitorDataProvider>
@@ -29,7 +37,7 @@ const MonitorData = () => {
           <p className="text-muted-foreground">埋点监控数据展示列表</p>
         </div>
         <div className="flex items-center gap-2">
-          <Search />
+          <Search refetch={handleSearch} isFetching={isFetching} />
         </div>
       </div>
       <DataTable

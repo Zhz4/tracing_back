@@ -16,7 +16,13 @@ interface EventBase {
   // 事件ID
   eventId: string;
   // 事件类型-click 等
-  eventType: "click" | "error" | "pv" | "performance" | "intersection";
+  eventType:
+    | "click"
+    | "error"
+    | "pv"
+    | "performance"
+    | "intersection"
+    | "server";
   // 事件发生时间
   triggerTime: number;
   // 发送时间
