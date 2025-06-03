@@ -1,20 +1,4 @@
-version: "3.8"
-
 services:
-  # Nginx 前端代理
-  nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: nginx
-    ports:
-      - "80:80"
-    depends_on:
-      - app
-    restart: unless-stopped
-    networks:
-      - app-network
-
   # NestJS API
   app:
     build:
@@ -28,6 +12,20 @@ services:
       - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - database
+    restart: unless-stopped
+    networks:
+      - app-network
+    entrypoint: ["sh", "./entrypoint.sh"]
+    # Nginx 前端代理
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - app
     restart: unless-stopped
     networks:
       - app-network
