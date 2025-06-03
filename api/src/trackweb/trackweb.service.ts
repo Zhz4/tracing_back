@@ -113,8 +113,25 @@ export class TrackwebService {
       this.prisma.trackingData.count({ where }),
     ]);
 
+    // data中的eventType类型有哪些暴露在外层 data中
+    const newData = data.map((item) => {
+      const eventTypeList = Array.isArray(item.eventInfo)
+        ? Array.from(
+            new Set(
+              (item.eventInfo as Array<{ eventType?: string }>)
+                .map((event) => event?.eventType)
+                .filter((eventType): eventType is string => Boolean(eventType)),
+            ),
+          )
+        : [];
+      return {
+        ...item,
+        eventTypeList,
+      };
+    });
+
     return {
-      records: data,
+      records: newData,
       pagination: {
         page,
         limit,
