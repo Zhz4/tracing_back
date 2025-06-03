@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "npx prisma generate",
     "prisma:studio": "npx prisma studio",
-    "prisma:migrate": "npx prisma migrate dev --name ",
+    "prisma:migrate": "npx prisma migrate dev",
     "prisma:format": "npx prisma format"
   },
   "dependencies": {
