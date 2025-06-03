@@ -1,4 +1,16 @@
 services:
+  # PostgreSQL 数据库
+  database:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tracing_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - app-network
   # NestJS API
   app:
     build:
@@ -26,19 +38,6 @@ services:
       - "80:80"
     depends_on:
       - app
-    restart: unless-stopped
-    networks:
-      - app-network
-
-  # PostgreSQL 数据库
-  database:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-tracing_db}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - app-network
