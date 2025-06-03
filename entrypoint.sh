@@ -3,4 +3,4 @@
 npx prisma migrate deploy
 
 # 启动应用
-pnpm start:prod
+node dist/src/main.js

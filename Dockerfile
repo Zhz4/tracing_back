@@ -49,25 +49,19 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
 
-# === API 生产阶段 ===
+# === API 运行阶段（生产环境）===
 FROM node:20-alpine AS api-production
-
-RUN npm install -g pnpm
 WORKDIR /app
 
-# 复制运行所需内容
+# 复制生产依赖（包含 NestJS 编译后的 dist 和 Prisma Client）
 COPY --from=api-builder /app/api/package.json ./
 COPY --from=api-builder /app/api/pnpm-lock.yaml ./
+COPY --from=api-builder /app/api/node_modules ./node_modules
 COPY --from=api-builder /app/api/dist ./dist
 COPY --from=api-builder /app/api/prisma ./prisma
 
-# 复制 entrypoint.sh
+# 复制启动脚本
 COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
-
-# 安装生产依赖
-RUN pnpm install --prod --frozen-lockfile
-# 注意：此时如果你需要使用 Prisma Client，建议重新 generate
-RUN npx prisma generate
 
 EXPOSE 3000
