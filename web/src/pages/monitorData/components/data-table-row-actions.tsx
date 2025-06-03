@@ -24,11 +24,17 @@ export function DataTableRowActions<TData>({
         <Button
           variant="ghost"
           className="data-[state=open]:bg-muted flex h-8 w-8 p-0"
+          aria-label="打开操作菜单"
         >
           <DotsHorizontalIcon className="h-4 w-4" />
+          <span className="sr-only">更多操作</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[160px]">
+      <DropdownMenuContent
+        align="end"
+        className="w-[160px]"
+        onCloseAutoFocus={(e) => e.preventDefault()}
+      >
         <DropdownMenuItem
           onClick={() => {
             setCurrentRow(row.original as MonitorData);
