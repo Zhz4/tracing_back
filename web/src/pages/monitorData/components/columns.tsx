@@ -53,6 +53,10 @@ export const columns: ColumnDef<MonitorData>[] = [
     },
   },
   {
+    accessorKey: "appName",
+    header: "应用名称",
+  },
+  {
     accessorKey: "vendor",
     header: "浏览器厂商",
   },

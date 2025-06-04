@@ -3,7 +3,11 @@ import { DataTableSkeleton } from "@/components/table/data-table-skeleton";
 import { LoadingOverlay } from "@/components/ui/loading-modal";
 import { columns } from "./components/columns";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getMonitorData, MonitorDataResponse } from "@/api/monitor";
+import {
+  getMonitorData,
+  MonitorDataResponse,
+  SearchParamsType,
+} from "@/api/monitor";
 import { useState } from "react";
 import { type PaginationState } from "@tanstack/react-table";
 import Search from "./components/search";
@@ -15,21 +19,26 @@ const MonitorData = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+  const [searchParams, setSearchParams] = useState<SearchParamsType>({
+    userName: "",
+  });
+  const { data, isFetching, isLoading } = useQuery<MonitorDataResponse>({
+    queryKey: ["monitorData", pagination, searchParams],
+    queryFn: () =>
+      getMonitorData(
+        pagination.pageIndex + 1,
+        pagination.pageSize,
+        searchParams
+      ),
+    placeholderData: keepPreviousData,
+  });
 
-  const { data, refetch, isFetching, isLoading } =
-    useQuery<MonitorDataResponse>({
-      queryKey: ["monitorData", pagination],
-      queryFn: () =>
-        getMonitorData(pagination.pageIndex + 1, pagination.pageSize),
-      placeholderData: keepPreviousData,
-    });
-
-  const handleSearch = () => {
+  const handleSearch = (searchParams: SearchParamsType) => {
+    setSearchParams(searchParams);
     setPagination({
       pageIndex: 0,
       pageSize: 10,
     });
-    refetch();
   };
 
   return (
@@ -40,7 +49,11 @@ const MonitorData = () => {
           <p className="text-muted-foreground">埋点监控数据展示列表</p>
         </div>
         <div className="flex items-center gap-2">
-          <Search refetch={handleSearch} isFetching={isFetching} />
+          <Search
+            handleSearch={handleSearch}
+            isFetching={isFetching}
+            searchParams={searchParams}
+          />
         </div>
       </div>
 

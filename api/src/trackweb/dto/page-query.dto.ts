@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsNumber, Min } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -16,4 +23,19 @@ export class PageQueryDto {
   @Type(() => Number)
   @IsNotEmpty({ message: '每页条数不能为空' })
   limit: number;
+
+  @ApiProperty({ description: '应用名称' })
+  @IsString()
+  @IsOptional()
+  appName?: string;
+
+  @ApiProperty({ description: '用户名' })
+  @IsString()
+  @IsOptional()
+  userName?: string;
+
+  @ApiProperty({ description: '事件类型' })
+  @IsArray()
+  @IsOptional()
+  eventTypeList?: string[];
 }

@@ -97,10 +97,22 @@ export class TrackwebService {
   }
 
   async findAll(query: PageQueryDto) {
-    const { page = 1, limit = 10 } = query;
+    const { page = 1, limit = 10, appName, userName, eventTypeList } = query;
     const skip = (page - 1) * limit;
+
     // 构建查询条件
     const where: Prisma.TrackingDataWhereInput = {};
+    if (appName) where.appName = appName;
+    if (userName) where.userName = userName;
+    if (eventTypeList && eventTypeList.length > 0) {
+      // 查询 eventInfo JSON 数组中是否包含指定的事件类型
+      where.OR = eventTypeList.map((eventType) => ({
+        eventInfo: {
+          path: [],
+          string_contains: `"eventType":"${eventType}"`,
+        },
+      }));
+    }
 
     // 查询数据和总数
     const [data, total] = await Promise.all([
