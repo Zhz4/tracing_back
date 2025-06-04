@@ -3,8 +3,23 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { type ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariants } from "@/components/ui/badge";
 import { getEventName } from "@/utils/checkEventAll";
+import { EventNames } from "@/constants";
+import { VariantProps } from "class-variance-authority";
+
+type EventNameValues = (typeof EventNames)[keyof typeof EventNames];
+type BadgeVariants = VariantProps<typeof badgeVariants>["variant"];
+const eventNameVariants: Record<EventNameValues, BadgeVariants> = {
+  代码错误: "destructive",
+  点击事件: "info",
+  页面跳转: "accent",
+  页面停留: "muted",
+  资源首次加载: "success",
+  请求事件: "warning",
+  请求失败: "destructive",
+  资源加载: "outline-info",
+};
 
 export const columns: ColumnDef<MonitorData>[] = [
   {
@@ -43,13 +58,11 @@ export const columns: ColumnDef<MonitorData>[] = [
     accessorKey: "sendTime",
     header: "发送时间",
     cell: ({ row }) => {
-      return (
-        <div>
-          {row.original.sendTime
-            ? dayjs(Number(row.original.sendTime)).format("YYYY-MM-DD HH:mm:ss")
-            : "-"}
-        </div>
-      );
+      const { sendTime } = row.original;
+      const formattedSendTime = sendTime
+        ? dayjs(Number(sendTime)).format("YYYY-MM-DD HH:mm:ss")
+        : "-";
+      return <div className="text-xs">{formattedSendTime}</div>;
     },
   },
   {
@@ -74,11 +87,15 @@ export const columns: ColumnDef<MonitorData>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex flex-wrap gap-2">
-          {row.original.eventTypeList.map((item, index) => (
-            <Badge key={`${item}-${index}`} variant="outline">
-              {getEventName(item.eventType, item.eventId)}
-            </Badge>
-          ))}
+          {row.original.eventTypeList.map((item, index) => {
+            const eventName = getEventName(item.eventType, item.eventId);
+            const variant = eventNameVariants[eventName];
+            return (
+              <Badge key={`${item}-${index}`} variant={variant}>
+                {eventName}
+              </Badge>
+            );
+          })}
         </div>
       );
     },

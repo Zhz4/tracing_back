@@ -6,10 +6,11 @@ import { EventTypeEnum, EventIdEnum, EventNames } from "@/constants";
  * @param eventId 事件ID
  * @returns 事件名称
  */
+type EventNameValues = (typeof EventNames)[keyof typeof EventNames];
 export const getEventName = (
   eventType: `${EventTypeEnum}`,
   eventId: string
-): string => {
+): EventNameValues => {
   // 检查eventId是否属于预定义的枚举值
   const predefinedEventIds = Object.values(EventIdEnum) as string[];
   let eventCategory: string;
