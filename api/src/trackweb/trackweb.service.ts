@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PageQueryDto } from './dto/page-query.dto';
 import { PrismaService } from 'prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, TrackingData } from '@prisma/client';
 
 interface TrackingPayload {
   baseInfo?: Record<string, unknown>;
@@ -101,7 +101,11 @@ export class TrackwebService {
     const skip = (page - 1) * limit;
 
     // 构建查询条件
-    const where: Prisma.TrackingDataWhereInput = {};
+    const where: Prisma.TrackingDataWhereInput = {
+      // 去除脏数据
+      userName: { not: '' },
+      userUuid: { not: '' },
+    };
     if (appName) where.appName = appName;
     if (userName) where.userName = userName;
     if (eventTypeList && eventTypeList.length > 0) {
@@ -125,23 +129,8 @@ export class TrackwebService {
       this.prisma.trackingData.count({ where }),
     ]);
 
-    // data中的eventType类型有哪些暴露在外层 data中
-    const newData = data.map((item) => {
-      const eventTypeList = Array.isArray(item.eventInfo)
-        ? Array.from(
-            new Set(
-              (item.eventInfo as Array<{ eventType?: string }>)
-                .map((event) => event?.eventType)
-                .filter((eventType): eventType is string => Boolean(eventType)),
-            ),
-          )
-        : [];
-      return {
-        ...item,
-        eventTypeList,
-      };
-    });
-
+    // data中的eventType，eventId 有哪些暴露在外层 data中
+    const newData = this.getEventInfo(data);
     return {
       records: newData,
       pagination: {
@@ -153,6 +142,44 @@ export class TrackwebService {
         hasPrev: page > 1,
       },
     };
+  }
+
+  /**
+   *  将数据中的eventInfo 提到外层
+   * @param data 原数数据
+   * @returns 新的数据结构
+   */
+  private getEventInfo(data: TrackingData[]) {
+    return data.map((item) => {
+      const eventTypeList = Array.isArray(item.eventInfo)
+        ? (
+            item.eventInfo as Array<{
+              eventType?: string;
+              eventId?: string;
+            }>
+          )
+            .map((event) => {
+              return {
+                eventType: event?.eventType,
+                eventId: event?.eventId,
+              };
+            })
+            // 过滤掉 eventType 为 undefined 的元素
+            .filter((event): event is { eventType: string; eventId: string } =>
+              Boolean(event.eventType),
+            )
+        : [];
+      // 将 eventTypeList 中对象元素去重
+      const uniqueEventTypeList = Array.from(
+        new Set(eventTypeList.map((item) => JSON.stringify(item))),
+      ).map(
+        (item) => JSON.parse(item) as { eventType: string; eventId: string },
+      );
+      return {
+        ...item,
+        eventTypeList: uniqueEventTypeList,
+      };
+    });
   }
 
   findOne(id: number) {
