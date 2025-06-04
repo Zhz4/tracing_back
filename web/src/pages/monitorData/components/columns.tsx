@@ -4,7 +4,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { Badge } from "@/components/ui/badge";
-import { EventConst } from "@/constants";
+import { getEventName } from "@/utils/checkEventAll";
 
 export const columns: ColumnDef<MonitorData>[] = [
   {
@@ -72,23 +72,11 @@ export const columns: ColumnDef<MonitorData>[] = [
     accessorKey: "eventTypeList",
     header: "事件类型",
     cell: ({ row }) => {
-      const variantMap: Record<
-        (typeof row.original.eventTypeList)[number],
-        "default" | "secondary" | "destructive" | "outline"
-      > = {
-        click: "secondary",
-        error: "destructive",
-        pv: "outline",
-        performance: "outline",
-        intersection: "outline",
-        server: "outline",
-        "pv-duration": "outline",
-      };
       return (
         <div className="flex flex-wrap gap-2">
           {row.original.eventTypeList.map((item, index) => (
-            <Badge key={`${item}-${index}`} variant={variantMap[item]}>
-              {EventConst[item as keyof typeof EventConst]}
+            <Badge key={`${item}-${index}`} variant="outline">
+              {getEventName(item.eventType, item.eventId)}
             </Badge>
           ))}
         </div>
