@@ -1,4 +1,4 @@
-import { EventConst } from "@/constants";
+import { EventTypeEnum } from "@/constants";
 
 export interface PaginationType {
   hasNext: boolean;
@@ -14,13 +14,11 @@ export interface TableData<T> {
   pagination: PaginationType;
 }
 
-export type EventType = (typeof EventConst)[keyof typeof EventConst];
-
 export interface EventBase {
   // 事件ID
   eventId: string;
   // 事件类型
-  eventType: EventType;
+  eventType: EventTypeEnum;
   // 事件发生时间
   triggerTime: number;
   // 发送时间

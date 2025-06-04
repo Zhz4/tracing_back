@@ -31,6 +31,7 @@ const MonitorData = () => {
         searchParams
       ),
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
   });
 
   const handleSearch = (searchParams: SearchParamsType) => {

@@ -1,8 +1,8 @@
 import { EventClick } from "@/types";
 import dayjs from "dayjs";
 import { MousePointer2, Clock, Globe, Target, MapPin } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EventConst } from "@/constants";
+import { Card, CardContent } from "@/components/ui/card";
+import EventCardHeard from "./event-card-heard";
 
 interface EventClickProps {
   event: EventClick;
@@ -11,15 +11,13 @@ interface EventClickProps {
 const EventClickPage = ({ event }: EventClickProps) => {
   return (
     <Card className="mb-4 border-l-4 border-l-blue-500">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-blue-700">
-          <MousePointer2 className="h-5 w-5" />
-          {EventConst[event.eventType as keyof typeof EventConst]}
-          <span className="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-            {event.eventType}
-          </span>
-        </CardTitle>
-      </CardHeader>
+      <EventCardHeard
+        eventType={event.eventType}
+        eventId={event.eventId}
+        textColor="text-blue-700"
+        bgColor="bg-blue-100"
+        icon={<MousePointer2 className="h-5 w-5" />}
+      />
       <CardContent className="space-y-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex items-center gap-2 text-sm">
