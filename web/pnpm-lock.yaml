@@ -68,6 +68,12 @@ importers:
       js-base64:
         specifier: ^3.7.7
         version: 3.7.7
+      keepalive-for-react:
+        specifier: ^4.0.2
+        version: 4.0.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      keepalive-for-react-router:
+        specifier: ^2.0.2
+        version: 2.0.2(keepalive-for-react@4.0.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react-router@7.6.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       lucide-react:
         specifier: ^0.511.0
         version: 0.511.0(react@19.1.0)
@@ -1682,6 +1688,20 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
+
+  keepalive-for-react-router@2.0.2:
+    resolution: {integrity: sha512-evZosdQgPDd4Udu5gD0GZl0yuToW4EYhQIAPEohi1IMKEO1f7oyrwD2BfSICwiV2/Ug3ZC4ruJ3e9+LcNZwY9w==}
+    peerDependencies:
+      keepalive-for-react: ^4.0.0
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+      react-router: '>=7.0.0'
+
+  keepalive-for-react@4.0.2:
+    resolution: {integrity: sha512-KX57IFOvChhIZOz//NuqWzD04vhr+HtFBbj+ibmRnB0dWQrYu/XyaKvD1eWbeArzrtVdQ8gapLG5+hz9IomSnA==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -3671,6 +3691,18 @@ snapshots:
   json-stable-stringify-without-jsonify@1.0.1: {}
 
   json5@2.2.3: {}
+
+  keepalive-for-react-router@2.0.2(keepalive-for-react@4.0.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react-router@7.6.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
+    dependencies:
+      keepalive-for-react: 4.0.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      react-router: 7.6.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+
+  keepalive-for-react@4.0.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
 
   keyv@4.5.4:
     dependencies:

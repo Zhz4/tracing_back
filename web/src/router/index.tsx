@@ -4,7 +4,7 @@ import Layout from "@/layouts";
 import MonitorData from "@/pages/monitorData";
 import RecordscreenPage from "@/pages/recordscreen";
 
-export const routes = createBrowserRouter([
+export const routes = [
   {
     path: "/",
     element: <Layout />,
@@ -16,15 +16,29 @@ export const routes = createBrowserRouter([
       {
         path: "/home",
         element: <Home />,
+        handle: {
+          keepAlive: true,
+          title: "首页",
+        },
       },
       {
         path: "/monitor-data",
         element: <MonitorData />,
+        handle: {
+          keepAlive: true,
+          title: "监控数据",
+        },
       },
       {
         path: "/recordscreen",
         element: <RecordscreenPage />,
+        handle: {
+          keepAlive: true,
+          title: "记录屏幕",
+        },
       },
     ],
   },
-]);
+];
+
+export const router = createBrowserRouter(routes);

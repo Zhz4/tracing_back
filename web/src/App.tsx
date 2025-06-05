@@ -1,7 +1,7 @@
 import { RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { routes } from "./router";
+import { router } from "./router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
@@ -17,7 +17,7 @@ const App = () => {
             buttonPosition="bottom-left"
           />
         )}
-        <RouterProvider router={routes} />
+        <RouterProvider router={router} />
       </ThemeProvider>
     </QueryClientProvider>
   );
