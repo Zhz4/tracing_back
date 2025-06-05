@@ -6,11 +6,44 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useMonitorData } from "../context/monitor-data-context";
-import EventClickPage from "./event-click";
+import EventClickPage from "./Event-click";
 import EventRoutePage from "./Event-route";
 import EventRequestPage from "./Event-request";
 import { getEventName } from "@/utils/checkEventAll";
 import EventErrorPage from "./Event-error";
+import { EventStatusEnum } from "@/constants";
+import { EventClick, EventError, EventRoute, EventRequest } from "@/types";
+import { MonitorData } from "@/api/monitor/type";
+
+// 渲染事件组件的函数
+const renderEventComponent = (
+  item: EventClick | EventError | EventRoute | EventRequest,
+  currentRow: MonitorData | null
+) => {
+  const eventName = getEventName(item.eventType, item.eventId);
+  // 添加空值检查
+  if (!currentRow) return null;
+  switch (eventName) {
+    case EventStatusEnum.点击事件:
+      return <EventClickPage event={item as EventClick} />;
+
+    case EventStatusEnum.代码错误:
+    case EventStatusEnum.控制台错误:
+      return <EventErrorPage event={item as EventError} id={currentRow.id} />;
+
+    case EventStatusEnum.页面跳转:
+    case EventStatusEnum.页面停留:
+      return <EventRoutePage event={item as EventRoute} />;
+
+    case EventStatusEnum.请求事件:
+    case EventStatusEnum.请求失败:
+      return (
+        <EventRequestPage event={item as EventRequest} id={currentRow.id} />
+      );
+    default:
+      return null;
+  }
+};
 
 const CheckDialog = () => {
   const { open, setOpen, currentRow } = useMonitorData();
@@ -25,22 +58,7 @@ const CheckDialog = () => {
         <div className="p-4 w-full">
           {currentRow?.eventInfo?.map((item, index) => (
             <div key={`${item.eventId}-${index}`}>
-              {getEventName(item.eventType, item.eventId) === "点击事件" && (
-                <EventClickPage event={item} />
-              )}
-              {(getEventName(item.eventType, item.eventId) === "代码错误" ||
-                getEventName(item.eventType, item.eventId) ===
-                  "控制台错误") && (
-                <EventErrorPage event={item} id={currentRow.id} />
-              )}
-              {getEventName(item.eventType, item.eventId) === "页面跳转" ||
-                (getEventName(item.eventType, item.eventId) === "页面停留" && (
-                  <EventRoutePage event={item} />
-                ))}
-              {(getEventName(item.eventType, item.eventId) === "请求事件" ||
-                getEventName(item.eventType, item.eventId) === "请求失败") && (
-                <EventRequestPage event={item} id={currentRow.id} />
-              )}
+              {renderEventComponent(item, currentRow)}
             </div>
           ))}
         </div>

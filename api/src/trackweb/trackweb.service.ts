@@ -135,6 +135,8 @@ export class TrackwebService {
    */
   private processEventInfo(data: TrackingDataWithEventInfo[]) {
     return data.map((item) => {
+      // 去除eventInfo中不需要的字段 - 不同eventType 不同eventId 需要不同的字段
+      const eventInfo = item.eventInfo.map((event) => mapResponseFile(event));
       const eventTypeList = item.eventInfo
         .filter((event) => Boolean(event))
         .map((event: EventInfo) => ({
@@ -150,8 +152,6 @@ export class TrackwebService {
         (item) => JSON.parse(item) as { eventType: string; eventId: string },
       );
 
-      // 去除eventInfo中不需要的字段 - 不同eventType 不同eventId 需要不同的字段
-      const eventInfo = item.eventInfo.map((event) => mapResponseFile(event));
       return {
         ...item,
         eventTypeList: uniqueEventTypeList,
