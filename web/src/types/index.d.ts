@@ -105,3 +105,9 @@ export interface EventRequest extends EventBase {
   // 错误录屏数据
   recordscreen?: string;
 }
+
+// TODO:资源加载事件
+// export interface EventResource extends EventBase {
+//   // 资源URL
+//   resourceUrl: string;
+// }

@@ -39,9 +39,6 @@ const CheckDialog = () => {
                 getEventName(item.eventType, item.eventId) === "请求失败") && (
                 <EventRequestPage event={item} id={currentRow.id} />
               )}
-              {/* {getEventName(item.eventType, item.eventId) === "资源加载" && (
-                <EventRequestPage event={item} id={currentRow.id} />
-              )} */}
             </div>
           ))}
         </div>
