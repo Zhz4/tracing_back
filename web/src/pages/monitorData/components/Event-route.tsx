@@ -91,7 +91,7 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">发生时间:</span>
             <span className="text-muted-foreground">
-              {dayjs(event.triggerTime).format("YYYY-MM-DD HH:mm:ss")}
+              {dayjs(Number(event.triggerTime)).format("YYYY-MM-DD HH:mm:ss")}
             </span>
           </div>
         </div>
@@ -100,7 +100,7 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
           <Clock className="h-4 w-4 text-muted-foreground" />
           <span className="font-medium">发送时间:</span>
           <span className="text-muted-foreground">
-            {dayjs(event.sendTime).format("YYYY-MM-DD HH:mm:ss")}
+            {dayjs(Number(event.sendTime)).format("YYYY-MM-DD HH:mm:ss")}
           </span>
         </div>
 
