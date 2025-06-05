@@ -7,19 +7,20 @@ import { Badge, badgeVariants } from "@/components/ui/badge";
 import { getEventName } from "@/utils/checkEventAll";
 import { EventNames } from "@/constants";
 import { VariantProps } from "class-variance-authority";
+import { EventStatusEnum } from "@/constants";
 
 type EventNameValues = (typeof EventNames)[keyof typeof EventNames];
 type BadgeVariants = VariantProps<typeof badgeVariants>["variant"];
 const eventNameVariants: Record<EventNameValues, BadgeVariants> = {
-  代码错误: "destructive",
-  控制台错误: "destructive",
-  请求失败: "destructive",
-  点击事件: "info",
-  页面跳转: "accent",
-  页面停留: "muted",
-  资源首次加载: "success",
-  请求事件: "warning",
-  资源加载: "outline-info",
+  [EventStatusEnum.代码错误]: "destructive",
+  [EventStatusEnum.控制台错误]: "destructive",
+  [EventStatusEnum.请求失败]: "destructive",
+  [EventStatusEnum.点击事件]: "info",
+  [EventStatusEnum.页面跳转]: "accent",
+  [EventStatusEnum.页面停留]: "muted",
+  [EventStatusEnum.资源首次加载]: "success",
+  [EventStatusEnum.请求事件]: "warning",
+  [EventStatusEnum.资源加载]: "outline-info",
 };
 
 export const columns: ColumnDef<MonitorData>[] = [
