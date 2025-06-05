@@ -11,13 +11,15 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import EventCardHeard from "./event-card-heard";
+import { handleCheck } from "@/utils/handleCheck";
 
 interface EventResourceProps {
   event: EventResource;
 }
 
 const EventResourcePage = ({ event }: EventResourceProps) => {
-  const formatFileSize = (bytes: number) => {
+  const formatFileSize = (bytes: number | null) => {
+    if (!bytes) return "-";
     if (bytes === 0) return "0 B";
     const k = 1024;
     const sizes = ["B", "KB", "MB", "GB"];
@@ -183,7 +185,7 @@ const EventResourcePage = ({ event }: EventResourceProps) => {
             <div>
               <span className="font-medium shrink-0">总耗时:</span>
               <span className="ml-2 text-blue-700 dark:text-blue-300 font-medium">
-                {event.duration}ms
+                {handleCheck(event.duration, `${event.duration}ms`)}
               </span>
             </div>
             <div>
@@ -213,7 +215,7 @@ const EventResourcePage = ({ event }: EventResourceProps) => {
                 <div>
                   <span className="font-medium shrink-0">重定向结束:</span>
                   <span className="ml-2 text-foreground">
-                    {event.redirectEnd}ms
+                    {handleCheck(event.redirectEnd, event.redirectEnd + "ms")}
                   </span>
                 </div>
               </div>
@@ -223,13 +225,16 @@ const EventResourcePage = ({ event }: EventResourceProps) => {
               <div>
                 <span className="font-medium shrink-0">开始获取:</span>
                 <span className="ml-2 text-foreground">
-                  {event.fetchStart}ms
+                  {handleCheck(event.fetchStart, event.fetchStart + "ms")}
                 </span>
               </div>
               <div>
                 <span className="font-medium shrink-0">DNS查询开始:</span>
                 <span className="ml-2 text-foreground">
-                  {event.domainLookupStart}ms
+                  {handleCheck(
+                    event.domainLookupStart,
+                    event.domainLookupStart + "ms"
+                  )}
                 </span>
               </div>
             </div>
@@ -238,13 +243,16 @@ const EventResourcePage = ({ event }: EventResourceProps) => {
               <div>
                 <span className="font-medium shrink-0">DNS查询结束:</span>
                 <span className="ml-2 text-foreground">
-                  {event.domainLookupEnd}ms
+                  {handleCheck(
+                    event.domainLookupEnd,
+                    event.domainLookupEnd + "ms"
+                  )}
                 </span>
               </div>
               <div>
                 <span className="font-medium shrink-0">连接开始:</span>
                 <span className="ml-2 text-foreground">
-                  {event.connectStart}ms
+                  {handleCheck(event.connectStart, event.connectStart + "ms")}
                 </span>
               </div>
             </div>
@@ -253,13 +261,13 @@ const EventResourcePage = ({ event }: EventResourceProps) => {
               <div>
                 <span className="font-medium shrink-0">连接完成:</span>
                 <span className="ml-2 text-foreground">
-                  {event.connectEnd}ms
+                  {handleCheck(event.connectEnd, event.connectEnd + "ms")}
                 </span>
               </div>
               <div>
                 <span className="font-medium shrink-0">请求开始:</span>
                 <span className="ml-2 text-foreground">
-                  {event.requestStart}ms
+                  {handleCheck(event.requestStart, event.requestStart + "ms")}
                 </span>
               </div>
             </div>
@@ -268,13 +276,13 @@ const EventResourcePage = ({ event }: EventResourceProps) => {
               <div>
                 <span className="font-medium shrink-0">响应开始:</span>
                 <span className="ml-2 text-foreground">
-                  {event.responseStart}ms
+                  {handleCheck(event.responseStart, event.responseStart + "ms")}
                 </span>
               </div>
               <div>
                 <span className="font-medium shrink-0">响应完成:</span>
                 <span className="ml-2 text-foreground">
-                  {event.responseEnd}ms
+                  {handleCheck(event.responseEnd, event.responseEnd + "ms")}
                 </span>
               </div>
             </div>
