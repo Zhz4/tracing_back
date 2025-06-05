@@ -104,14 +104,20 @@ export class TrackwebService {
       userUuid: { not: '' },
     };
 
-    // 应用名称过滤
+    // 应用名称过滤（模糊搜索）
     if (appName) {
-      where.appName = appName;
+      where.appName = {
+        contains: appName,
+        mode: 'insensitive', // 不区分大小写
+      };
     }
 
-    // 用户名过滤
+    // 用户名过滤（模糊搜索）
     if (userName) {
-      where.userName = userName;
+      where.userName = {
+        contains: userName,
+        mode: 'insensitive', // 不区分大小写
+      };
     }
 
     // 事件类型过滤 - 现在通过关联表查询
