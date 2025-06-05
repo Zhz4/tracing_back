@@ -12,11 +12,13 @@ export enum EventIdEnum {
   SERVER = "server",
   RESOURCE = "resource",
   PAGE_ID = "pageId",
+  CONSOLEERROR = "console.error",
 }
 
 export const EventNames = {
   [`${EventIdEnum.CODE}-${EventTypeEnum.CLICK}`]: "点击事件",
   [`${EventIdEnum.CODE}-${EventTypeEnum.ERROR}`]: "代码错误",
+  [`${EventIdEnum.CONSOLEERROR}-${EventTypeEnum.ERROR}`]: "控制台错误",
   [`${EventIdEnum.PAGE_ID}-${EventTypeEnum.PV}`]: "页面跳转",
   [`${EventIdEnum.PAGE_ID}-${EventTypeEnum["PV-DURATION"]}`]: "页面停留",
   [`${EventIdEnum.PAGE_ID}-${EventTypeEnum.PERFORMANCE}`]: "资源首次加载",

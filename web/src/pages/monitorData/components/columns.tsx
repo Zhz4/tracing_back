@@ -12,12 +12,13 @@ type EventNameValues = (typeof EventNames)[keyof typeof EventNames];
 type BadgeVariants = VariantProps<typeof badgeVariants>["variant"];
 const eventNameVariants: Record<EventNameValues, BadgeVariants> = {
   代码错误: "destructive",
+  控制台错误: "destructive",
+  请求失败: "destructive",
   点击事件: "info",
   页面跳转: "accent",
   页面停留: "muted",
   资源首次加载: "success",
   请求事件: "warning",
-  请求失败: "destructive",
   资源加载: "outline-info",
 };
 

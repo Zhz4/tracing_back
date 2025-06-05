@@ -28,7 +28,9 @@ const CheckDialog = () => {
               {getEventName(item.eventType, item.eventId) === "点击事件" && (
                 <EventClickPage event={item} />
               )}
-              {getEventName(item.eventType, item.eventId) === "代码错误" && (
+              {(getEventName(item.eventType, item.eventId) === "代码错误" ||
+                getEventName(item.eventType, item.eventId) ===
+                  "控制台错误") && (
                 <EventErrorPage event={item} id={currentRow.id} />
               )}
               {getEventName(item.eventType, item.eventId) === "页面跳转" ||
