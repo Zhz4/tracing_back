@@ -97,26 +97,11 @@ export class TrackwebService {
   }
 
   async findAll(query: PageQueryDto) {
-    const { page = 1, limit = 10, appName, userName, eventTypeList } = query;
+    const { page = 1, limit = 10 } = query;
     const skip = (page - 1) * limit;
 
     // 构建查询条件
-    const where: Prisma.TrackingDataWhereInput = {
-      // 去除脏数据
-      userName: { not: '' },
-      userUuid: { not: '' },
-    };
-    if (appName) where.appName = appName;
-    if (userName) where.userName = userName;
-    if (eventTypeList && eventTypeList.length > 0) {
-      // 查询 eventInfo JSON 数组中是否包含指定的事件类型
-      where.OR = eventTypeList.map((eventType) => ({
-        eventInfo: {
-          path: [],
-          string_contains: `"eventType":"${eventType}"`,
-        },
-      }));
-    }
+    const where = this.buildWhereCondition(query);
 
     // 查询数据和总数
     const [data, total] = await Promise.all([
@@ -129,10 +114,11 @@ export class TrackwebService {
       this.prisma.trackingData.count({ where }),
     ]);
 
-    // data中的eventType，eventId 有哪些暴露在外层 data中
-    const newData = this.getEventInfo(data);
+    // 提取事件信息到外层
+    const records = this.getEventInfo(data);
+
     return {
-      records: newData,
+      records,
       pagination: {
         page,
         limit,
@@ -142,6 +128,45 @@ export class TrackwebService {
         hasPrev: page > 1,
       },
     };
+  }
+
+  /**
+   * 构建查询条件
+   * @param query 查询参数
+   * @returns Prisma查询条件对象
+   */
+  private buildWhereCondition(
+    query: PageQueryDto,
+  ): Prisma.TrackingDataWhereInput {
+    const { appName, userName, eventTypeList } = query;
+
+    const where: Prisma.TrackingDataWhereInput = {
+      // 基础过滤条件：去除脏数据
+      userName: { not: '' },
+      userUuid: { not: '' },
+    };
+
+    // 应用名称过滤
+    if (appName) {
+      where.appName = appName;
+    }
+
+    // 用户名过滤
+    if (userName) {
+      where.userName = userName;
+    }
+
+    // 事件类型过滤
+    if (eventTypeList?.length) {
+      where.OR = eventTypeList.map((eventType) => ({
+        eventInfo: {
+          path: ['$[*].eventType'],
+          equals: eventType,
+        },
+      }));
+    }
+
+    return where;
   }
 
   /**
