@@ -78,7 +78,7 @@ const EventRequestPage = ({ event, id }: EventRequestProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex items-center gap-2 text-sm">
             <Activity className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">事件ID:</span>
+            <span className="font-medium shrink-0">事件ID:</span>
             <span className="text-muted-foreground font-mono text-xs">
               {event.eventId}
             </span>
@@ -86,7 +86,7 @@ const EventRequestPage = ({ event, id }: EventRequestProps) => {
 
           <div className="flex items-center gap-2 text-sm">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">发生时间:</span>
+            <span className="font-medium shrink-0">发生时间:</span>
             <span className="text-muted-foreground">
               {dayjs(Number(event.triggerTime)).format("YYYY-MM-DD HH:mm:ss")}
             </span>
@@ -95,7 +95,7 @@ const EventRequestPage = ({ event, id }: EventRequestProps) => {
 
         <div className="flex items-center gap-2 text-sm">
           <Clock className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">发送时间:</span>
+          <span className="font-medium shrink-0">发送时间:</span>
           <span className="text-muted-foreground">
             {dayjs(Number(event.sendTime)).format("YYYY-MM-DD HH:mm:ss")}
           </span>
@@ -103,7 +103,7 @@ const EventRequestPage = ({ event, id }: EventRequestProps) => {
 
         <div className="flex items-start gap-2 text-sm">
           <Globe className="h-4 w-4 text-muted-foreground mt-0.5" />
-          <span className="font-medium">页面URL:</span>
+          <span className="font-medium shrink-0">页面URL:</span>
           <span className="text-blue-600 dark:text-blue-400 break-all">
             {event.triggerPageUrl}
           </span>
@@ -119,7 +119,7 @@ const EventRequestPage = ({ event, id }: EventRequestProps) => {
 
           <div className="space-y-3">
             <div className="flex items-start gap-2 text-sm">
-              <span className="font-medium">请求URL:</span>
+              <span className="font-medium shrink-0">请求URL:</span>
               <span className="text-blue-600 dark:text-blue-400 break-all">
                 {event.requestUrl}
               </span>
@@ -127,7 +127,7 @@ const EventRequestPage = ({ event, id }: EventRequestProps) => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-sm">方法:</span>
+                <span className="font-medium text-sm shrink-0">方法:</span>
                 <span
                   className={`text-xs px-2 py-1 rounded font-medium ${getMethodColor(
                     event.requestMethod

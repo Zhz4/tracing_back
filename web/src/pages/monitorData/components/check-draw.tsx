@@ -12,12 +12,19 @@ import EventRequestPage from "./Event-request";
 import { getEventName } from "@/utils/checkEventAll";
 import EventErrorPage from "./Event-error";
 import { EventStatusEnum } from "@/constants";
-import { EventClick, EventError, EventRoute, EventRequest } from "@/types";
+import {
+  EventClick,
+  EventError,
+  EventRoute,
+  EventRequest,
+  EventResource,
+} from "@/types";
 import { MonitorData } from "@/api/monitor/type";
+import EventResourcePage from "./Event-resource";
 
 // 渲染事件组件的函数
 const renderEventComponent = (
-  item: EventClick | EventError | EventRoute | EventRequest,
+  item: EventClick | EventError | EventRoute | EventRequest | EventResource,
   currentRow: MonitorData | null
 ) => {
   const eventName = getEventName(item.eventType, item.eventId);
@@ -40,6 +47,8 @@ const renderEventComponent = (
       return (
         <EventRequestPage event={item as EventRequest} id={currentRow.id} />
       );
+    case EventStatusEnum.资源加载:
+      return <EventResourcePage event={item as EventResource} />;
     default:
       return null;
   }
@@ -50,7 +59,7 @@ const CheckDialog = () => {
 
   return (
     <Drawer open={open} onOpenChange={setOpen} direction="right">
-      <DrawerContent className="fixed right-0 top-0 w-full !max-w-[600px] h-[98vh] overflow-y-auto overflow-x-hidden  rounded-2xl my-2">
+      <DrawerContent className="fixed right-0 top-0 w-full !max-w-[700px] h-[98vh] overflow-y-auto overflow-x-hidden  rounded-2xl my-2">
         <DrawerHeader className="sticky w-full top-0 z-10 bg-background">
           <DrawerTitle>查看操作事件</DrawerTitle>
           <DrawerDescription>查看用户操作事件详情</DrawerDescription>

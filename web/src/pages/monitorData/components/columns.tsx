@@ -85,7 +85,9 @@ export const columns: ColumnDef<MonitorData>[] = [
   },
   {
     accessorKey: "eventTypeList",
-    header: "事件类型",
+    header: () => {
+      return <div className="cursor-pointer">事件类型</div>;
+    },
     cell: ({ row }) => {
       return (
         <div className="flex flex-wrap gap-2">

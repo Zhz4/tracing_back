@@ -81,7 +81,7 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex items-center gap-2 text-sm">
             <Navigation className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">事件ID:</span>
+            <span className="font-medium shrink-0">事件ID:</span>
             <span className="text-muted-foreground font-mono text-xs">
               {event.eventId}
             </span>
@@ -89,7 +89,7 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
 
           <div className="flex items-center gap-2 text-sm">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">发生时间:</span>
+            <span className="font-medium shrink-0">发生时间:</span>
             <span className="text-muted-foreground">
               {dayjs(Number(event.triggerTime)).format("YYYY-MM-DD HH:mm:ss")}
             </span>
@@ -98,7 +98,7 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
 
         <div className="flex items-center gap-2 text-sm">
           <Clock className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">发送时间:</span>
+          <span className="font-medium shrink-0">发送时间:</span>
           <span className="text-muted-foreground">
             {dayjs(Number(event.sendTime)).format("YYYY-MM-DD HH:mm:ss")}
           </span>
@@ -115,7 +115,7 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
           <div className="space-y-3">
             <div className="flex items-start gap-2 text-sm">
               <Globe className="h-4 w-4 text-muted-foreground mt-0.5" />
-              <span className="font-medium">当前页面:</span>
+              <span className="font-medium shrink-0">当前页面:</span>
               <span className="text-blue-600 dark:text-blue-400 break-all">
                 {event.triggerPageUrl}
               </span>
@@ -123,7 +123,7 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
 
             <div className="flex items-start gap-2 text-sm">
               <ArrowLeft className="h-4 w-4 text-muted-foreground mt-0.5" />
-              <span className="font-medium">来源页面:</span>
+              <span className="font-medium shrink-0">来源页面:</span>
               <span className="text-blue-600 dark:text-blue-400 break-all">
                 {event.referer || "直接访问"}
               </span>
@@ -131,14 +131,14 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
 
             <div className="flex items-center gap-2 text-sm">
               <FileText className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">页面标题:</span>
+              <span className="font-medium shrink-0">页面标题:</span>
               <span className="text-foreground">{event.title}</span>
             </div>
 
             {event.durationTime && (
               <div className="flex items-center gap-2 text-sm">
                 <FileText className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">停留时间:</span>
+                <span className="font-medium shrink-0">停留时间:</span>
                 <span className="text-foreground">
                   {formatMilliseconds(event.durationTime)}
                 </span>
@@ -150,7 +150,7 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
         <div className="bg-secondary p-3 rounded-lg">
           <div className="flex items-center gap-2 text-sm mb-2">
             {getActionIcon(event.action)}
-            <span className="font-medium">加载来源</span>
+            <span className="font-medium shrink-0">加载来源</span>
           </div>
           <div className="flex items-center gap-2">
             <span
