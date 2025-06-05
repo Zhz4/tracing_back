@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import EventCardHeard from "./event-card-heard";
+import { formatMilliseconds } from "@/utils/time";
 
 interface EventRouteProps {
   event: EventRoute;
@@ -133,6 +134,16 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
               <span className="font-medium">页面标题:</span>
               <span className="text-foreground">{event.title}</span>
             </div>
+
+            {event.durationTime && (
+              <div className="flex items-center gap-2 text-sm">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">停留时间:</span>
+                <span className="text-foreground">
+                  {formatMilliseconds(event.durationTime)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

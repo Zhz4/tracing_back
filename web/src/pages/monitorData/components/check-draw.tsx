@@ -7,12 +7,14 @@ import {
 } from "@/components/ui/drawer";
 import { useMonitorData } from "../context/monitor-data-context";
 import EventClickPage from "./event-click";
-import EventErrorPage from "./Event-error";
 import EventRoutePage from "./Event-route";
 import EventRequestPage from "./Event-request";
+import { getEventName } from "@/utils/checkEventAll";
+import EventErrorPage from "./Event-error";
 
 const CheckDialog = () => {
   const { open, setOpen, currentRow } = useMonitorData();
+
   return (
     <Drawer open={open} onOpenChange={setOpen} direction="right">
       <DrawerContent className="fixed right-0 top-0 w-full !max-w-[600px] h-[98vh] overflow-y-auto overflow-x-hidden  rounded-2xl my-2">
@@ -23,16 +25,23 @@ const CheckDialog = () => {
         <div className="p-4 w-full">
           {currentRow?.eventInfo?.map((item, index) => (
             <div key={`${item.eventId}-${index}`}>
-              {item.eventType === "click" && <EventClickPage event={item} />}
-              {item.eventType === "error" && (
+              {getEventName(item.eventType, item.eventId) === "点击事件" && (
+                <EventClickPage event={item} />
+              )}
+              {getEventName(item.eventType, item.eventId) === "代码错误" && (
                 <EventErrorPage event={item} id={currentRow.id} />
               )}
-              {item.eventType === "pv" && <EventRoutePage event={item} />}
-              {(item.eventType === "server" ||
-                item.eventType === "performance" ||
-                item.eventType === "pv-duration") && (
+              {getEventName(item.eventType, item.eventId) === "页面跳转" ||
+                (getEventName(item.eventType, item.eventId) === "页面停留" && (
+                  <EventRoutePage event={item} />
+                ))}
+              {(getEventName(item.eventType, item.eventId) === "请求事件" ||
+                getEventName(item.eventType, item.eventId) === "请求失败") && (
                 <EventRequestPage event={item} id={currentRow.id} />
               )}
+              {/* {getEventName(item.eventType, item.eventId) === "资源加载" && (
+                <EventRequestPage event={item} id={currentRow.id} />
+              )} */}
             </div>
           ))}
         </div>

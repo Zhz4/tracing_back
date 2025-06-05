@@ -83,15 +83,15 @@ const EventErrorPage = ({ event, id }: EventErrorProps) => {
                 错误描述:
               </div>
               <div className="text-sm text-secondary-foreground">
-                {event.errMessage}
+                {event.errMessage || "无"}
               </div>
             </div>
             <div className="bg-background p-2 rounded border border-gray-200 dark:border-gray-700">
               <div className="text-sm font-medium text-destructive mb-1">
-                错误堆栈:
+                完整的错误信息:
               </div>
               <pre className="text-xs text-destructive overflow-x-auto whitespace-pre-wrap">
-                {event.errStack}
+                {event.errStack || "无"}
               </pre>
             </div>
           </div>
@@ -105,11 +105,15 @@ const EventErrorPage = ({ event, id }: EventErrorProps) => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="font-medium">行号:</span>
-              <span className="ml-2 text-muted-foreground">{event.line}</span>
+              <span className="ml-2 text-muted-foreground">
+                {event.line || "未知"}
+              </span>
             </div>
             <div>
               <span className="font-medium">列号:</span>
-              <span className="ml-2 text-muted-foreground">{event.col}</span>
+              <span className="ml-2 text-muted-foreground">
+                {event.col || "未知"}
+              </span>
             </div>
           </div>
         </div>

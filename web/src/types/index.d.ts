@@ -75,6 +75,8 @@ export interface EventRoute extends EventBase {
   title: string;
   // 页面加载来源
   action: EventRouteAction;
+  // 停留时间
+  durationTime?: number;
 }
 
 // 请求事件

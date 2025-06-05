@@ -6,7 +6,7 @@ import { EventTypeEnum, EventIdEnum, EventNames } from "@/constants";
  * @param eventId 事件ID
  * @returns 事件名称
  */
-type EventNameValues = (typeof EventNames)[keyof typeof EventNames];
+export type EventNameValues = (typeof EventNames)[keyof typeof EventNames];
 export const getEventName = (
   eventType: `${EventTypeEnum}`,
   eventId: string
