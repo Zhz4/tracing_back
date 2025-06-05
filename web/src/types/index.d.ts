@@ -106,8 +106,73 @@ export interface EventRequest extends EventBase {
   recordscreen?: string;
 }
 
-// TODO:资源加载事件
-// export interface EventResource extends EventBase {
-//   // 资源URL
-//   resourceUrl: string;
-// }
+// 首次页面性能数据对象格式
+export interface EventFirstResource extends EventBase {
+  // dns缓存时间
+  appcache: number;
+  // dom解析耗时
+  dom: number;
+  // dns查询耗时
+  dns: number;
+  // 首包时间
+  firstbyte: number;
+  // 首屏时间
+  fmp: number;
+  // 页面完全加载时间
+  loadon: number;
+  // HTML加载完成时间
+  ready: number;
+  // 同步资源加载耗时
+  res: number;
+  // SSL安全连接耗时
+  ssllink: number;
+  // tcp连接耗时
+  tcp: number;
+  // 内容传输耗时
+  trans: number;
+  // 请求响应耗时
+  ttfb: number;
+  // 首次可交互时间
+  tti: number;
+  // 重定向时间
+  redirect: number;
+  // 上一个页面的卸载耗时
+  unloadTime: number;
+}
+
+export interface EventResource extends EventBase {
+  // 资源具体url
+  requestUrl: string;
+  // 通过某种方式请求的资源,比如script,link
+  initiatorType: string;
+  // 传输的数据包大小
+  transferSize: number;
+  // 数据包压缩后大小
+  encodedBodySize: number;
+  // 数据包解压后大小
+  decodedBodySize: number;
+  // 加载具体时长
+  duration: number;
+  // 重定向开始时间
+  redirectStart: number;
+  // 重定向结束时间
+  redirectEnd: number;
+  // 	开始时间
+  startTime: number;
+  // 开始发起请求时间
+  fetchStart: number;
+  // DNS开始解析时间
+  domainLookupStart: number;
+  // DNS结束解析时间
+  domainLookupEnd: number;
+  // 开始建立连接时间
+  connectStart: number;
+  // 连接建立完成时间
+  connectEnd: number;
+  // 开始发送数据包时间
+  requestStart: number;
+  // 开始接收数据包时间
+  responseStart: number;
+  // 数据包接收完成时间
+  responseEnd: number;
+}

@@ -9,11 +9,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// 跟踪数据表 - 包含所有 baseInfo 和 eventInfo 字段
+// 跟踪数据表 - 包含所有 baseInfo 字段
 model TrackingData {
   id String @id @default(uuid())
 
@@ -44,24 +45,145 @@ model TrackingData {
   sdkUserUuid  String @default("")
 
   // 应用名称
-  appName    String @default("")
+  appName    String      @default("")
   // 应用代码
-  appCode    String @default("")
+  appCode    String      @default("")
   // 页面ID
-  pageId     String @default("")
+  pageId     String      @default("")
   // 会话ID
-  sessionId  String @default("")
+  sessionId  String      @default("")
   // SDK版本
-  sdkVersion String @default("")
+  sdkVersion String      @default("")
   // IP地址
-  ip         String @default("")
+  ip         String      @default("")
   // 发送时间
-  sendTime   BigInt @default(0)
+  sendTime   BigInt      @default(0)
   // 扩展字段
   ext        Json?
-  eventInfo  Json?
+  // 关联事件信息
+  eventInfo  EventInfo[]
 
-  // 事件类型
   @@index([id, sendTime])
   @@map("tracking_data")
+}
+
+// 事件信息表
+model EventInfo {
+  id             String @id @default(uuid())
+  // 事件ID
+  eventId        String
+  // 事件类型
+  eventType      String
+  // 事件发生时间
+  triggerTime    BigInt
+  // 发送时间
+  sendTime       BigInt
+  // 当前页面URL
+  triggerPageUrl String
+
+  // 事件名
+  title       String?
+  // 事件参数
+  params      Json?
+  // 被点击元素的层级 例如: div>div>button
+  elementPath String?
+  // 被点击元素与屏幕左边距离
+  x           Int?
+  // 被点击元素与屏幕上边距离
+  y           Int?
+
+  // 错误信息
+  errMessage     String?
+  // 错误的完整信息
+  errStack       String?
+  // 错误发生行号
+  line           Int?
+  // 错误发生列号
+  col            Int?
+  // 错误录屏信息
+  recordscreen   String?
+  // 上级页面URL
+  referer        String?
+  // 页面加载来源
+  action         String?
+  // 停留时间
+  durationTime   BigInt?
+  // 请求URL
+  requestUrl     String?
+  // 请求方法
+  requestMethod  String?
+  // 请求类型
+  requestType    String?
+  // 请求返回状态码
+  responseStatus Int?
+  // 请求耗时
+  duration       BigInt?
+
+  // 资源信息
+  appcache   BigInt?
+  // dom解析耗时
+  dom        BigInt?
+  // dns查询耗时
+  dns        BigInt?
+  // 首包时间
+  firstbyte  BigInt?
+  // 首屏时间
+  fmp        BigInt?
+  // 页面完全加载时间
+  loadon     BigInt?
+  // HTML加载完成时间
+  ready      BigInt?
+  // 同步资源加载耗时
+  res        BigInt?
+  // SSL安全连接耗时
+  ssllink    BigInt?
+  // tcp连接耗时
+  tcp        BigInt?
+  // 内容传输耗时
+  trans      BigInt?
+  // 请求响应耗时
+  ttfb       BigInt?
+  // 首次可交互时间
+  tti        BigInt?
+  // 重定向时间
+  redirect   BigInt?
+  // 上一个页面的卸载耗时
+  unloadTime BigInt?
+
+  // 通过某种方式请求的资源,比如script,link
+  initiatorType     String?
+  // 传输的数据包大小
+  transferSize      BigInt?
+  // 数据包压缩后大小
+  encodedBodySize   BigInt?
+  // 数据包解压后大小
+  decodedBodySize   BigInt?
+  // 重定向开始时间
+  redirectStart     BigInt?
+  // 重定向结束时间
+  redirectEnd       BigInt?
+  // 开始时间
+  startTime         BigInt?
+  // 开始发起请求时间
+  fetchStart        BigInt?
+  // DNS开始解析时间
+  domainLookupStart BigInt?
+  // DNS结束解析时间
+  domainLookupEnd   BigInt?
+  // 开始建立连接时间
+  connectStart      BigInt?
+  // 连接建立完成时间
+  connectEnd        BigInt?
+  // 开始发送数据包时间
+  requestStart      BigInt?
+  // 开始接收数据包时间
+  responseStart     BigInt?
+  // 数据包接收完成时间
+  responseEnd       BigInt?
+
+  // 关联的跟踪数据ID
+  TrackingData   TrackingData? @relation(fields: [trackingDataId], references: [id])
+  trackingDataId String?
+
+  @@map("event_info")
 }

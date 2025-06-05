@@ -1,99 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { PageQueryDto } from './dto/page-query.dto';
 import { PrismaService } from 'prisma/prisma.service';
-import { Prisma, TrackingData } from '@prisma/client';
+import { Prisma, TrackingData, EventInfo } from '@prisma/client';
+import { CreateDto } from './dto/create.dto';
+import { mapCreateDtoToPrisma } from './mapper/trackweb.mapper';
 
-interface TrackingPayload {
-  baseInfo?: Record<string, unknown>;
-  eventInfo?: Record<string, unknown>;
-}
+type TrackingDataWithEventInfo = TrackingData & {
+  eventInfo: EventInfo[];
+};
 
 @Injectable()
 export class TrackwebService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createTrackwebDto: string | object) {
-    try {
-      const data = this.parseTrackingData(createTrackwebDto);
-      const trackingData = this.transformToDbFormat(data);
-      const result = await this.saveToDatabase(trackingData);
-      return {
-        id: result.id,
-        message: '追踪数据已成功存储',
-      };
-    } catch (error) {
-      console.error('存储数据时发生错误:', error);
-      throw new Error(`数据存储失败: ${error.message}`);
-    }
-  }
+  async create(createTrackwebDto: CreateDto) {
+    const { trackingData, eventInfoList } =
+      mapCreateDtoToPrisma(createTrackwebDto);
 
-  private parseTrackingData(jsonString: string | object): TrackingPayload {
-    try {
-      // 如果已经是对象，直接返回
-      if (typeof jsonString === 'object' && jsonString !== null) {
-        return jsonString as TrackingPayload;
+    // 使用事务确保数据一致性
+    const result = await this.prisma.$transaction(async (prisma) => {
+      // 创建TrackingData记录
+      const createdTrackingData = await prisma.trackingData.create({
+        data: trackingData,
+      });
+
+      // 如果有事件信息，则创建关联的EventInfo记录
+      if (eventInfoList.length > 0) {
+        const eventInfoWithTrackingId = eventInfoList.map((event) => ({
+          ...event,
+          trackingDataId: createdTrackingData.id,
+        }));
+
+        await prisma.eventInfo.createMany({
+          data: eventInfoWithTrackingId,
+        });
+
+        // 返回包含事件信息的完整数据
+        return await prisma.trackingData.findUnique({
+          where: { id: createdTrackingData.id },
+          include: {
+            eventInfo: true,
+          },
+        });
       }
 
-      // 如果是字符串，尝试解析JSON
-      return JSON.parse(jsonString) as TrackingPayload;
-    } catch (error) {
-      console.error('解析追踪数据失败:', error);
-      console.error('接收到的数据:', jsonString);
-      throw new Error(`数据格式错误: 无法解析追踪数据`);
-    }
-  }
-
-  private transformToDbFormat(data: TrackingPayload) {
-    const { baseInfo = {}, eventInfo = {} } = data;
-
-    return {
-      // 基础信息字段
-      ...this.mapBaseInfoFields(baseInfo),
-      // JSON 字段
-      ext: (baseInfo.ext as Prisma.InputJsonValue) || undefined,
-      eventInfo: (eventInfo as Prisma.InputJsonValue) || undefined,
-    };
-  }
-
-  private mapBaseInfoFields(baseInfo: Record<string, unknown>) {
-    return {
-      clientHeight: Number(baseInfo.clientHeight) || 0,
-      clientWidth: Number(baseInfo.clientWidth) || 0,
-      colorDepth: Number(baseInfo.colorDepth) || 0,
-      pixelDepth: Number(baseInfo.pixelDepth) || 0,
-      deviceId: this.safeString(baseInfo.deviceId),
-      screenWidth: Number(baseInfo.screenWidth) || 0,
-      screenHeight: Number(baseInfo.screenHeight) || 0,
-      vendor: this.safeString(baseInfo.vendor),
-      platform: this.safeString(baseInfo.platform),
-      userUuid: this.safeString(baseInfo.userUuid),
-      userName: this.safeString(baseInfo.userName),
-      sdkUserUuid: this.safeString(baseInfo.sdkUserUuid),
-      appName: this.safeString(baseInfo.appName),
-      appCode: this.safeString(baseInfo.appCode),
-      pageId: this.safeString(baseInfo.pageId),
-      sessionId: this.safeString(baseInfo.sessionId),
-      sdkVersion: this.safeString(baseInfo.sdkVersion),
-      ip: this.safeString(baseInfo.ip),
-      sendTime: this.safeBigInt(baseInfo.sendTime),
-    };
-  }
-
-  private safeString(value: unknown): string {
-    return typeof value === 'string' ? value : '';
-  }
-
-  private safeBigInt(value: unknown): bigint {
-    if (value && (typeof value === 'string' || typeof value === 'number')) {
-      return BigInt(value);
-    }
-    return BigInt(Date.now());
-  }
-
-  private async saveToDatabase(trackingData: Prisma.TrackingDataCreateInput) {
-    return await this.prisma.trackingData.create({
-      data: trackingData,
+      return createdTrackingData;
     });
+
+    return result;
   }
 
   async findAll(query: PageQueryDto) {
@@ -103,19 +57,22 @@ export class TrackwebService {
     // 构建查询条件
     const where = this.buildWhereCondition(query);
 
-    // 查询数据和总数
+    // 查询数据和总数，包含关联的事件信息
     const [data, total] = await Promise.all([
       this.prisma.trackingData.findMany({
         where,
         skip,
         take: limit,
         orderBy: { sendTime: 'desc' },
+        include: {
+          eventInfo: true, // 包含关联的事件信息
+        },
       }),
       this.prisma.trackingData.count({ where }),
     ]);
 
-    // 提取事件信息到外层
-    const records = this.getEventInfo(data);
+    // 处理事件信息
+    const records = this.processEventInfo(data as TrackingDataWithEventInfo[]);
 
     return {
       records,
@@ -156,58 +113,45 @@ export class TrackwebService {
       where.userName = userName;
     }
 
-    // 事件类型过滤
+    // 事件类型过滤 - 现在通过关联表查询
     if (eventTypeList?.length) {
-      where.OR = eventTypeList.map((eventType) => ({
-        eventInfo: {
-          path: ['$[*].eventType'],
-          equals: eventType,
+      where.eventInfo = {
+        some: {
+          eventType: {
+            in: eventTypeList,
+          },
         },
-      }));
+      };
     }
 
     return where;
   }
 
   /**
-   *  将数据中的eventInfo 提到外层
-   * @param data 原数数据
+   * 处理事件信息，提取到外层
+   * @param data 原始数据
    * @returns 新的数据结构
    */
-  private getEventInfo(data: TrackingData[]) {
+  private processEventInfo(data: TrackingDataWithEventInfo[]) {
     return data.map((item) => {
-      const eventTypeList = Array.isArray(item.eventInfo)
-        ? (
-            item.eventInfo as Array<{
-              eventType?: string;
-              eventId?: string;
-            }>
-          )
-            .map((event) => {
-              return {
-                eventType: event?.eventType,
-                eventId: event?.eventId,
-              };
-            })
-            // 过滤掉 eventType 为 undefined 的元素
-            .filter((event): event is { eventType: string; eventId: string } =>
-              Boolean(event.eventType),
-            )
-        : [];
-      // 将 eventTypeList 中对象元素去重
+      const eventTypeList = item.eventInfo
+        .map((event: EventInfo) => ({
+          eventType: event.eventType,
+          eventId: event.eventId,
+        }))
+        .filter((event) => Boolean(event.eventType));
+
+      // 去重
       const uniqueEventTypeList = Array.from(
         new Set(eventTypeList.map((item) => JSON.stringify(item))),
       ).map(
         (item) => JSON.parse(item) as { eventType: string; eventId: string },
       );
+
       return {
         ...item,
         eventTypeList: uniqueEventTypeList,
       };
     });
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} trackweb`;
   }
 }

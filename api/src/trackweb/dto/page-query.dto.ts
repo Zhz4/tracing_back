@@ -24,17 +24,17 @@ export class PageQueryDto {
   @IsNotEmpty({ message: '每页条数不能为空' })
   limit: number;
 
-  @ApiProperty({ description: '应用名称' })
+  @ApiProperty({ description: '应用名称', required: false })
   @IsString()
   @IsOptional()
   appName?: string;
 
-  @ApiProperty({ description: '用户名' })
+  @ApiProperty({ description: '用户名', required: false })
   @IsString()
   @IsOptional()
   userName?: string;
 
-  @ApiProperty({ description: '事件类型' })
+  @ApiProperty({ description: '事件类型', required: false, type: [String] })
   @IsArray()
   @IsOptional()
   eventTypeList?: string[];
