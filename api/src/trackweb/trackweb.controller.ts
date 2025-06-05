@@ -13,6 +13,9 @@ export class TrackwebController {
   @ApiResponse({ status: 200, description: '成功返回埋点数据' })
   @Post()
   create(@Body() createTrackwebDto: CreateDto) {
+    if (typeof createTrackwebDto === 'string') {
+      createTrackwebDto = JSON.parse(createTrackwebDto) as CreateDto;
+    }
     return this.trackwebService.create(createTrackwebDto);
   }
 

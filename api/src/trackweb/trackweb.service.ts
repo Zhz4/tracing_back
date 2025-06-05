@@ -4,6 +4,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { Prisma, TrackingData, EventInfo } from '@prisma/client';
 import { CreateDto } from './dto/create.dto';
 import { mapCreateDtoToPrisma } from './mapper/trackweb.mapper';
+import { mapResponseFile } from './mapper/fieldFormat.mapper';
 
 type TrackingDataWithEventInfo = TrackingData & {
   eventInfo: EventInfo[];
@@ -135,6 +136,7 @@ export class TrackwebService {
   private processEventInfo(data: TrackingDataWithEventInfo[]) {
     return data.map((item) => {
       const eventTypeList = item.eventInfo
+        .filter((event) => Boolean(event))
         .map((event: EventInfo) => ({
           eventType: event.eventType,
           eventId: event.eventId,
@@ -148,9 +150,12 @@ export class TrackwebService {
         (item) => JSON.parse(item) as { eventType: string; eventId: string },
       );
 
+      // 去除eventInfo中不需要的字段 - 不同eventType 不同eventId 需要不同的字段
+      const eventInfo = item.eventInfo.map((event) => mapResponseFile(event));
       return {
         ...item,
         eventTypeList: uniqueEventTypeList,
+        eventInfo,
       };
     });
   }
