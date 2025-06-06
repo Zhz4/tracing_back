@@ -114,7 +114,47 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+
+  /* 隐藏滚动条但保持滚动功能 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+  }
+
+  /* 自定义标签页动画 */
+  .tab-enter {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  .tab-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 200ms ease-out, transform 200ms ease-out;
+  }
+
+  .tab-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tab-exit-active {
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 150ms ease-in, transform 150ms ease-in;
   }
 }

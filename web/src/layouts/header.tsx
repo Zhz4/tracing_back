@@ -1,7 +1,7 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useKeepAliveContext } from "keepalive-for-react";
-// import Tabs from "./tabs";
+import Tabs from "./tabs";
 
 const Header = () => {
   const { getCacheNodes } = useKeepAliveContext();
@@ -13,7 +13,7 @@ const Header = () => {
         <SidebarTrigger />
         <ModeToggle />
       </div>
-      {/* <Tabs /> */}
+      <Tabs />
     </>
   );
 };

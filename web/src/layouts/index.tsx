@@ -13,7 +13,6 @@ export default function Layout() {
       <AppSidebar />
       <div className="flex flex-col h-screen w-full">
         <KeepAlive
-          transition
           aliveRef={aliveRef}
           activeCacheKey={currentCacheKey}
           cacheNodeClassName="w-full h-full"

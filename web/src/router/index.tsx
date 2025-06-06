@@ -3,8 +3,8 @@ import Home from "@/pages/home";
 import Layout from "@/layouts";
 import MonitorData from "@/pages/monitorData";
 import RecordscreenPage from "@/pages/recordscreen";
-
-export const routes = [
+import type { RouteObject } from "react-router-dom";
+export const routes: RouteObject[] = [
   {
     path: "/",
     element: <Layout />,
@@ -26,7 +26,7 @@ export const routes = [
         element: <MonitorData />,
         handle: {
           keepAlive: true,
-          title: "监控数据",
+          title: "埋点数据",
         },
       },
       {
