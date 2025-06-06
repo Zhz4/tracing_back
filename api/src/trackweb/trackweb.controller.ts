@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { TrackwebService } from './trackweb.service';
 import { PageQueryDto } from './dto/page-query.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -21,8 +21,8 @@ export class TrackwebController {
 
   @ApiOperation({ summary: '分页查询埋点数据' })
   @ApiResponse({ status: 200, description: '成功返回埋点数据' })
-  @Get()
-  findAll(@Query() query: PageQueryDto) {
-    return this.trackwebService.findAll(query);
+  @Post('page')
+  findAll(@Body() body: PageQueryDto) {
+    return this.trackwebService.findAll(body);
   }
 }

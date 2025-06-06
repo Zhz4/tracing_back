@@ -12,6 +12,7 @@ export enum EventIdEnum {
   SERVER = "server",
   RESOURCE = "resource",
   PAGE_ID = "pageId",
+  PAGE = "page",
   CONSOLEERROR = "console.error",
 }
 
@@ -35,7 +36,7 @@ export const EventNames = {
   [`${EventIdEnum.PAGE_ID}-${EventTypeEnum.PV}`]: EventStatusEnum.页面跳转,
   [`${EventIdEnum.PAGE_ID}-${EventTypeEnum["PV-DURATION"]}`]:
     EventStatusEnum.页面停留,
-  [`${EventIdEnum.PAGE_ID}-${EventTypeEnum.PERFORMANCE}`]:
+  [`${EventIdEnum.PAGE}-${EventTypeEnum.PERFORMANCE}`]:
     EventStatusEnum.资源首次加载,
   [`${EventIdEnum.SERVER}-${EventTypeEnum.PERFORMANCE}`]:
     EventStatusEnum.请求事件,

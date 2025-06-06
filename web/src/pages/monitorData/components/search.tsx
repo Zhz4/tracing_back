@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
+import EventTypeFilter from "./event-type-filter";
 
 interface SearchProps {
   handleSearch: (searchParams: SearchParamsType) => void;
@@ -14,6 +15,15 @@ const Search = ({ handleSearch, isFetching, searchParams }: SearchProps) => {
   const form = useForm<SearchParamsType>({
     defaultValues: searchParams,
   });
+
+  const handleEventTypeChange = (eventTypes: string[]) => {
+    const newSearchParams = {
+      ...form.getValues(),
+      eventTypeList: eventTypes.length > 0 ? eventTypes : undefined,
+    };
+    handleSearch(newSearchParams);
+  };
+
   return (
     <div className="flex w-full items-center gap-2">
       <Form {...form}>
@@ -34,6 +44,10 @@ const Search = ({ handleSearch, isFetching, searchParams }: SearchProps) => {
           </Button>
         </form>
       </Form>
+      <EventTypeFilter
+        selectedEventTypes={searchParams.eventTypeList || []}
+        onEventTypeChange={handleEventTypeChange}
+      />
     </div>
   );
 };

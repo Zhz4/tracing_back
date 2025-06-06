@@ -33,7 +33,7 @@ const EventCardHeard = ({
             textColor
           )}
         >
-          {eventType}
+          {eventType} {eventId}
         </span>
       </CardTitle>
     </CardHeader>

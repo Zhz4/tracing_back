@@ -132,15 +132,17 @@ const EventResourcePage = ({ event }: EventResourceProps) => {
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium text-sm shrink-0">资源类型:</span>
-              <span
-                className={`text-xs px-2 py-1 rounded font-medium ${getInitiatorTypeColor(
-                  event.initiatorType
-                )}`}
-              >
-                {getInitiatorTypeText(event.initiatorType)}
-              </span>
+              {event.initiatorType && (
+                <span
+                  className={`text-xs px-2 py-1 rounded font-medium ${getInitiatorTypeColor(
+                    event.initiatorType
+                  )}`}
+                >
+                  {getInitiatorTypeText(event.initiatorType)}
+                </span>
+              )}
               <span className="text-xs text-muted-foreground">
-                ({event.initiatorType})
+                {handleCheck(event.initiatorType, `(${event.initiatorType})`)}
               </span>
             </div>
           </div>

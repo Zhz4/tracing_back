@@ -48,6 +48,7 @@ const renderEventComponent = (
         <EventRequestPage event={item as EventRequest} id={currentRow.id} />
       );
     case EventStatusEnum.资源加载:
+    case EventStatusEnum.资源首次加载:
       return <EventResourcePage event={item as EventResource} />;
     default:
       return null;

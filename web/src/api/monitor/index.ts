@@ -8,6 +8,7 @@ import { MonitorData } from "./type";
 export type MonitorDataResponse = TableData<MonitorData>;
 export interface SearchParamsType {
   userName?: string;
+  eventTypeList?: string[];
 }
 export const getMonitorData = async (
   page: number,
@@ -15,9 +16,9 @@ export const getMonitorData = async (
   searchParams: SearchParamsType
 ) => {
   const result = await service.request<MonitorDataResponse>({
-    url: `/trackweb`,
-    method: "get",
-    params: {
+    url: `/trackweb/page`,
+    method: "post",
+    data: {
       page,
       limit,
       ...searchParams,

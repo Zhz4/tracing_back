@@ -15,6 +15,7 @@ export enum EventIdEnum {
   RESOURCE = 'resource',
   PAGE_ID = 'pageId',
   CONSOLEERROR = 'console.error',
+  PAGE = 'page',
 }
 
 type PrismaField = Prisma.EventInfoGetPayload<object>;
@@ -72,7 +73,7 @@ export const EventNames = {
     'params',
   ],
   // 资源首次加载
-  [`${EventIdEnum.PAGE_ID}-${EventTypeEnum.PERFORMANCE}`]: [
+  [`${EventIdEnum.PAGE}-${EventTypeEnum.PERFORMANCE}`]: [
     ...baseFields,
     'appcache',
     'dom',

@@ -91,7 +91,6 @@ export class TrackwebService {
     query: PageQueryDto,
   ): Prisma.TrackingDataWhereInput {
     const { appName, userName, eventTypeList } = query;
-
     const where: Prisma.TrackingDataWhereInput = {
       // 基础过滤条件：去除脏数据
       userName: { not: '' },
@@ -114,13 +113,26 @@ export class TrackwebService {
       };
     }
 
-    // 事件类型过滤 - 现在通过关联表查询
+    // 事件类型过滤
     if (eventTypeList?.length) {
+      const orConditions: any[] = [];
+      eventTypeList.forEach((item: string) => {
+        const [eventId, eventType] = item.split('-');
+        if (item === 'pageId-pv-duration' || item === 'pageId-pv') {
+          // pageId 是随即的，并且eventype 中的 pv-duration 和 pv 是唯一的，因此只用eventType 过滤
+          orConditions.push({
+            eventType: eventType,
+          });
+        } else {
+          // 普通情况：同时匹配 eventType 和 eventId
+          orConditions.push({
+            AND: [{ eventType: eventType }, { eventId: eventId }],
+          });
+        }
+      });
       where.eventInfo = {
         some: {
-          eventType: {
-            in: eventTypeList,
-          },
+          OR: orConditions,
         },
       };
     }
