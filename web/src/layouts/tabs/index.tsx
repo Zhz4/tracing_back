@@ -5,7 +5,8 @@ import { useKeepAliveContext } from "keepalive-for-react";
 import { X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { INIT_TABS_ROUTE_PATH } from "@/constants";
+import { INIT_TABS_ROUTE_PATH, MAX_TABS_COUNT } from "@/constants";
+import { toast } from "sonner";
 
 const searchRoutesName = (routePath: string) => {
   const routesPx = treeToPx(routes);
@@ -55,6 +56,11 @@ const Tabs = () => {
   };
 
   const handleTabClick = (cacheKey: string) => {
+    // 标签数量大于MAX_TABS_COUNT时，不进行跳转
+    if (nodes.length >= MAX_TABS_COUNT) {
+      toast.error("标签页数量超过最大限制");
+      return;
+    }
     if (cacheKey !== active) {
       navigate(cacheKey);
     }

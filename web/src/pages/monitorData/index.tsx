@@ -1,8 +1,7 @@
 import { DataTable } from "@/components/table/data-table";
 import { DataTableSkeleton } from "@/components/table/data-table-skeleton";
-import { LoadingOverlay } from "@/components/ui/loading-modal";
 import { columns } from "./components/columns";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   getMonitorData,
   MonitorDataResponse,
@@ -30,7 +29,6 @@ const MonitorData = () => {
         pagination.pageSize,
         searchParams
       ),
-    placeholderData: keepPreviousData,
   });
 
   const handleSearch = (searchParams: SearchParamsType) => {
@@ -56,24 +54,20 @@ const MonitorData = () => {
           />
         </div>
       </div>
-
-      <LoadingOverlay isOpen={isFetching && !isLoading} showModal={true}>
-        {!isLoading ? (
-          <DataTable
-            columns={columns}
-            data={data?.records || []}
-            pagination={pagination}
-            setPagination={setPagination}
-            totalCount={data?.pagination.total}
-          />
-        ) : (
-          <DataTableSkeleton
-            columnCount={columns.length}
-            rowCount={pagination.pageSize}
-          />
-        )}
-      </LoadingOverlay>
-
+      {!isLoading ? (
+        <DataTable
+          columns={columns}
+          data={data?.records || []}
+          pagination={pagination}
+          setPagination={setPagination}
+          totalCount={data?.pagination.total}
+        />
+      ) : (
+        <DataTableSkeleton
+          columnCount={columns.length}
+          rowCount={pagination.pageSize}
+        />
+      )}
       <CheckDraw />
     </MonitorDataProvider>
   );

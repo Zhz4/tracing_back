@@ -6,7 +6,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
 const App = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // 禁用窗口聚焦时重新获取
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>

@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { useLocation, useOutlet } from "react-router-dom";
 import { KeepAlive, useKeepAliveRef } from "keepalive-for-react";
 import { Suspense } from "react";
+import { MAX_TABS_COUNT } from "@/constants";
 
 export default function Layout() {
   const aliveRef = useKeepAliveRef();
@@ -17,7 +18,7 @@ export default function Layout() {
           aliveRef={aliveRef}
           activeCacheKey={currentCacheKey}
           cacheNodeClassName="w-full h-full"
-          max={18}
+          max={MAX_TABS_COUNT}
         >
           <Header />
           <main className="flex-1 p-2">

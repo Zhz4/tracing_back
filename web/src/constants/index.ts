@@ -48,3 +48,5 @@ export const EventNames = {
 
 // 初始化标签页路由路径
 export const INIT_TABS_ROUTE_PATH = "/home";
+// 最多显示的标签页数量
+export const MAX_TABS_COUNT = 18;
