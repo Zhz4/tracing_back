@@ -19,36 +19,30 @@ export class TrackwebService {
       mapCreateDtoToPrisma(createTrackwebDto);
 
     // 使用事务确保数据一致性
-    const result = await this.prisma.$transaction(async (prisma) => {
-      // 创建TrackingData记录
-      const createdTrackingData = await prisma.trackingData.create({
-        data: trackingData,
-      });
-
-      // 如果有事件信息，则创建关联的EventInfo记录
-      if (eventInfoList.length > 0) {
-        const eventInfoWithTrackingId = eventInfoList.map((event) => ({
-          ...event,
-          trackingDataId: createdTrackingData.id,
-        }));
-
-        await prisma.eventInfo.createMany({
-          data: eventInfoWithTrackingId,
+    await this.prisma.$transaction(
+      async (prisma) => {
+        // 创建TrackingData记录
+        const createdTrackingData = await prisma.trackingData.create({
+          data: trackingData,
         });
-
-        // 返回包含事件信息的完整数据
-        return await prisma.trackingData.findUnique({
-          where: { id: createdTrackingData.id },
-          include: {
-            eventInfo: true,
-          },
-        });
-      }
-
-      return createdTrackingData;
-    });
-
-    return result;
+        // 如果有事件信息，则创建关联的EventInfo记录
+        if (eventInfoList.length > 0) {
+          const eventInfoWithTrackingId = eventInfoList.map((event) => ({
+            ...event,
+            trackingDataId: createdTrackingData.id,
+          }));
+          await prisma.eventInfo.createMany({
+            data: eventInfoWithTrackingId,
+          });
+        }
+        // 直接返回创建的数据，避免额外查询
+        return createdTrackingData;
+      },
+      {
+        timeout: 10000, // 增加超时时间到10秒
+      },
+    );
+    return;
   }
 
   async findAll(query: PageQueryDto) {
