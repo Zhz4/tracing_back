@@ -5,6 +5,7 @@ import { useKeepAliveContext } from "keepalive-for-react";
 import { X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { INIT_TABS_ROUTE_PATH } from "@/constants";
 
 const searchRoutesName = (routePath: string) => {
   const routesPx = treeToPx(routes);
@@ -24,11 +25,11 @@ const Tabs = () => {
         (node) => node.cacheKey === cacheKey
       );
       if (nodes.length === 1) {
-        if (cacheKey === "/home") {
+        if (cacheKey === INIT_TABS_ROUTE_PATH) {
           destroy(cacheKey);
           return;
         } else {
-          navigate("/home");
+          navigate(INIT_TABS_ROUTE_PATH);
         }
       } else {
         let targetIndex;
@@ -37,13 +38,12 @@ const Tabs = () => {
         } else {
           targetIndex = currentIndex - 1;
         }
-
         const targetNode = nodes[targetIndex];
         if (targetNode) {
           navigate(targetNode.cacheKey);
         } else {
-          if (cacheKey !== "/home") {
-            navigate("/home");
+          if (cacheKey !== INIT_TABS_ROUTE_PATH) {
+            navigate(INIT_TABS_ROUTE_PATH);
           }
         }
       }

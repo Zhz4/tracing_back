@@ -15,6 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import EventCardHeard from "./event-card-heard";
+import { useMonitorData } from "../context/monitor-data-context";
 
 interface EventRequestProps {
   event: EventRequest;
@@ -22,6 +23,8 @@ interface EventRequestProps {
 }
 
 const EventRequestPage = ({ event, id }: EventRequestProps) => {
+  const { setOpen } = useMonitorData();
+
   const navigate = useNavigate();
 
   const handleViewRecordscreen = (rowId: string) => {
@@ -196,7 +199,10 @@ const EventRequestPage = ({ event, id }: EventRequestProps) => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleViewRecordscreen(id)}
+              onClick={() => {
+                setOpen(false);
+                handleViewRecordscreen(id);
+              }}
               className="flex items-center gap-2 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700"
             >
               <ExternalLink className="h-4 w-4" />

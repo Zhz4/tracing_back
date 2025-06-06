@@ -45,3 +45,6 @@ export const EventNames = {
 } as const satisfies Partial<
   Record<`${EventIdEnum}-${EventTypeEnum}`, keyof typeof EventStatusEnum>
 >;
+
+// 初始化标签页路由路径
+export const INIT_TABS_ROUTE_PATH = "/home";
