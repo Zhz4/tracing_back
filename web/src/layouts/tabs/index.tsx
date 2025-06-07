@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 const searchRoutesName = (routePath: string) => {
   const routesPx = treeToPx(routes);
-  const route = routesPx.find((item) => item.path === routePath);
+  const route = routesPx.find((item) => item.path === routePath.split("?")[0]);
   return route?.handle?.title;
 };
 
@@ -18,7 +18,7 @@ const Tabs = () => {
   const { getCacheNodes, destroy } = useKeepAliveContext();
   const navigate = useNavigate();
   const nodes = getCacheNodes();
-  const active = useLocation().pathname;
+  const active = useLocation().pathname + useLocation().search;
 
   const handleDestroy = (cacheKey: string) => {
     if (cacheKey === active) {

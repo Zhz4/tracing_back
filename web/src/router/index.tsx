@@ -26,7 +26,7 @@ export const routes: RouteObject[] = [
         element: <MonitorData />,
         handle: {
           keepAlive: true,
-          title: "埋点数据",
+          title: "实时数据",
         },
       },
       {

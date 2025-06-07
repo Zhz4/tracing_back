@@ -9,7 +9,7 @@ import { MAX_TABS_COUNT } from "@/constants";
 export default function Layout() {
   const aliveRef = useKeepAliveRef();
   const outlet = useOutlet();
-  const currentCacheKey = useLocation().pathname;
+  const currentCacheKey = useLocation().pathname + useLocation().search;
   return (
     <SidebarProvider>
       <AppSidebar />

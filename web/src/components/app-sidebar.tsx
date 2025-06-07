@@ -19,7 +19,7 @@ const items = [
     icon: Home,
   },
   {
-    title: "埋点数据",
+    title: "实时数据",
     url: "/monitor-data",
     icon: BarChart,
   },
