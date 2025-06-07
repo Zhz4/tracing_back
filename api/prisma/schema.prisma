@@ -9,8 +9,22 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 用户表
+model User {
+  id        String   @id @default(uuid())
+  username  String
+  email     String
+  password  String
+  createdAt DateTime @default(now())
+  salt      String
+  avatar    String?
+
+  @@map("user")
 }
 
 // 跟踪数据表 - 包含所有 baseInfo 字段
@@ -62,7 +76,7 @@ model TrackingData {
   // 关联事件信息
   eventInfo  EventInfo[]
 
-  @@index([id, sendTime])
+  @@index([id, sendTime, appName, userName, userUuid])
   @@map("tracking_data")
 }
 
@@ -184,5 +198,6 @@ model EventInfo {
   TrackingData   TrackingData? @relation(fields: [trackingDataId], references: [id])
   trackingDataId String?
 
+  @@index([trackingDataId])
   @@map("event_info")
 }
