@@ -4,6 +4,7 @@ import Layout from "@/layouts";
 import MonitorData from "@/pages/monitorData";
 import RecordscreenPage from "@/pages/recordscreen";
 import type { RouteObject } from "react-router-dom";
+import { BarChart, House } from "lucide-react";
 export const routes: RouteObject[] = [
   {
     path: "/",
@@ -17,6 +18,8 @@ export const routes: RouteObject[] = [
         path: "/home",
         element: <Home />,
         handle: {
+          icon: House,
+          affix: true,
           keepAlive: true,
           title: "首页",
         },
@@ -25,6 +28,8 @@ export const routes: RouteObject[] = [
         path: "/monitor-data",
         element: <MonitorData />,
         handle: {
+          icon: BarChart,
+          affix: true,
           keepAlive: true,
           title: "实时数据",
         },
