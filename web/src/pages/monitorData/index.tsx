@@ -64,10 +64,7 @@ const MonitorData = () => {
           totalCount={data?.pagination.total}
         />
       ) : (
-        <DataTableSkeleton
-          columnCount={columns.length}
-          rowCount={pagination.pageSize}
-        />
+        <DataTableSkeleton columnCount={1} rowCount={3} />
       )}
       <CheckDraw />
     </MonitorDataProvider>
