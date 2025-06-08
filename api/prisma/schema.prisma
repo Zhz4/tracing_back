@@ -17,11 +17,10 @@ datasource db {
 // 用户表
 model User {
   id        String   @id @default(uuid())
-  username  String
-  email     String
+  username  String?
+  email     String   @unique
   password  String
   createdAt DateTime @default(now())
-  salt      String
   avatar    String?
 
   @@map("user")
