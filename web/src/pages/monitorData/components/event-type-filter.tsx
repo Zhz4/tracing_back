@@ -41,7 +41,7 @@ const EventTypeFilter = ({
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="gap-2">
           <Filter className="h-4 w-4" />
@@ -54,7 +54,11 @@ const EventTypeFilter = ({
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end">
+      <DropdownMenuContent
+        className="w-56"
+        align="end"
+        onCloseAutoFocus={(e) => e.preventDefault()}
+      >
         <DropdownMenuLabel>选择事件类型</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="flex gap-2 p-2">
