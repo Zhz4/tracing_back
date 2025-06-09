@@ -23,6 +23,10 @@ const instance: AxiosInstance = axios.create({
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -38,6 +42,7 @@ instance.interceptors.response.use(
       toast.error(res.message || "请求失败");
       return Promise.reject(res);
     }
+
     return res;
   },
   (error) => {
@@ -45,6 +50,17 @@ instance.interceptors.response.use(
       if (error.code === "ECONNABORTED") {
         toast.error("请求超时");
         return Promise.reject(new Error("请求超时"));
+      }
+      if (error.status === 401) {
+        toast.error("未登录或登录过期");
+        localStorage.removeItem("access_token");
+
+        const currentPath = window.location.pathname;
+        window.location.href = `/login?redirect=${encodeURIComponent(
+          currentPath
+        )}`;
+
+        return Promise.reject(new Error("未登录或登录过期"));
       }
       toast.error(error.response?.data?.message || "请求失败");
       return Promise.reject(error.response?.data || "请求失败");
