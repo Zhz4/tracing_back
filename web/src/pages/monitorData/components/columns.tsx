@@ -8,6 +8,19 @@ import { getEventName } from "@/utils/checkEventAll";
 import { EventNames } from "@/constants";
 import { VariantProps } from "class-variance-authority";
 import { EventStatusEnum } from "@/constants";
+import chromeIcon from "@/assets/icons/chrome.svg";
+
+const BrowserVendor = {
+  "Google Inc.": chromeIcon,
+  "Mozilla Foundation": chromeIcon,
+  "Microsoft Corporation": chromeIcon,
+  "Apple Inc.": chromeIcon,
+  "Opera Software ASA": chromeIcon,
+} as const;
+
+const findBrowserVendorIcon = (vendor: keyof typeof BrowserVendor) => {
+  return <img src={BrowserVendor[vendor]} alt={vendor} className="w-4 h-4" />;
+};
 
 type EventNameValues = (typeof EventNames)[keyof typeof EventNames];
 type BadgeVariants = VariantProps<typeof badgeVariants>["variant"];
@@ -74,6 +87,15 @@ export const columns: ColumnDef<MonitorData>[] = [
   {
     accessorKey: "vendor",
     header: "浏览器厂商",
+    cell: ({ row }) => {
+      const { vendor } = row.original;
+      return (
+        <div className="flex items-center gap-2">
+          {findBrowserVendorIcon(vendor as keyof typeof BrowserVendor)}
+          {vendor}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "platform",
