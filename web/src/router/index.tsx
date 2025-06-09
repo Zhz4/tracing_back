@@ -38,7 +38,6 @@ export const routes: RouteObject[] = [
         path: "/recordscreen",
         element: <RecordscreenPage />,
         handle: {
-          keepAlive: true,
           title: "记录屏幕",
         },
       },
