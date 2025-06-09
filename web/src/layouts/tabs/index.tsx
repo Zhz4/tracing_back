@@ -1,12 +1,13 @@
 import { cn } from "@/lib/utils";
 import { routes } from "@/router";
-import treeToPx from "@/utils/treeTopx";
+import { treeToPx } from "@/utils/route/treeTopx";
 import { useKeepAliveContext } from "keepalive-for-react";
 import { X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { INIT_TABS_ROUTE_PATH, MAX_TABS_COUNT } from "@/constants";
 import { toast } from "sonner";
+import { getKeepAliveInclude } from "./tab-utils";
 
 const searchRoutesName = (routePath: string) => {
   const routesPx = treeToPx(routes);
@@ -17,7 +18,10 @@ const searchRoutesName = (routePath: string) => {
 const Tabs = () => {
   const { getCacheNodes, destroy } = useKeepAliveContext();
   const navigate = useNavigate();
-  const nodes = getCacheNodes();
+  const keepAliveInclude = getKeepAliveInclude(routes) as string[];
+  const nodes = getCacheNodes().filter((node) =>
+    keepAliveInclude.includes(node.cacheKey)
+  );
   const active = useLocation().pathname + useLocation().search;
 
   const handleDestroy = (cacheKey: string) => {

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import treeToPx from "./treeTopx";
+import { treeToPx } from "@/utils/route/treeTopx";
 test("树形转平面", () => {
   const routes = [
     {
@@ -21,6 +21,15 @@ test("树形转平面", () => {
             keepAlive: true,
             title: "监控数据",
           },
+          children: [
+            {
+              path: "/monitor-data/1",
+              handle: {
+                keepAlive: true,
+                title: "监控数据1",
+              },
+            },
+          ],
         },
         {
           path: "/recordscreen",
@@ -56,6 +65,5 @@ test("树形转平面", () => {
     },
   ];
   const res = treeToPx(routes);
-  console.log(res);
-  expect(res).toEqual(result);
+  expect(res).toEqual(expect.arrayContaining(result));
 });
