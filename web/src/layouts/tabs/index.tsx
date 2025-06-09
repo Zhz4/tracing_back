@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { routes } from "@/router";
-import treeToPx from "@/utils/route/treeTopx";
+import { treeToPx } from "@/utils/route/treeTopx";
 import { useKeepAliveContext } from "keepalive-for-react";
 import { X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { findMenus } from "./findMenus";
+import { findMenus } from "@/utils/route/findMenus";
 import { Home, BarChart, List } from "lucide-react";
 
 test("3层嵌套路由", () => {

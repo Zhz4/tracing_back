@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { treeToPx } from "@/utils/treeTopx";
+import { treeToPx } from "@/utils/route/treeTopx";
 test("树形转平面", () => {
   const routes = [
     {
