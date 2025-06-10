@@ -6,11 +6,11 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useMonitorData } from "../context/monitor-data-context";
-import EventClickPage from "./Event-click";
-import EventRoutePage from "./Event-route";
-import EventRequestPage from "./Event-request";
+import EventClickPage from "./events/Event-click";
+import EventRoutePage from "./events/Event-route";
+import EventRequestPage from "./events/Event-request";
 import { getEventName } from "@/utils/checkEventAll";
-import EventErrorPage from "./Event-error";
+import EventErrorPage from "./events/Event-error";
 import { EventStatusEnum } from "@/constants";
 import {
   EventClick,
@@ -20,7 +20,7 @@ import {
   EventResource,
 } from "@/types";
 import { MonitorData } from "@/api/monitor/type";
-import EventResourcePage from "./Event-resource";
+import EventResourcePage from "./events/Event-resource";
 
 // 渲染事件组件的函数
 const renderEventComponent = (
