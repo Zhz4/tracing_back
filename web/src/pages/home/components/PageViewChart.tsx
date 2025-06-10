@@ -9,54 +9,33 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface PageData {
-  url: string;
-  views: number;
-}
-
-interface PageViewChartProps {
+interface PageViewChartProps<T> {
   isLoading: boolean;
-  pageData?: PageData[];
+  pageData: Array<T>;
+  title: string;
+  description: string;
+  label: string;
+  labelKey: keyof T;
+  valueKey: keyof T;
 }
-
-// 自定义 Tooltip 组件
-const CustomTooltip = ({
-  active,
-  payload,
-}: {
-  active?: boolean;
-  payload?: Array<{ payload: { fullUrl: string }; value: number }>;
-}) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
-    return (
-      <div className="bg-background border rounded-lg shadow-lg p-3 text-sm max-w-[300px] min-w-[200px]">
-        <p className="font-medium break-all whitespace-normal leading-tight mb-2">
-          {data.fullUrl}
-        </p>
-        <p className="text-muted-foreground">
-          访问量:
-          <span className="font-medium text-foreground">
-            {payload[0].value}
-          </span>
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
-
-// 主组件
-const PageViewChart = ({ isLoading, pageData }: PageViewChartProps) => {
+const PageViewChart = <T,>({
+  isLoading,
+  pageData,
+  title,
+  description,
+  label,
+  labelKey,
+  valueKey,
+}: PageViewChartProps<T>) => {
   const data = pageData?.map((item) => ({
-    name: item.url,
-    fullUrl: item.url,
-    uv: item.views,
+    name: item[labelKey] as string,
+    fullUrl: item[labelKey] as string,
+    uv: item[valueKey] as number,
   }));
 
   const config = {
     uv: {
-      label: "访问量",
+      label: label,
       color: "hsl(var(--chart-1))",
     },
   };
@@ -95,7 +74,9 @@ const PageViewChart = ({ isLoading, pageData }: PageViewChartProps) => {
                   tickLine={false}
                   width={25}
                 />
-                <ChartTooltip content={<CustomTooltip />} />
+                <ChartTooltip
+                  content={<CustomTooltip currentLabel={label} />}
+                />
                 <Bar
                   dataKey="uv"
                   fill="hsl(var(--primary))"
@@ -120,16 +101,42 @@ const PageViewChart = ({ isLoading, pageData }: PageViewChartProps) => {
   };
 
   return (
-    <Card className="w-1/2 min-w-0">
+    <Card className="w-full">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">页面访问统计</CardTitle>
-        <CardDescription className="text-sm">
-          各页面的访问量分布情况
-        </CardDescription>
+        <CardTitle className="text-lg">{title}</CardTitle>
+        <CardDescription className="text-sm">{description}</CardDescription>
       </CardHeader>
       <CardContent className="p-4">{renderContent()}</CardContent>
     </Card>
   );
+};
+
+const CustomTooltip = ({
+  active,
+  payload,
+  currentLabel,
+}: {
+  active?: boolean;
+  payload?: Array<{ payload: { fullUrl: string }; value: number }>;
+  currentLabel: string;
+}) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-background border rounded-lg shadow-lg p-3 text-sm max-w-[300px] min-w-[200px]">
+        <p className="font-medium break-all whitespace-normal leading-tight mb-2">
+          {data.fullUrl}
+        </p>
+        <p className="text-muted-foreground">
+          {currentLabel}:
+          <span className="font-medium text-foreground">
+            {payload[0].value}
+          </span>
+        </p>
+      </div>
+    );
+  }
+  return null;
 };
 
 export default PageViewChart;
