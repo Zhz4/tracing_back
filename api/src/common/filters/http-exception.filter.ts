@@ -14,9 +14,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal server error';
+    let message = '网络异常';
     let error: string | null = null;
-    let code = -1;
+    let code = 500;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -38,8 +38,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
       code = -status;
     } else if (exception instanceof Error) {
-      message = exception.message;
-      error = exception.stack || null;
+      console.error(exception.message);
+      console.error(exception.stack);
+      message = '服务器异常';
+      error = exception.message;
     }
 
     response.status(status).json({
