@@ -8,7 +8,7 @@ export interface UserInfo {
   id: string;
   username: string;
   email: string;
-  password: string;
+  password?: string;
   createdAt?: object;
-  avatar?: string | null;
+  avatar?: string;
 }

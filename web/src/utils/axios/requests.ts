@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { toast } from "sonner";
+import { getUserToken, removeUserToken } from "@/utils/storage/userToken";
 
 export interface RequestOptions extends RequestInit {
   timeout?: number;
@@ -23,7 +24,7 @@ const instance: AxiosInstance = axios.create({
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("access_token");
+    const token = getUserToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -53,12 +54,13 @@ instance.interceptors.response.use(
       }
       if (error.status === 401) {
         toast.error("未登录或登录过期");
-        localStorage.removeItem("access_token");
+        removeUserToken();
+        window.location.reload();
 
-        const currentPath = window.location.pathname;
-        window.location.href = `/login?redirect=${encodeURIComponent(
-          currentPath
-        )}`;
+        // const currentPath = window.location.pathname;
+        // window.location.href = `/login?redirect=${encodeURIComponent(
+        //   currentPath
+        // )}`;
 
         return Promise.reject(new Error("未登录或登录过期"));
       }

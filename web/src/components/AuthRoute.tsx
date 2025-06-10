@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
+import { getUserToken } from "@/utils/storage/userToken";
 
 interface Props {
   children: React.ReactNode;
@@ -6,7 +7,7 @@ interface Props {
 
 const AuthRoute = ({ children }: Props) => {
   const location = useLocation();
-  const token = localStorage.getItem("access_token");
+  const token = getUserToken();
 
   if (!token) {
     // 未登录，跳转到 login，并带上来源地址
