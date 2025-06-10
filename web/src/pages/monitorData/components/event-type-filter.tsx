@@ -9,7 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Filter } from "lucide-react";
+import { ChevronDown, Filter, Check, X } from "lucide-react";
+import { useState } from "react";
 
 interface EventTypeFilterProps {
   selectedEventTypes: string[];
@@ -20,28 +21,56 @@ const EventTypeFilter = ({
   selectedEventTypes,
   onEventTypeChange,
 }: EventTypeFilterProps) => {
+  // 添加本地状态来管理临时选择的事件类型
+  const [tempSelectedTypes, setTempSelectedTypes] =
+    useState<string[]>(selectedEventTypes);
+  const [isOpen, setIsOpen] = useState(false);
+
   const eventTypeOptions = Object.entries(EventNames).map(([key, label]) => ({
     value: key,
     label: label,
   }));
 
-  const handleEventTypeToggle = (eventType: string) => {
-    const newSelectedTypes = selectedEventTypes.includes(eventType)
-      ? selectedEventTypes.filter((type) => type !== eventType)
-      : [...selectedEventTypes, eventType];
-    onEventTypeChange(newSelectedTypes);
+  // 处理临时选择的事件类型切换
+  const handleTempEventTypeToggle = (eventType: string) => {
+    const newTempSelectedTypes = tempSelectedTypes.includes(eventType)
+      ? tempSelectedTypes.filter((type) => type !== eventType)
+      : [...tempSelectedTypes, eventType];
+    setTempSelectedTypes(newTempSelectedTypes);
   };
 
+  // 处理全选
   const handleSelectAll = () => {
-    onEventTypeChange(eventTypeOptions.map((option) => option.value));
+    setTempSelectedTypes(eventTypeOptions.map((option) => option.value));
   };
 
+  // 处理清空
   const handleClearAll = () => {
-    onEventTypeChange([]);
+    setTempSelectedTypes([]);
+  };
+
+  // 确定按钮：应用筛选并关闭下拉菜单
+  const handleConfirm = () => {
+    onEventTypeChange(tempSelectedTypes);
+    setIsOpen(false);
+  };
+
+  // 取消按钮：恢复到原始状态并关闭下拉菜单
+  const handleCancel = () => {
+    setTempSelectedTypes(selectedEventTypes);
+    setIsOpen(false);
+  };
+
+  // 当下拉菜单打开时，同步临时状态
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      setTempSelectedTypes(selectedEventTypes);
+    }
   };
 
   return (
-    <DropdownMenu modal={false}>
+    <DropdownMenu modal={false} open={isOpen} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="gap-2">
           <Filter className="h-4 w-4" />
@@ -83,12 +112,34 @@ const EventTypeFilter = ({
         {eventTypeOptions.map((option) => (
           <DropdownMenuCheckboxItem
             key={option.value}
-            checked={selectedEventTypes.includes(option.value)}
-            onCheckedChange={() => handleEventTypeToggle(option.value)}
+            checked={tempSelectedTypes.includes(option.value)}
+            onCheckedChange={() => handleTempEventTypeToggle(option.value)}
+            onSelect={(e) => e.preventDefault()} // 阻止选择时关闭下拉菜单
           >
             {option.label}
           </DropdownMenuCheckboxItem>
         ))}
+        <DropdownMenuSeparator />
+        <div className="flex gap-2 p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCancel}
+            className="flex-1 gap-1"
+          >
+            <X className="h-3 w-3" />
+            取消
+          </Button>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleConfirm}
+            className="flex-1 gap-1"
+          >
+            <Check className="h-3 w-3" />
+            确定
+          </Button>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
