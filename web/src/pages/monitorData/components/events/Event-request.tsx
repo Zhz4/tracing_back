@@ -15,7 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import EventCardHeard from "./event-card-heard";
-import { useMonitorData } from "../context/monitor-data-context";
+import { useMonitorData } from "../../context/monitor-data-context";
 
 interface EventRequestProps {
   event: EventRequest;
