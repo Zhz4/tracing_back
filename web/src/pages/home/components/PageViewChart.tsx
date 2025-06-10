@@ -1,4 +1,4 @@
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import {
   Card,
@@ -54,37 +54,28 @@ const PageViewChart = <T,>({
     // 有数据时显示图表
     if (data && data.length > 0) {
       return (
-        <div className="w-full h-[300px] overflow-hidden">
+        <div className="w-full h-[300px]">
           <ChartContainer config={config} className="w-full h-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={data}
-                margin={{ top: 10, right: 5, left: 5, bottom: 5 }}
-                barCategoryGap="10%"
-              >
-                <XAxis
-                  dataKey="name"
-                  tick={false}
-                  axisLine={false}
-                  height={0}
-                />
-                <YAxis
-                  tick={{ fontSize: 10 }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={25}
-                />
-                <ChartTooltip
-                  content={<CustomTooltip currentLabel={label} />}
-                />
-                <Bar
-                  dataKey="uv"
-                  fill="hsl(var(--primary))"
-                  radius={[2, 2, 0, 0]}
-                  maxBarSize={40}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <BarChart
+              data={data}
+              margin={{ top: 10, right: 5, left: 5, bottom: 5 }}
+              barCategoryGap="10%"
+            >
+              <XAxis dataKey="name" tick={false} axisLine={false} height={0} />
+              <YAxis
+                tick={{ fontSize: 10 }}
+                axisLine={false}
+                tickLine={false}
+                width={25}
+              />
+              <ChartTooltip content={<CustomTooltip currentLabel={label} />} />
+              <Bar
+                dataKey="uv"
+                fill="hsl(var(--primary))"
+                radius={[2, 2, 0, 0]}
+                maxBarSize={40}
+              />
+            </BarChart>
           </ChartContainer>
         </div>
       );
