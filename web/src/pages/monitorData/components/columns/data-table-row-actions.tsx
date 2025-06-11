@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMonitorData } from "../context/monitor-data-context";
+import { useMonitorData } from "../../context/monitor-data-context";
 import { MonitorData } from "@/api/monitor/type";
 
 interface DataTableRowActionsProps<TData> {

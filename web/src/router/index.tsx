@@ -1,13 +1,20 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Home from "@/pages/home";
 import Layout from "@/layouts";
+import Login from "@/pages/login";
 import MonitorData from "@/pages/monitorData";
 import RecordscreenPage from "@/pages/recordscreen";
 import type { RouteObject } from "react-router-dom";
+import AuthRoute from "@/components/AuthRoute";
+import { BarChart, House } from "lucide-react";
 export const routes: RouteObject[] = [
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <AuthRoute>
+        <Layout />
+      </AuthRoute>
+    ),
     children: [
       {
         index: true,
@@ -17,6 +24,8 @@ export const routes: RouteObject[] = [
         path: "/home",
         element: <Home />,
         handle: {
+          icon: House,
+          affix: true,
           keepAlive: true,
           title: "首页",
         },
@@ -25,6 +34,8 @@ export const routes: RouteObject[] = [
         path: "/monitor-data",
         element: <MonitorData />,
         handle: {
+          icon: BarChart,
+          affix: true,
           keepAlive: true,
           title: "实时数据",
         },
@@ -38,6 +49,10 @@ export const routes: RouteObject[] = [
         },
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ];
 

@@ -1,9 +1,9 @@
-import { BarChart, Home } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -11,19 +11,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
-const items = [
-  {
-    title: "Home",
-    url: "/home",
-    icon: Home,
-  },
-  {
-    title: "实时数据",
-    url: "/monitor-data",
-    icon: BarChart,
-  },
-];
+import { findMenus } from "@/utils/route/findMenus";
+import { routes } from "@/router/index";
+import { UserMenu } from "./UserMenu";
 
 function checkIsActive(
   href: string,
@@ -42,6 +32,7 @@ function checkIsActive(
 }
 
 export function AppSidebar() {
+  const items = findMenus(routes[0].children!);
   const location = useLocation();
   return (
     <Sidebar>
@@ -60,7 +51,7 @@ export function AppSidebar() {
                     tooltip={item.title}
                   >
                     <Link to={item.url}>
-                      <item.icon className="w-4 h-4 mr-2" />
+                      {item.icon && <item.icon className="w-4 h-4 mr-2" />}
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -70,6 +61,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <UserMenu />
+      </SidebarFooter>
     </Sidebar>
   );
 }

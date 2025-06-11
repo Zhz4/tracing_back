@@ -17,7 +17,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <Toaster />
+        <Toaster position="top-center" />
         {import.meta.env.DEV && (
           <ReactQueryDevtools
             initialIsOpen={false}
