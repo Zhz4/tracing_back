@@ -195,25 +195,6 @@ export default function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
             {form.formState.isSubmitting ? "注册中..." : "注册"}
           </Button>
         </div>
-
-        <div className="text-center pt-2">
-          <p className="text-xs text-muted-foreground">
-            注册即表示您同意我们的
-            <button
-              type="button"
-              className="text-primary hover:text-primary/80 mx-1"
-            >
-              服务条款
-            </button>
-            和
-            <button
-              type="button"
-              className="text-primary hover:text-primary/80 ml-1"
-            >
-              隐私政策
-            </button>
-          </p>
-        </div>
       </form>
     </Form>
   );
