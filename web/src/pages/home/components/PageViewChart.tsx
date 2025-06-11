@@ -1,5 +1,9 @@
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartTooltip,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import {
   Card,
   CardContent,
@@ -18,6 +22,7 @@ interface PageViewChartProps<T> {
   labelKey: keyof T;
   valueKey: keyof T;
 }
+
 const PageViewChart = <T,>({
   isLoading,
   pageData,
@@ -36,9 +41,9 @@ const PageViewChart = <T,>({
   const config = {
     uv: {
       label: label,
-      color: "hsl(var(--chart-1))",
+      color: "oklch(var(--primary))",
     },
-  };
+  } satisfies ChartConfig;
 
   const renderContent = () => {
     // 加载状态
@@ -71,7 +76,7 @@ const PageViewChart = <T,>({
               <ChartTooltip content={<CustomTooltip currentLabel={label} />} />
               <Bar
                 dataKey="uv"
-                fill="hsl(var(--primary))"
+                fill="var(--color-uv)"
                 radius={[2, 2, 0, 0]}
                 maxBarSize={40}
               />
@@ -120,7 +125,7 @@ const CustomTooltip = ({
         </p>
         <p className="text-muted-foreground">
           {currentLabel}:
-          <span className="font-medium text-foreground">
+          <span className="font-medium text-foreground ml-1">
             {payload[0].value}
           </span>
         </p>
@@ -130,4 +135,5 @@ const CustomTooltip = ({
   return null;
 };
 
+PageViewChart.displayName = "PageViewChart";
 export default PageViewChart;

@@ -79,7 +79,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-700">
+              <FormLabel className="text-sm font-medium text-foreground">
                 用户名
               </FormLabel>
               <FormControl>
@@ -101,7 +101,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-700">
+              <FormLabel className="text-sm font-medium text-foreground">
                 邮箱
               </FormLabel>
               <FormControl>
@@ -123,7 +123,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-700">
+              <FormLabel className="text-sm font-medium text-foreground">
                 密码
               </FormLabel>
               <FormControl>
@@ -137,7 +137,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -157,7 +157,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-700">
+              <FormLabel className="text-sm font-medium text-foreground">
                 确认密码
               </FormLabel>
               <FormControl>
@@ -171,7 +171,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -194,6 +194,25 @@ export default function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
           >
             {form.formState.isSubmitting ? "注册中..." : "注册"}
           </Button>
+        </div>
+
+        <div className="text-center pt-2">
+          <p className="text-xs text-muted-foreground">
+            注册即表示您同意我们的
+            <button
+              type="button"
+              className="text-primary hover:text-primary/80 mx-1"
+            >
+              服务条款
+            </button>
+            和
+            <button
+              type="button"
+              className="text-primary hover:text-primary/80 ml-1"
+            >
+              隐私政策
+            </button>
+          </p>
         </div>
       </form>
     </Form>

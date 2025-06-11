@@ -60,7 +60,7 @@ export default function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-700">
+              <FormLabel className="text-sm font-medium text-foreground">
                 邮箱
               </FormLabel>
               <FormControl>
@@ -81,7 +81,7 @@ export default function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-700">
+              <FormLabel className="text-sm font-medium text-foreground">
                 密码
               </FormLabel>
               <FormControl>
@@ -95,7 +95,7 @@ export default function LoginForm({ onSuccess }: { onSuccess: () => void }) {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />

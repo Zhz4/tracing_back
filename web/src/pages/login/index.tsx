@@ -15,15 +15,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-8">
           {/* 简洁的标题区域 */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold text-gray-900">
+            <h1 className="text-2xl font-semibold text-foreground">
               {tab === "login" ? "登录账户" : "创建账户"}
             </h1>
-            <p className="text-gray-600 mt-2 text-sm">
+            <p className="text-muted-foreground mt-2 text-sm">
               {tab === "login"
                 ? "欢迎回来，请登录您的账户"
                 : "填写信息创建新账户"}
