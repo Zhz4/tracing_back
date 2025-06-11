@@ -22,10 +22,10 @@ export class AnalyzeController {
     return this.analyzeService.analyzeClick();
   }
 
-  // @Public()
-  // @ApiOperation({ summary: '页面停留时间统计' })
-  // @Get('stay-time')
-  // analyzeStayTime() {
-  //   return this.analyzeService.analyzeStayTime();
-  // }
+  @Public()
+  @ApiOperation({ summary: '错误统计' })
+  @Get('error')
+  analyzeError() {
+    return this.analyzeService.analyzeError();
+  }
 }

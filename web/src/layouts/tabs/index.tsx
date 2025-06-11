@@ -20,7 +20,7 @@ const Tabs = () => {
   const navigate = useNavigate();
   const keepAliveInclude = getKeepAliveInclude(routes) as string[];
   const nodes = getCacheNodes().filter((node) =>
-    keepAliveInclude.includes(node.cacheKey)
+    keepAliveInclude.includes(node.cacheKey.split("?")[0])
   );
   const active = useLocation().pathname + useLocation().search;
 

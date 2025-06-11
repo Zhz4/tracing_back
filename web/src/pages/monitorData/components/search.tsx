@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import EventTypeFilter from "./event-type-filter";
+import EventTypeFilter from "./events/event-type-filter";
 
 interface SearchProps {
   handleSearch: (searchParams: SearchParamsType) => void;

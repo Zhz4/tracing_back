@@ -19,25 +19,33 @@ export class AnalyzeService {
 
   async analyzeClick() {
     const data = await this.prisma.$queryRaw`
-      SELECT "title", COUNT(*)::int AS views
-      FROM "event_info"
-      WHERE "eventType" = 'click'
-      GROUP BY "title"
+      SELECT 
+        e."title", 
+        COUNT(*)::int AS views, 
+        t."appName"
+      FROM "event_info" e
+      JOIN "tracking_data" t ON e."trackingDataId" = t."id"
+      WHERE e."eventType" = 'click'
+      GROUP BY e."title", t."appName"
       ORDER BY views DESC
       LIMIT 10;
     `;
     return data;
   }
 
-  async analyzeStayTime() {
-    const data = await this.prisma.$queryRaw`
-      SELECT "triggerPageUrl" AS url, COUNT(*)::int AS views
-      FROM "event_info"
-      WHERE "eventType" = 'stay-time'
-      GROUP BY "triggerPageUrl"
-      ORDER BY views DESC
-      LIMIT 10;
+  async analyzeError() {
+    const result = await this.prisma.$queryRaw`
+      SELECT 
+        t."appName",
+        COUNT(*)::int AS "errorCount"
+      FROM "tracking_data" t
+      JOIN "event_info" e 
+        ON t."id" = e."trackingDataId"
+      WHERE e."eventType" = 'error'
+      GROUP BY t."appName"
+      ORDER BY "errorCount" DESC
+      LIMIT 10
     `;
-    return data;
+    return result;
   }
 }

@@ -44,6 +44,7 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.57.0",
     "react-router-dom": "^7.6.1",
+    "react-top-loading-bar": "^3.0.2",
     "recharts": "^2.15.3",
     "rrweb-player": "2.0.0-alpha.18",
     "sonner": "^2.0.4",
