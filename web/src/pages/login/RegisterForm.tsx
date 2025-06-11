@@ -62,8 +62,9 @@ export default function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
         toast.success("注册成功，请登录", { id: loadingId });
         onSuccess();
       }
-    } finally {
+    } catch (error) {
       toast.dismiss(loadingId);
+      console.log(error);
     }
   };
 

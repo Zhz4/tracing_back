@@ -47,8 +47,9 @@ export default function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       });
       onSuccess();
       toast.success("登录成功", { id: loadingId });
-    } finally {
+    } catch (error) {
       toast.dismiss(loadingId);
+      console.log(error);
     }
   };
 
