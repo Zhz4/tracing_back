@@ -14,6 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { login } from "@/api/login";
 import { setUserToken } from "@/utils/storage/userToken";
+import { toast } from "sonner";
+import { setUserInfo } from "@/utils/storage/userInfo";
+import { Eye, EyeOff } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("请输入正确的邮箱地址"),
@@ -33,62 +36,89 @@ export default function LoginForm({ onSuccess }: { onSuccess: () => void }) {
   });
 
   const onSubmit = async (values: LoginFormData) => {
-    const res = await login(values);
-    if (res.code === 200) {
+    const loadingId = toast.loading("登录中...");
+    try {
+      const res = await login(values);
       setUserToken(res.data.access_token);
+      setUserInfo({
+        username: res.data.username,
+        email: res.data.email,
+        avatar: res.data.avatar,
+      });
       onSuccess();
+      toast.success("登录成功", { id: loadingId });
+    } finally {
+      toast.dismiss(loadingId);
     }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                邮箱<span className="text-red-500">*</span>
+              <FormLabel className="text-sm font-medium text-gray-700">
+                邮箱
               </FormLabel>
               <FormControl>
-                <Input type="email" {...field} />
+                <Input
+                  type="email"
+                  {...field}
+                  className="h-10"
+                  placeholder="请输入邮箱地址"
+                />
               </FormControl>
-              <FormMessage>{fieldState.error?.message}</FormMessage>
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="password"
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                密码<span className="text-red-500">*</span>
+              <FormLabel className="text-sm font-medium text-gray-700">
+                密码
               </FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
                     {...field}
                     type={showPassword ? "text" : "password"}
-                    className="pr-10"
+                    className="h-10 pr-10"
+                    placeholder="请输入密码"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    {showPassword ? "🙈" : "👁️"}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
               </FormControl>
-              <FormMessage>{fieldState.error?.message}</FormMessage>
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          {form.formState.isSubmitting ? "登录中..." : "登录"}
-        </Button>
+
+        <div className="pt-2">
+          <Button
+            type="submit"
+            className="w-full h-10"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? "登录中..." : "登录"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

@@ -1,6 +1,10 @@
-import { UserInfo } from "@/api/login/type";
 const USER_INFO_KEY = "user_info";
 
+export interface UserInfo {
+  username: string;
+  email: string;
+  avatar?: string;
+}
 export const setUserInfo = (userInfo: UserInfo) => {
   localStorage.setItem(USER_INFO_KEY, JSON.stringify(userInfo));
 };

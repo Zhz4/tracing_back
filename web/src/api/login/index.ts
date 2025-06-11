@@ -7,6 +7,9 @@ import { LoginParams, UserInfo } from "./type";
  */
 interface LoginResponseData {
   access_token: string;
+  username: string;
+  email: string;
+  avatar?: string;
 }
 export const login = (data: LoginParams) => {
   return service.request<LoginResponseData>({

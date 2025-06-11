@@ -24,7 +24,7 @@ export default function Layout() {
           max={MAX_TABS_COUNT}
         >
           <Header />
-          <main className="flex-1 p-2">
+          <main className="flex-1 p-6">
             <Suspense fallback={null}>{outlet}</Suspense>
           </main>
         </KeepAlive>

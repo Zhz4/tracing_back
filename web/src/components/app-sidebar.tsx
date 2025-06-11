@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { findMenus } from "@/utils/route/findMenus";
 import { routes } from "@/router/index";
+import { UserMenu } from "./UserMenu";
 
 function checkIsActive(
   href: string,
@@ -59,6 +61,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <UserMenu />
+      </SidebarFooter>
     </Sidebar>
   );
 }
