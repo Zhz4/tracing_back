@@ -20,7 +20,7 @@ const MonitorData = () => {
   });
   const [searchParams, setSearchParams] = useState<SearchParamsType>({
     userName: "",
-    eventTypeList: [],
+    eventTypeList: ["code-error", "console.error-error", "server-error"],
   });
   const { data, isFetching, isLoading } = useQuery<MonitorDataResponse>({
     queryKey: ["monitorData", pagination, searchParams],
