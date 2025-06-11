@@ -26,7 +26,6 @@ export class TrackwebController {
     return this.trackwebService.create(createTrackwebDto);
   }
 
-  @Public()
   @ApiBearerAuth('auth')
   @ApiOperation({ summary: '分页查询埋点数据' })
   @ApiResponse({ status: 200, description: '成功返回埋点数据' })

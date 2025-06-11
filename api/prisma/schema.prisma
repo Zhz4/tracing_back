@@ -75,7 +75,11 @@ model TrackingData {
   // 关联事件信息
   eventInfo  EventInfo[]
 
-  @@index([id, sendTime, appName, userName, userUuid])
+  @@index([sendTime(sort: Desc)])
+  @@index([appName, userName])
+  @@index([userName])
+  @@index([appName])
+  @@index([userUuid])
   @@map("tracking_data")
 }
 
@@ -198,5 +202,9 @@ model EventInfo {
   trackingDataId String?
 
   @@index([trackingDataId])
+  @@index([eventType])
+  @@index([eventId])
+  @@index([eventType, eventId])
+  @@index([trackingDataId, eventType])
   @@map("event_info")
 }
