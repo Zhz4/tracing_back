@@ -1,5 +1,5 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
-import Header from "./header";
+import Header, { HEADER_HEIGHT } from "./header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useLocation, useOutlet } from "react-router-dom";
 import { KeepAlive, useKeepAliveRef } from "keepalive-for-react";
@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { MAX_TABS_COUNT } from "@/constants";
 import { getKeepAliveInclude } from "./tabs/tab-utils";
 import { routes } from "@/router";
+
 export default function Layout() {
   const aliveRef = useKeepAliveRef();
   const outlet = useOutlet();
@@ -15,7 +16,15 @@ export default function Layout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <div className="flex flex-col h-screen w-full">
+      <div
+        className="flex flex-col w-full"
+        style={
+          {
+            "--header-height": HEADER_HEIGHT,
+            height: "calc(100vh - var(--header-height))",
+          } as React.CSSProperties
+        }
+      >
         <KeepAlive
           aliveRef={aliveRef}
           activeCacheKey={currentCacheKey}
@@ -24,7 +33,7 @@ export default function Layout() {
           max={MAX_TABS_COUNT}
         >
           <Header />
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-6 mt-[var(--header-height)]">
             <Suspense fallback={null}>{outlet}</Suspense>
           </main>
         </KeepAlive>
