@@ -18,7 +18,6 @@ export default function Login() {
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="bg-card rounded-lg shadow-sm border border-border p-8">
-          {/* 简洁的标题区域 */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-semibold text-foreground">
               {tab === "login" ? "登录账户" : "创建账户"}

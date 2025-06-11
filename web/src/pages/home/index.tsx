@@ -17,7 +17,7 @@ const Home = () => {
   return (
     <div className="w-full h-full ">
       <PageHeader />
-      <div className="grid grid-cols-2 gap-6 mt-6">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-6 mt-6">
         <PageViewChart
           isLoading={isLoading}
           pageData={pageData || []}
