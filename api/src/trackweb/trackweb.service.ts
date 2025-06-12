@@ -55,13 +55,26 @@ export class TrackwebService {
     // 查询数据和总数，包含关联的事件信息
     const [data, total] = await Promise.all([
       this.prisma.trackingData.findMany({
+        select: {
+          id: true,
+          sendTime: true,
+          appName: true,
+          userName: true,
+          userUuid: true,
+          vendor: true,
+          platform: true,
+          ip: true,
+          eventInfo: {
+            select: {
+              eventType: true,
+              eventId: true,
+            },
+          },
+        },
         where,
         skip,
         take: limit,
         orderBy: { sendTime: 'desc' },
-        include: {
-          eventInfo: true, // 包含关联的事件信息
-        },
       }),
       this.prisma.trackingData.count({ where }),
     ]);
@@ -101,7 +114,7 @@ export class TrackwebService {
     if (appName) {
       where.appName = {
         contains: appName,
-        mode: 'insensitive', // 不区分大小写
+        mode: 'insensitive',
       };
     }
 
@@ -109,7 +122,7 @@ export class TrackwebService {
     if (userName) {
       where.userName = {
         contains: userName,
-        mode: 'insensitive', // 不区分大小写
+        mode: 'insensitive',
       };
     }
 
@@ -147,8 +160,6 @@ export class TrackwebService {
    */
   private processEventInfo(data: TrackingDataWithEventInfo[]) {
     return data.map((item) => {
-      // 去除eventInfo中不需要的字段 - 不同eventType 不同eventId 需要不同的字段
-      const eventInfo = item.eventInfo.map((event) => mapResponseFile(event));
       const eventTypeList = item.eventInfo
         .filter((event) => Boolean(event))
         .map((event: EventInfo) => ({
@@ -167,8 +178,16 @@ export class TrackwebService {
       return {
         ...item,
         eventTypeList: uniqueEventTypeList,
-        eventInfo,
       };
     });
+  }
+
+  async findEventById(id: string) {
+    const data = await this.prisma.eventInfo.findMany({
+      where: { trackingDataId: id },
+      orderBy: { sendTime: 'desc' },
+    });
+    const records = data.map((event) => mapResponseFile(event));
+    return records;
   }
 }

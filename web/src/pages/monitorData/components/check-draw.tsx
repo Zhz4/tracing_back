@@ -21,6 +21,8 @@ import {
 } from "@/types";
 import { MonitorData } from "@/api/monitor/type";
 import EventResourcePage from "./events/Event-resource";
+import { getEventById } from "@/api/monitor";
+import { useQuery } from "@tanstack/react-query";
 
 // 渲染事件组件的函数
 const renderEventComponent = (
@@ -57,6 +59,10 @@ const renderEventComponent = (
 
 const CheckDialog = () => {
   const { open, setOpen, currentRow } = useMonitorData();
+  const { data, isLoading } = useQuery({
+    queryKey: ["event", currentRow?.id],
+    queryFn: () => getEventById(currentRow?.id as string),
+  });
 
   return (
     <Drawer open={open} onOpenChange={setOpen} direction="right">
@@ -66,11 +72,20 @@ const CheckDialog = () => {
           <DrawerDescription>查看用户操作事件详情</DrawerDescription>
         </DrawerHeader>
         <div className="p-4 w-full">
-          {currentRow?.eventInfo?.map((item, index) => (
-            <div key={`${item.eventId}-${index}`}>
-              {renderEventComponent(item, currentRow)}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-8 space-y-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p className="text-sm text-muted-foreground">
+                正在加载事件数据...
+              </p>
             </div>
-          ))}
+          ) : (
+            data?.map((item, index) => (
+              <div key={`${item.eventId}-${index}`}>
+                {renderEventComponent(item, currentRow)}
+              </div>
+            ))
+          )}
         </div>
       </DrawerContent>
     </Drawer>
