@@ -50,7 +50,7 @@ const EventErrorPage = ({ event }: EventErrorProps) => {
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium shrink-0">发生时间:</span>
             <span className="text-destructive">
-              {dayjs(event.triggerTime).format("YYYY-MM-DD HH:mm:ss")}
+              {dayjs(Number(event.triggerTime)).format("YYYY-MM-DD HH:mm:ss")}
             </span>
           </div>
         </div>
