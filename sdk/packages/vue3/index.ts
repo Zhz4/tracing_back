@@ -1,8 +1,8 @@
-import { init, InitOptions } from '@web-tracing/core'
+import { init, InitOptions } from '@smooth_zhz/web-tracing-core'
 
-function install(app: any, options: InitOptions) {
-  init(options)
+const ZhzWebTracing = {
+  install: (app: any, options: InitOptions) => init(options)
 }
 
-export default { install }
-export * from '@web-tracing/core'
+export default ZhzWebTracing
+export * from '@smooth_zhz/web-tracing-core'

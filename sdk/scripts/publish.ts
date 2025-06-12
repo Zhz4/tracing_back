@@ -15,5 +15,5 @@ for (const { name } of packages) {
     stdio: 'inherit',
     cwd: path.join('packages', name, 'dist')
   })
-  consola.success(`Published @web-tracing/${name}`)
+  consola.success(`Published @zhz-web-tracing/${name}`)
 }

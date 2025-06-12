@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@web-tracing/core": "workspace:*"
+    "@smooth_zhz/web-tracing-core": "workspace:*"
   },
   "devDependencies": {
     "vite": "^4.2.0"

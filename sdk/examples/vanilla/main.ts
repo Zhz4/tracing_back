@@ -7,7 +7,7 @@ import {
   getBaseInfo,
   getFirstScreen,
   getIPs
-} from '@web-tracing/core'
+} from '@smooth_zhz/web-tracing-core'
 
 start()
 
