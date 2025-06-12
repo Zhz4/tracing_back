@@ -5,7 +5,7 @@ import {
   logError,
   parseError,
   SENDID
-} from '@web-tracing/core'
+} from '@smooth_zhz/web-tracing-core'
 
 function install(Vue: any, options: InitOptions) {
   const handler = Vue.config.errorHandler
@@ -26,8 +26,9 @@ function install(Vue: any, options: InitOptions) {
     traceError(errorInfo)
     if (handler) handler.apply(null, [err, vm, info])
   }
+
   init(options)
 }
 
 export default { install }
-export * from '@web-tracing/core'
+export * from '@smooth_zhz/web-tracing-core'

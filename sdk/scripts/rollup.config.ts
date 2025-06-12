@@ -13,7 +13,7 @@ const esbuildPlugin = esbuild({ target: 'esnext' })
 const dtsPlugin = [dts()]
 
 const externals = []
-// const externals = ['@web-tracing/core']
+// const externals = ['@smooth_zhz/web-tracing-core']
 
 const esbuildMinifer = (options: ESBuildOptions) => {
   const { renderChunk } = esbuild(options)
@@ -34,7 +34,7 @@ for (const {
   if (build === false) continue
 
   const iifeGlobals = {
-    '@web-tracing/core': 'WebTracing',
+    '@smooth_zhz/web-tracing-core': 'WebTracing',
     ...(globals || {})
   }
   const iifeName = 'WebTracing'

@@ -12,7 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@web-tracing/vue3": "workspace:*",
+    "@smooth_zhz/web-tracing-vue3": "workspace:*",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
     "co-body": "^6.1.0",
