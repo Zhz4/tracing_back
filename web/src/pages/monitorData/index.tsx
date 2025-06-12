@@ -9,6 +9,7 @@ import {
 } from "@/api/monitor";
 import { useState } from "react";
 import { type PaginationState } from "@tanstack/react-table";
+import { keepPreviousData } from "@tanstack/react-query";
 import Search from "./components/search";
 import MonitorDataProvider from "./context/monitor-data-context";
 import CheckDraw from "./components/check-draw";
@@ -20,7 +21,6 @@ const MonitorData = () => {
   });
   const [searchParams, setSearchParams] = useState<SearchParamsType>({
     userName: "",
-    eventTypeList: ["code-error", "console.error-error", "server-error"],
   });
   const { data, isFetching, isLoading } = useQuery<MonitorDataResponse>({
     queryKey: ["monitorData", pagination, searchParams],
@@ -30,6 +30,7 @@ const MonitorData = () => {
         pagination.pageSize,
         searchParams
       ),
+    placeholderData: keepPreviousData,
   });
 
   const handleSearch = (searchParams: SearchParamsType) => {

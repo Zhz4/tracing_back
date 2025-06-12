@@ -9,44 +9,50 @@ import { useSearchParams } from "react-router-dom";
 import { unzip } from "@/utils/record";
 import rrwebPlayer from "rrweb-player";
 import "rrweb-player/dist/style.css";
-import { useQueryClient } from "@tanstack/react-query";
-import { MonitorDataResponse } from "@/api/monitor";
+import { useQuery } from "@tanstack/react-query";
+import { getRecordscreenDataByEventId } from "@/api/monitor";
+
+// 加载动画组件
+const LoadingSpinner: React.FC = () => (
+  <div className="flex flex-col items-center justify-center space-y-4">
+    <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+    <p className="text-muted-foreground text-lg">正在加载录屏数据...</p>
+  </div>
+);
+
+// 播放器加载组件
+const PlayerLoading: React.FC = () => (
+  <div className="flex flex-col items-center justify-center space-y-4">
+    <div className="animate-pulse flex space-x-1">
+      <div className="w-3 h-3 bg-primary rounded-full animate-bounce"></div>
+      <div
+        className="w-3 h-3 bg-primary rounded-full animate-bounce"
+        style={{ animationDelay: "0.1s" }}
+      ></div>
+      <div
+        className="w-3 h-3 bg-primary rounded-full animate-bounce"
+        style={{ animationDelay: "0.2s" }}
+      ></div>
+    </div>
+    <p className="text-muted-foreground">正在初始化录屏回放...</p>
+  </div>
+);
 
 const RecordscreenPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const playerRef = useRef<rrwebPlayer | null>(null);
-  const queryClient = useQueryClient();
   const rowId = searchParams.get("rowId");
   const [isPlayerInitialized, setIsPlayerInitialized] = useState(false);
   const [isPageVisible, setIsPageVisible] = useState(!document.hidden);
 
-  // 从 React Query 缓存中获取录屏数据
-  const getRecordscreenDataFromCache = useCallback(() => {
-    if (!rowId) return null;
-    const cacheData = queryClient.getQueriesData({
-      queryKey: ["monitorData"],
-      exact: false,
-    });
-    // 遍历缓存查找对应的数据
-    for (const [, data] of cacheData) {
-      const monitorData = data as MonitorDataResponse;
-      if (monitorData?.records) {
-        const targetRow = monitorData.records.find((row) => row.id === rowId);
-        if (targetRow?.eventInfo) {
-          // 找到第一个有录屏数据的事件
-          const targetEvent = targetRow.eventInfo.find(
-            (event) => event.recordscreen
-          );
-          if (targetEvent?.recordscreen) {
-            return targetEvent.recordscreen;
-          }
-        }
-      }
-    }
-    return null; // 如果缓存中没找到，返回 null
-  }, [rowId, queryClient]);
-
-  const recordscreenData = getRecordscreenDataFromCache();
+  const {
+    data: recordscreenData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["recordscreenData", rowId],
+    queryFn: () => getRecordscreenDataByEventId(rowId as string),
+  });
 
   // 清理播放器的函数
   const cleanupPlayer = useCallback(() => {
@@ -84,7 +90,7 @@ const RecordscreenPage: React.FC = () => {
         const target = document.getElementById("recordscreen-player");
         if (target && !playerRef.current) {
           // 解压录屏数据
-          const unzippedData = unzip(recordscreenData);
+          const unzippedData = unzip(recordscreenData.recordscreen);
           // 创建新的播放器实例
           const player = new rrwebPlayer({
             target: target,
@@ -168,22 +174,63 @@ const RecordscreenPage: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="flex items-center gap-4 mb-6">
-        <h1 className="text-2xl font-bold">错误录屏回放</h1>
+        <h1 className="text-2xl font-bold text-foreground">错误录屏回放</h1>
       </div>
-      {recordscreenData ? (
-        <div
-          id="recordscreen-player"
-          className={
-            isPlayerInitialized
-              ? ""
-              : "min-h-[400px] flex items-center justify-center text-gray-500"
-          }
-        >
-          {!isPlayerInitialized && <div>正在加载录屏回放...</div>}
+
+      {/* 数据加载状态 */}
+      {isLoading && (
+        <div className="min-h-[400px] flex items-center justify-center bg-card rounded-lg border">
+          <LoadingSpinner />
         </div>
-      ) : (
-        <div className="text-center text-gray-500 py-20">
-          <p>没有找到录屏数据</p>
+      )}
+
+      {/* 错误状态 */}
+      {error && (
+        <div className="text-center text-destructive py-20 bg-card rounded-lg border">
+          <div className="space-y-2">
+            <p className="text-lg font-medium">加载录屏数据失败</p>
+            <p className="text-muted-foreground">请稍后重试</p>
+          </div>
+        </div>
+      )}
+
+      {/* 有数据但无录屏内容 */}
+      {!isLoading &&
+        !error &&
+        recordscreenData &&
+        !recordscreenData.recordscreen && (
+          <div className="text-center text-muted-foreground py-20 bg-card rounded-lg border">
+            <div className="space-y-2">
+              <p className="text-lg">没有找到录屏数据</p>
+              <p className="text-sm">此事件可能没有录屏信息</p>
+            </div>
+          </div>
+        )}
+
+      {/* 录屏播放器 */}
+      {!isLoading &&
+        !error &&
+        recordscreenData &&
+        recordscreenData.recordscreen && (
+          <div
+            id="recordscreen-player"
+            className={
+              isPlayerInitialized
+                ? "min-h-[400px] bg-card border rounded-lg shadow-sm"
+                : "min-h-[400px] flex items-center justify-center bg-card border rounded-lg shadow-sm"
+            }
+          >
+            {!isPlayerInitialized && <PlayerLoading />}
+          </div>
+        )}
+
+      {/* 没有rowId参数 */}
+      {!rowId && (
+        <div className="text-center text-muted-foreground py-20 bg-card rounded-lg border">
+          <div className="space-y-2">
+            <p className="text-lg">缺少必要的参数</p>
+            <p className="text-sm">请提供有效的rowId参数</p>
+          </div>
         </div>
       )}
     </div>

@@ -19,26 +19,22 @@ import {
   EventRequest,
   EventResource,
 } from "@/types";
-import { MonitorData } from "@/api/monitor/type";
 import EventResourcePage from "./events/Event-resource";
 import { getEventById } from "@/api/monitor";
 import { useQuery } from "@tanstack/react-query";
 
 // 渲染事件组件的函数
 const renderEventComponent = (
-  item: EventClick | EventError | EventRoute | EventRequest | EventResource,
-  currentRow: MonitorData | null
+  item: EventClick | EventError | EventRoute | EventRequest | EventResource
 ) => {
   const eventName = getEventName(item.eventType, item.eventId);
-  // 添加空值检查
-  if (!currentRow) return null;
   switch (eventName) {
     case EventStatusEnum.点击事件:
       return <EventClickPage event={item as EventClick} />;
 
     case EventStatusEnum.代码错误:
     case EventStatusEnum.控制台错误:
-      return <EventErrorPage event={item as EventError} id={currentRow.id} />;
+      return <EventErrorPage event={item as EventError} />;
 
     case EventStatusEnum.页面跳转:
     case EventStatusEnum.页面停留:
@@ -46,9 +42,7 @@ const renderEventComponent = (
 
     case EventStatusEnum.请求事件:
     case EventStatusEnum.请求失败:
-      return (
-        <EventRequestPage event={item as EventRequest} id={currentRow.id} />
-      );
+      return <EventRequestPage event={item as EventRequest} />;
     case EventStatusEnum.资源加载:
     case EventStatusEnum.资源首次加载:
       return <EventResourcePage event={item as EventResource} />;
@@ -62,6 +56,7 @@ const CheckDialog = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["event", currentRow?.id],
     queryFn: () => getEventById(currentRow?.id as string),
+    enabled: open && !!currentRow?.id,
   });
 
   return (
@@ -82,7 +77,7 @@ const CheckDialog = () => {
           ) : (
             data?.map((item, index) => (
               <div key={`${item.eventId}-${index}`}>
-                {renderEventComponent(item, currentRow)}
+                {renderEventComponent(item)}
               </div>
             ))
           )}

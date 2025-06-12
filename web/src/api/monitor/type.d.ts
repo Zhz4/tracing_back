@@ -52,3 +52,8 @@ export type MonitorData = {
 };
 
 export type EventInfo = EventClick | EventError | EventRoute | EventRequest;
+
+export interface RecordscreenData {
+  id: string;
+  recordscreen: string;
+}

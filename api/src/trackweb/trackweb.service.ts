@@ -187,7 +187,24 @@ export class TrackwebService {
       where: { trackingDataId: id },
       orderBy: { sendTime: 'desc' },
     });
-    const records = data.map((event) => mapResponseFile(event));
+    const records = data.map((event) => {
+      const record = mapResponseFile(event);
+      return {
+        ...record,
+        id: event.id,
+      };
+    });
     return records;
+  }
+
+  async findEventByEventId(id: string) {
+    const data = await this.prisma.eventInfo.findUnique({
+      select: {
+        id: true,
+        recordscreen: true,
+      },
+      where: { id },
+    });
+    return data;
   }
 }

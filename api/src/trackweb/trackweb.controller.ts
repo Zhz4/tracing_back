@@ -42,4 +42,13 @@ export class TrackwebController {
   findEventById(@Param('id') id: string) {
     return this.trackwebService.findEventById(id);
   }
+
+  @ApiBearerAuth('auth')
+  @ApiOperation({ summary: '根据事件Id查询录屏数据' })
+  @ApiResponse({ status: 200, description: '成功返回录屏数据' })
+  @Get('event/:id/screen')
+  @Public()
+  findEventByEventId(@Param('id') id: string) {
+    return this.trackwebService.findEventByEventId(id);
+  }
 }
