@@ -4,6 +4,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import EventTypeFilter from "./events/event-type-filter";
+import { Loader2, SearchIcon } from "lucide-react";
 
 interface SearchProps {
   handleSearch: (searchParams: SearchParamsType) => void;
@@ -40,6 +41,11 @@ const Search = ({ handleSearch, isFetching, searchParams }: SearchProps) => {
             )}
           />
           <Button type="submit" disabled={isFetching}>
+            {isFetching ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <SearchIcon className="mr-2 h-4 w-4" />
+            )}
             查询
           </Button>
         </form>

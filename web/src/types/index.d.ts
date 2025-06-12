@@ -43,6 +43,7 @@ export interface EventClick extends EventBase {
 
 // 错误事件
 export interface EventError extends EventBase {
+  id: string;
   // 错误信息
   errMessage: string;
   // 错误的完整信息
@@ -81,6 +82,7 @@ export interface EventRoute extends EventBase {
 
 // 请求事件
 export interface EventRequest extends EventBase {
+  id: string;
   // 请求URL
   requestUrl: string;
   // 请求方法

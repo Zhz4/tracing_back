@@ -19,10 +19,9 @@ import { useMonitorData } from "../../context/monitor-data-context";
 
 interface EventRequestProps {
   event: EventRequest;
-  id: string;
 }
 
-const EventRequestPage = ({ event, id }: EventRequestProps) => {
+const EventRequestPage = ({ event }: EventRequestProps) => {
   const { setOpen } = useMonitorData();
 
   const navigate = useNavigate();
@@ -201,7 +200,7 @@ const EventRequestPage = ({ event, id }: EventRequestProps) => {
               size="sm"
               onClick={() => {
                 setOpen(false);
-                handleViewRecordscreen(id);
+                handleViewRecordscreen(event.id);
               }}
               className="flex items-center gap-2 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700"
             >

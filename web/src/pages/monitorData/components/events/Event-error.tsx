@@ -17,10 +17,9 @@ import { useMonitorData } from "../../context/monitor-data-context";
 
 interface EventErrorProps {
   event: EventError;
-  id: string;
 }
 
-const EventErrorPage = ({ event, id }: EventErrorProps) => {
+const EventErrorPage = ({ event }: EventErrorProps) => {
   const navigate = useNavigate();
   const { setOpen } = useMonitorData();
 
@@ -51,7 +50,7 @@ const EventErrorPage = ({ event, id }: EventErrorProps) => {
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium shrink-0">发生时间:</span>
             <span className="text-destructive">
-              {dayjs(event.triggerTime).format("YYYY-MM-DD HH:mm:ss")}
+              {dayjs(Number(event.triggerTime)).format("YYYY-MM-DD HH:mm:ss")}
             </span>
           </div>
         </div>
@@ -133,7 +132,7 @@ const EventErrorPage = ({ event, id }: EventErrorProps) => {
               size="sm"
               onClick={() => {
                 setOpen(false);
-                handleViewRecordscreen(id);
+                handleViewRecordscreen(event.id);
               }}
               className="flex items-center gap-2 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700"
             >

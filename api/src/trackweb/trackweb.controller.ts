@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { TrackwebService } from './trackweb.service';
 import { PageQueryDto } from './dto/page-query.dto';
 import {
@@ -32,5 +32,23 @@ export class TrackwebController {
   @Post('page')
   findAll(@Body() body: PageQueryDto) {
     return this.trackwebService.findAll(body);
+  }
+
+  @ApiBearerAuth('auth')
+  @ApiOperation({ summary: '根据id查询埋点数据' })
+  @ApiResponse({ status: 200, description: '成功返回埋点数据' })
+  @Get('event/:id')
+  @Public()
+  findEventById(@Param('id') id: string) {
+    return this.trackwebService.findEventById(id);
+  }
+
+  @ApiBearerAuth('auth')
+  @ApiOperation({ summary: '根据事件Id查询录屏数据' })
+  @ApiResponse({ status: 200, description: '成功返回录屏数据' })
+  @Get('event/:id/screen')
+  @Public()
+  findEventByEventId(@Param('id') id: string) {
+    return this.trackwebService.findEventByEventId(id);
   }
 }

@@ -48,5 +48,12 @@ export type MonitorData = {
   // 扩展字段 (可选)
   ext?: Record<string, unknown> | null;
   // 事件信息 (可选)
-  eventInfo?: (EventClick | EventError | EventRoute | EventRequest)[];
+  eventInfo?: EventInfo[];
 };
+
+export type EventInfo = EventClick | EventError | EventRoute | EventRequest;
+
+export interface RecordscreenData {
+  id: string;
+  recordscreen: string;
+}

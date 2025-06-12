@@ -1,6 +1,6 @@
 import service from "@/utils/axios/service";
 import { TableData } from "@/types";
-import { MonitorData } from "./type";
+import { EventInfo, MonitorData, RecordscreenData } from "./type";
 /**
  * 获取埋点数据
  * @returns
@@ -23,6 +23,28 @@ export const getMonitorData = async (
       limit,
       ...searchParams,
     },
+  });
+  return result.data;
+};
+
+/**
+ * 根据埋点Id 获取事件
+ */
+export const getEventById = async (id: string) => {
+  const result = await service.request<EventInfo[]>({
+    url: `/trackweb/event/${id}`,
+    method: "get",
+  });
+  return result.data;
+};
+
+/**
+ * 根据事件Id查询录屏数据
+ */
+export const getRecordscreenDataByEventId = async (id: string) => {
+  const result = await service.request<RecordscreenData>({
+    url: `/trackweb/event/${id}/screen`,
+    method: "get",
   });
   return result.data;
 };
