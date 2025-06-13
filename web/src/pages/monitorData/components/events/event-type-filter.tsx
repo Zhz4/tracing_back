@@ -1,4 +1,4 @@
-import { EventNames } from "@/constants";
+import { EventNames, EventStatusEnum } from "@/constants";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, Filter, Check, X } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface EventTypeFilterProps {
   selectedEventTypes: string[];
@@ -26,10 +27,21 @@ const EventTypeFilter = ({
     useState<string[]>(selectedEventTypes);
   const [isOpen, setIsOpen] = useState(false);
 
-  const eventTypeOptions = Object.entries(EventNames).map(([key, label]) => ({
-    value: key,
-    label: label,
-  }));
+  const eventTypeOptions = Object.entries(EventNames).map(([key, label]) => {
+    const result = {
+      value: key,
+      label: label,
+      color: "text-primary",
+    };
+    if (
+      label === EventStatusEnum.请求失败 ||
+      label === EventStatusEnum.代码错误 ||
+      label === EventStatusEnum.控制台错误
+    ) {
+      result.color = "text-destructive data-[highlighted]:text-destructive";
+    }
+    return result;
+  });
 
   // 处理临时选择的事件类型切换
   const handleTempEventTypeToggle = (eventType: string) => {
@@ -47,6 +59,22 @@ const EventTypeFilter = ({
   // 处理清空
   const handleClearAll = () => {
     setTempSelectedTypes([]);
+  };
+
+  // 一键选择错误类型
+  const handleSelectAllError = () => {
+    
+    setTempSelectedTypes(
+      eventTypeOptions
+        .filter((option) =>
+          [
+            EventStatusEnum.代码错误,
+            EventStatusEnum.控制台错误,
+            EventStatusEnum.请求失败,
+          ].includes(option.label)
+        )
+        .map((option) => option.value)
+    );
   };
 
   // 确定按钮：应用筛选并关闭下拉菜单
@@ -108,9 +136,20 @@ const EventTypeFilter = ({
             清空
           </Button>
         </div>
+        <div className="flex gap-2 p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1"
+            onClick={handleSelectAllError}
+          >
+            一键选择错误类型
+          </Button>
+        </div>
         <DropdownMenuSeparator />
         {eventTypeOptions.map((option) => (
           <DropdownMenuCheckboxItem
+            className={cn(option.color)}
             key={option.value}
             checked={tempSelectedTypes.includes(option.value)}
             onCheckedChange={() => handleTempEventTypeToggle(option.value)}

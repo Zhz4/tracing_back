@@ -29,18 +29,18 @@ export enum EventStatusEnum {
 }
 
 export const EventNames = {
-  [`${EventIdEnum.CODE}-${EventTypeEnum.CLICK}`]: EventStatusEnum.点击事件,
   [`${EventIdEnum.CODE}-${EventTypeEnum.ERROR}`]: EventStatusEnum.代码错误,
   [`${EventIdEnum.CONSOLEERROR}-${EventTypeEnum.ERROR}`]:
     EventStatusEnum.控制台错误,
+  [`${EventIdEnum.SERVER}-${EventTypeEnum.ERROR}`]: EventStatusEnum.请求失败,
+  [`${EventIdEnum.CODE}-${EventTypeEnum.CLICK}`]: EventStatusEnum.点击事件,
+  [`${EventIdEnum.SERVER}-${EventTypeEnum.PERFORMANCE}`]:
+    EventStatusEnum.请求事件,
   [`${EventIdEnum.PAGE_ID}-${EventTypeEnum.PV}`]: EventStatusEnum.页面跳转,
   [`${EventIdEnum.PAGE_ID}-${EventTypeEnum["PV-DURATION"]}`]:
     EventStatusEnum.页面停留,
   [`${EventIdEnum.PAGE}-${EventTypeEnum.PERFORMANCE}`]:
     EventStatusEnum.资源首次加载,
-  [`${EventIdEnum.SERVER}-${EventTypeEnum.PERFORMANCE}`]:
-    EventStatusEnum.请求事件,
-  [`${EventIdEnum.SERVER}-${EventTypeEnum.ERROR}`]: EventStatusEnum.请求失败,
   [`${EventIdEnum.RESOURCE}-${EventTypeEnum.PERFORMANCE}`]:
     EventStatusEnum.资源加载,
 } as const satisfies Partial<
