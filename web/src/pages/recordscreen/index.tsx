@@ -55,29 +55,29 @@ const RecordscreenPage: React.FC = () => {
   });
 
   // 清理播放器的函数
-  const cleanupPlayer = useCallback(() => {
-    if (playerRef.current) {
-      try {
-        // 获取播放器的 replayer 实例
-        const replayer = playerRef.current.getReplayer?.();
-        if (replayer) {
-          // 停止播放
-          replayer.pause();
-        }
-        // 清空引用
-        playerRef.current = null;
-      } catch (error) {
-        console.warn("清理播放器时出错:", error);
-        playerRef.current = null;
-      }
-    }
-    // 清理 DOM
-    const target = document.getElementById("recordscreen-player");
-    if (target) {
-      target.innerHTML = "";
-    }
-    setIsPlayerInitialized(false);
-  }, []);
+  // const cleanupPlayer = useCallback(() => {
+  //   if (playerRef.current) {
+  //     try {
+  //       // 获取播放器的 replayer 实例
+  //       const replayer = playerRef.current.getReplayer?.();
+  //       if (replayer) {
+  //         // 停止播放
+  //         replayer.pause();
+  //       }
+  //       // 清空引用
+  //       playerRef.current = null;
+  //     } catch (error) {
+  //       console.warn("清理播放器时出错:", error);
+  //       playerRef.current = null;
+  //     }
+  //   }
+  //   // 清理 DOM
+  //   const target = document.getElementById("recordscreen-player");
+  //   if (target) {
+  //     target.innerHTML = "";
+  //   }
+  //   setIsPlayerInitialized(false);
+  // }, []);
 
   // 初始化播放器的函数
   const initializePlayer = useCallback(() => {
@@ -157,19 +157,19 @@ const RecordscreenPage: React.FC = () => {
   }, [recordscreenData, isPlayerInitialized, initializePlayer]);
 
   // 组件卸载时的清理（仅在真正卸载时执行）
-  useEffect(() => {
-    return () => {
-      // 添加延迟清理，避免 KeepAlive 切换时误清理
-      const cleanup = () => {
-        if (!document.getElementById("recordscreen-player")) {
-          // 只有当 DOM 不存在时才真正清理（说明组件被卸载了）
-          cleanupPlayer();
-        }
-      };
-      cleanup();
-      // setTimeout(cleanup, 100);
-    };
-  }, [cleanupPlayer]);
+  // useEffect(() => {
+  //   return () => {
+  //     // 添加延迟清理，避免 KeepAlive 切换时误清理
+  //     const cleanup = () => {
+  //       if (!document.getElementById("recordscreen-player")) {
+  //         // 只有当 DOM 不存在时才真正清理（说明组件被卸载了）
+  //         cleanupPlayer();
+  //       }
+  //     };
+  //     cleanup();
+  //     // setTimeout(cleanup, 100);
+  //   };
+  // }, [cleanupPlayer]);
 
   return (
     <div className="container mx-auto p-6">

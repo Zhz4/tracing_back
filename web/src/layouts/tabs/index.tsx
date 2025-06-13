@@ -18,10 +18,11 @@ const searchRoutesName = (routePath: string) => {
 const Tabs = () => {
   const { getCacheNodes, destroy } = useKeepAliveContext();
   const navigate = useNavigate();
-  const keepAliveInclude = getKeepAliveInclude(routes) as string[];
+  const keepAliveInclude = getKeepAliveInclude(routes) as RegExp[];
   const nodes = getCacheNodes().filter((node) =>
-    keepAliveInclude.includes(node.cacheKey.split("?")[0])
+    keepAliveInclude.some(regex => regex.test(node.cacheKey))
   );
+  console.log(nodes);
   const active = useLocation().pathname + useLocation().search;
 
   const handleDestroy = (cacheKey: string) => {
