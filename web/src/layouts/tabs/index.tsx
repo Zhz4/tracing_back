@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { INIT_TABS_ROUTE_PATH, MAX_TABS_COUNT } from "@/constants";
 import { toast } from "sonner";
-import { getKeepAliveInclude } from "./tab-utils";
+import { useCounterStore } from "@/stores/tab";
 
 const searchRoutesName = (routePath: string) => {
   const routesPx = treeToPx(routes);
@@ -16,13 +16,14 @@ const searchRoutesName = (routePath: string) => {
 };
 
 const Tabs = () => {
-  const { getCacheNodes, destroy } = useKeepAliveContext();
+  const { destroy } = useKeepAliveContext();
   const navigate = useNavigate();
-  const keepAliveInclude = getKeepAliveInclude(routes) as RegExp[];
-  const nodes = getCacheNodes().filter((node) =>
-    keepAliveInclude.some(regex => regex.test(node.cacheKey))
-  );
-  console.log(nodes);
+  const { tabList, removeTab } = useCounterStore();
+  const nodes = tabList
+    .map((tab) => ({
+      cacheKey: tab.path,
+      name: tab.name,
+    }));
   const active = useLocation().pathname + useLocation().search;
 
   const handleDestroy = (cacheKey: string) => {
@@ -32,6 +33,7 @@ const Tabs = () => {
       );
       if (nodes.length === 1) {
         if (cacheKey === INIT_TABS_ROUTE_PATH) {
+          removeTab({ path: cacheKey, name: searchRoutesName(cacheKey) });
           destroy(cacheKey);
           return;
         } else {
@@ -56,6 +58,7 @@ const Tabs = () => {
     }
 
     setTimeout(() => {
+      removeTab({ path: cacheKey, name: searchRoutesName(cacheKey) });
       destroy(cacheKey);
     }, 0);
   };
