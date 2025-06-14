@@ -9,8 +9,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
-    expose:
-      - "5432"
+    ports:
+      - "5432:5432"
     networks:
       - app-network
   # NestJS API
