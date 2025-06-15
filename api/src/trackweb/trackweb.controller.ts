@@ -9,21 +9,31 @@ import {
 } from '@nestjs/swagger';
 import { CreateDto } from './dto/create.dto';
 import { Public } from '../auth/decorators/public.decorator';
+import { KafkaService } from '@/common/kafka/kafka.service';
 
 @ApiTags('埋点数据')
 @Controller('trackweb')
 export class TrackwebController {
-  constructor(private readonly trackwebService: TrackwebService) {}
+  constructor(
+    private readonly trackwebService: TrackwebService,
+    private readonly kafkaService: KafkaService,
+  ) {}
 
   @Public()
   @ApiOperation({ summary: '创建埋点数据' })
   @ApiResponse({ status: 200, description: '成功返回埋点数据' })
   @Post()
-  create(@Body() createTrackwebDto: CreateDto) {
+  async create(@Body() createTrackwebDto: CreateDto) {
     if (typeof createTrackwebDto === 'string') {
       createTrackwebDto = JSON.parse(createTrackwebDto) as CreateDto;
     }
-    return this.trackwebService.create(createTrackwebDto);
+    await this.kafkaService.sendMessage(
+      'create-trackweb',
+      JSON.stringify(createTrackwebDto),
+    );
+    return {
+      message: '埋点数据已发送至 Kafka',
+    };
   }
 
   @ApiBearerAuth('auth')

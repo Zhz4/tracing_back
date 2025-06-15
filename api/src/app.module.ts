@@ -6,5 +6,6 @@ import { AnalyzeModule } from './analyze/analyze.module';
 
 @Module({
   imports: [PrismaModule, TrackwebModule, AuthModule, AnalyzeModule],
+  providers: [],
 })
 export class AppModule {}

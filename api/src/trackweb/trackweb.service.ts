@@ -5,6 +5,7 @@ import { Prisma, TrackingData, EventInfo } from '@prisma/client';
 import { CreateDto } from './dto/create.dto';
 import { mapCreateDtoToPrisma } from './mapper/trackweb.mapper';
 import { mapResponseFile } from './mapper/fieldFormat.mapper';
+import { MessagePattern } from '@nestjs/microservices';
 
 type TrackingDataWithEventInfo = TrackingData & {
   eventInfo: EventInfo[];
@@ -14,7 +15,9 @@ type TrackingDataWithEventInfo = TrackingData & {
 export class TrackwebService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createTrackwebDto: CreateDto) {
+  @MessagePattern('create-trackweb')
+  async create(message: any) {
+    const createTrackwebDto = JSON.parse(message.value) as CreateDto;
     const { trackingData, eventInfoList } =
       mapCreateDtoToPrisma(createTrackwebDto);
 

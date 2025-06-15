@@ -6,6 +6,7 @@ import { TransformInterceptor } from '@/common/interceptors/transform.intercepto
 import { AllExceptionsFilter } from '@/common/filters/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -55,6 +56,30 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  // 启用 Kafka
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: process.env.KAFKA_CLIENT_ID || 'track-web',
+        brokers: (process.env.KAFKA_BROKERS || 'kafka:9092').split(','),
+        connectionTimeout: 10000,
+        requestTimeout: 30000,
+        retry: {
+          initialRetryTime: 100,
+          retries: 8,
+        },
+      },
+      consumer: {
+        groupId: process.env.KAFKA_GROUP_ID || 'nest-group',
+        sessionTimeout: 30000,
+        heartbeatInterval: 3000,
+      },
+    },
+  });
+
+  await app.startAllMicroservices();
+
+  await app.listen(process.env.SERVER_PORT ?? 3000);
 }
 void bootstrap();
