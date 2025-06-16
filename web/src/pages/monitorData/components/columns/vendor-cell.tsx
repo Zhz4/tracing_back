@@ -1,5 +1,6 @@
 import { Globe } from "lucide-react";
 import chromeIcon from "@/assets/icons/chrome.svg";
+import safariIcon from "@/assets/icons/safari.svg";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -19,8 +20,8 @@ const BrowserVendor = {
     name: "Edge",
     color: "text-chart-2",
   },
-  "Apple Inc.": {
-    icon: chromeIcon,
+  "Apple Computer, Inc.": {
+    icon: safariIcon,
     name: "Safari",
     color: "text-muted-foreground",
   },
@@ -44,7 +45,11 @@ const findBrowserVendorIcon = (vendor: keyof typeof BrowserVendor) => {
             browserInfo.color
           )}
         >
-          <img src={browserInfo.icon} alt={vendor} className="w-4 h-4" />
+          {typeof browserInfo.icon === "string" ? (
+            <img src={browserInfo.icon} alt={vendor} className="w-4 h-4" />
+          ) : (
+            browserInfo.icon
+          )}
           <span className="text-xs font-medium">{browserInfo.name}</span>
         </div>
       </TooltipTrigger>
