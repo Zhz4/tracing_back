@@ -36,6 +36,10 @@ export const EventNames = {
     'elementPath',
     'x',
     'y',
+    'errMessage',
+    'errStack',
+    'line',
+    'col',
   ],
   // 控制台错误
   [`${EventIdEnum.CONSOLEERROR}-${EventTypeEnum.ERROR}`]: [
