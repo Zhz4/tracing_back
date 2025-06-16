@@ -23,13 +23,19 @@ export class TrackwebService {
       async (prisma) => {
         // 创建TrackingData记录
         const createdTrackingData = await prisma.trackingData.create({
-          data: trackingData,
+          data: {
+            ...trackingData,
+            // 重写sendTime，避免用户时间不准确
+            sendTime: new Date().getTime(),
+          },
         });
         // 如果有事件信息，则创建关联的EventInfo记录
         if (eventInfoList.length > 0) {
           const eventInfoWithTrackingId = eventInfoList.map((event) => ({
             ...event,
             trackingDataId: createdTrackingData.id,
+            // 重写sendTime，避免用户时间不准确
+            sendTime: new Date().getTime(),
           }));
           await prisma.eventInfo.createMany({
             data: eventInfoWithTrackingId,
