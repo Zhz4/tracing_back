@@ -22,8 +22,9 @@ const MonitorData = () => {
   const [searchParams, setSearchParams] = useState<SearchParamsType>({
     userName: "",
   });
+  const [queryKeyToken, setQueryKeyToken] = useState(0);
   const { data, isFetching, isLoading } = useQuery<MonitorDataResponse>({
-    queryKey: ["monitorData", pagination, searchParams],
+    queryKey: ["monitorData", pagination, searchParams, queryKeyToken],
     queryFn: () =>
       getMonitorData(
         pagination.pageIndex + 1,
@@ -33,12 +34,12 @@ const MonitorData = () => {
     placeholderData: keepPreviousData,
   });
 
-  const handleSearch = (searchParams: SearchParamsType) => {
-    setSearchParams(searchParams);
+  const handleSearch = () => {
     setPagination({
       pageIndex: 0,
       pageSize: 10,
     });
+    setQueryKeyToken((prev) => prev + 1);
   };
 
   return (
@@ -50,6 +51,7 @@ const MonitorData = () => {
         </div>
         <div className="flex items-center gap-2">
           <Search
+            setSearchParams={setSearchParams}
             handleSearch={handleSearch}
             isFetching={isFetching}
             searchParams={searchParams}

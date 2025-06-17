@@ -7,12 +7,18 @@ import EventTypeFilter from "./events/event-type-filter";
 import { Loader2, SearchIcon } from "lucide-react";
 
 interface SearchProps {
+  setSearchParams: (searchParams: SearchParamsType) => void;
   handleSearch: (searchParams: SearchParamsType) => void;
   searchParams: SearchParamsType;
   isFetching: boolean;
 }
 
-const Search = ({ handleSearch, isFetching, searchParams }: SearchProps) => {
+const Search = ({
+  handleSearch,
+  isFetching,
+  searchParams,
+  setSearchParams,
+}: SearchProps) => {
   const form = useForm<SearchParamsType>({
     defaultValues: searchParams,
   });
@@ -22,7 +28,7 @@ const Search = ({ handleSearch, isFetching, searchParams }: SearchProps) => {
       ...form.getValues(),
       eventTypeList: eventTypes.length > 0 ? eventTypes : undefined,
     };
-    handleSearch(newSearchParams);
+    setSearchParams(newSearchParams);
   };
 
   return (
@@ -40,7 +46,7 @@ const Search = ({ handleSearch, isFetching, searchParams }: SearchProps) => {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={isFetching}>
+          <Button className="cursor-pointer" type="submit" disabled={isFetching}>
             {isFetching ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
