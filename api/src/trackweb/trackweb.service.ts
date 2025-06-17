@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PageQueryDto } from './dto/page-query.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { Prisma, TrackingData, EventInfo } from '@prisma/client';
@@ -205,12 +205,12 @@ export class TrackwebService {
 
   async findEventByEventId(id: string) {
     const data = await this.prisma.eventInfo.findUnique({
-      select: {
-        id: true,
-        recordscreen: true,
-      },
       where: { id },
     });
-    return data;
+    console.log(data);
+    if (!data) {
+      throw new NotFoundException('未找到该事件');
+    }
+    return mapResponseFile(data);
   }
 }
