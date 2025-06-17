@@ -72,7 +72,7 @@ const EventErrorPage = ({ event }: EventErrorProps) => {
         </div>
 
         <div className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 p-3 rounded-lg border">
-          <div className="flex items-center gap-2 text-sm mb-2">
+          <div className="flex items-center gap-2 text-sm mb-2 ">
             <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />
             <span className="font-medium text-red-800 dark:text-red-300">
               错误信息

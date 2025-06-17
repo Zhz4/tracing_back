@@ -11,11 +11,13 @@ import {
   Video,
   CheckCircle,
   XCircle,
+  Copy,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import EventCardHeard from "./event-card-heard";
 import { useMonitorData } from "../../context/monitor-data-context";
+import CopyText from "@/utils/util";
 
 interface EventRequestProps {
   event: EventRequest;
@@ -106,7 +108,11 @@ const EventRequestPage = ({ event }: EventRequestProps) => {
         <div className="flex items-start gap-2 text-sm">
           <Globe className="h-4 w-4 text-muted-foreground mt-0.5" />
           <span className="font-medium shrink-0">页面URL:</span>
-          <span className="text-blue-600 dark:text-blue-400 break-all">
+          <span
+            title="点击复制"
+            className="text-blue-600 dark:text-blue-400 break-all cursor-pointer"
+            onClick={() => CopyText(event.triggerPageUrl)}
+          >
             {event.triggerPageUrl}
           </span>
         </div>
@@ -122,7 +128,11 @@ const EventRequestPage = ({ event }: EventRequestProps) => {
           <div className="space-y-3">
             <div className="flex items-start gap-2 text-sm">
               <span className="font-medium shrink-0">请求URL:</span>
-              <span className="text-blue-600 dark:text-blue-400 break-all">
+              <span
+                title="点击复制"
+                className="text-blue-600 dark:text-blue-400 break-all cursor-pointer"
+                onClick={() => CopyText(event.requestUrl)}
+              >
                 {event.requestUrl}
               </span>
             </div>
@@ -180,6 +190,10 @@ const EventRequestPage = ({ event }: EventRequestProps) => {
               <span className="font-medium text-red-800 dark:text-red-300">
                 错误信息
               </span>
+              <Copy
+                className="h-4 w-4 text-muted-foreground cursor-pointer"
+                onClick={() => CopyText(event.errMessage || "无")}
+              />
             </div>
             <div className="bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700 text-sm text-foreground">
               {event.errMessage}

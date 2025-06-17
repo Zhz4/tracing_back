@@ -13,6 +13,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import EventCardHeard from "./event-card-heard";
 import { formatMilliseconds } from "@/utils/time";
+import CopyText from "@/utils/util";
 
 interface EventRouteProps {
   event: EventRoute;
@@ -116,15 +117,23 @@ const EventRoutePage = ({ event }: EventRouteProps) => {
             <div className="flex items-start gap-2 text-sm">
               <Globe className="h-4 w-4 text-muted-foreground mt-0.5" />
               <span className="font-medium shrink-0">当前页面:</span>
-              <span className="text-blue-600 dark:text-blue-400 break-all">
+              <span
+                title="点击复制"
+                className="text-blue-600 dark:text-blue-400 break-all cursor-pointer"
+                onClick={() => CopyText(event.triggerPageUrl)}
+              >
                 {event.triggerPageUrl}
               </span>
             </div>
 
-            <div className="flex items-start gap-2 text-sm">
+            <div className="flex gap-2 text-sm items-center">
               <ArrowLeft className="h-4 w-4 text-muted-foreground mt-0.5" />
               <span className="font-medium shrink-0">来源页面:</span>
-              <span className="text-blue-600 dark:text-blue-400 break-all">
+              <span
+                title="点击复制"
+                className="text-blue-600 dark:text-blue-400 break-all cursor-pointer"
+                onClick={() => CopyText(event.referer || "直接访问")}
+              >
                 {event.referer || "直接访问"}
               </span>
             </div>
