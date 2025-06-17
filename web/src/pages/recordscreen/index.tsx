@@ -50,8 +50,13 @@ const RecordscreenPage: React.FC = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["recordscreenData", rowId],
+    queryKey: ["recordscreen", rowId],
     queryFn: () => getRecordscreenDataByEventId(rowId as string),
+    enabled: !!rowId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   // 清理播放器的函数
@@ -154,7 +159,8 @@ const RecordscreenPage: React.FC = () => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [recordscreenData, isPlayerInitialized, initializePlayer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlayerInitialized, initializePlayer]);
 
   // 组件卸载时的清理（仅在真正卸载时执行）
   // useEffect(() => {
