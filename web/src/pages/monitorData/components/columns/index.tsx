@@ -12,14 +12,21 @@ import {
   Globe,
 } from "lucide-react";
 import { SendTimeCell } from "./send-time-cell";
-import { AppNameCell } from "./app-name-cell";
 import { VendorCell } from "./vendor-cell";
 import { PlatformCell } from "./platform-cell";
 import { EventTypeCell } from "./event-type-cell";
-import { IpCell } from "./ip-cell";
 
 const HEADER_CLASS_NAME =
   "flex items-center gap-2 font-semibold text-foreground";
+
+const tableHeader = (tableName: string, icon: React.ReactNode) => {
+  return (
+    <div className={HEADER_CLASS_NAME}>
+      {icon}
+      {tableName}
+    </div>
+  );
+};
 
 export const columns: ColumnDef<MonitorData>[] = [
   {
@@ -53,12 +60,7 @@ export const columns: ColumnDef<MonitorData>[] = [
   },
   {
     accessorKey: "userUuid",
-    header: () => (
-      <div className={HEADER_CLASS_NAME}>
-        <User className="w-4 h-4" />
-        用户ID
-      </div>
-    ),
+    header: () => tableHeader("用户ID", <User className="w-4 h-4" />),
     cell: ({ row }) => {
       const userUuid = row.getValue("userUuid") as string;
       return (
@@ -72,12 +74,7 @@ export const columns: ColumnDef<MonitorData>[] = [
   },
   {
     accessorKey: "userName",
-    header: () => (
-      <div className={HEADER_CLASS_NAME}>
-        <UserCheck className="w-4 h-4" />
-        用户名
-      </div>
-    ),
+    header: () => tableHeader("用户名", <UserCheck className="w-4 h-4" />),
     cell: ({ row }) => {
       const userName = row.getValue("userName") as string;
       return (
@@ -91,12 +88,7 @@ export const columns: ColumnDef<MonitorData>[] = [
   },
   {
     accessorKey: "sendTime",
-    header: () => (
-      <div className={HEADER_CLASS_NAME}>
-        <Clock className="w-4 h-4" />
-        发送时间
-      </div>
-    ),
+    header: () => tableHeader("发送时间", <Clock className="w-4 h-4" />),
     cell: ({ row }) => {
       const { sendTime } = row.original;
       return <SendTimeCell sendTime={sendTime} />;
@@ -104,25 +96,19 @@ export const columns: ColumnDef<MonitorData>[] = [
   },
   {
     accessorKey: "appName",
-    header: () => (
-      <div className={HEADER_CLASS_NAME}>
-        <Activity className="w-4 h-4" />
-        应用名称
-      </div>
-    ),
+    header: () => tableHeader("应用名称", <Activity className="w-4 h-4" />),
     cell: ({ row }) => {
       const appName = row.getValue("appName") as string;
-      return <AppNameCell appName={appName} />;
+      return (
+        <div className="px-3 py-1 rounded-full text-sm font-medium  ">
+          {appName || "未知应用"}
+        </div>
+      );
     },
   },
   {
     accessorKey: "vendor",
-    header: () => (
-      <div className={HEADER_CLASS_NAME}>
-        <Globe className="w-4 h-4" />
-        浏览器厂商
-      </div>
-    ),
+    header: () => tableHeader("浏览器厂商", <Globe className="w-4 h-4" />),
     cell: ({ row }) => {
       const { vendor } = row.original;
       return <VendorCell vendor={vendor} />;
@@ -130,12 +116,7 @@ export const columns: ColumnDef<MonitorData>[] = [
   },
   {
     accessorKey: "platform",
-    header: () => (
-      <div className={HEADER_CLASS_NAME}>
-        <Monitor className="w-4 h-4" />
-        运行平台
-      </div>
-    ),
+    header: () => tableHeader("运行平台", <Monitor className="w-4 h-4" />),
     cell: ({ row }) => {
       const platform = row.getValue("platform") as string;
       return <PlatformCell platform={platform} />;
@@ -143,27 +124,19 @@ export const columns: ColumnDef<MonitorData>[] = [
   },
   {
     accessorKey: "ip",
-    header: () => (
-      <div className={HEADER_CLASS_NAME}>
-        <MapPin className="w-4 h-4" />
-        IP地址
-      </div>
-    ),
+    header: () => tableHeader("IP地址", <MapPin className="w-4 h-4" />),
     cell: ({ row }) => {
       const ip = row.getValue("ip") as string;
-      return <IpCell ip={ip} />;
+      return (
+        <div className="font-mono text-sm bg-muted px-2 py-1 rounded border border-border text-foreground">
+          {ip || "未知IP"}
+        </div>
+      );
     },
   },
   {
     accessorKey: "eventTypeList",
-    header: () => {
-      return (
-        <div className={HEADER_CLASS_NAME}>
-          <Activity className="w-4 h-4" />
-          事件类型
-        </div>
-      );
-    },
+    header: () => tableHeader("事件类型", <Activity className="w-4 h-4" />),
     cell: ({ row }) => {
       const eventTypeList = row.original.eventTypeList;
       return <EventTypeCell eventTypeList={eventTypeList} />;
@@ -172,12 +145,7 @@ export const columns: ColumnDef<MonitorData>[] = [
   },
   {
     id: "action",
-    header: () => (
-      <div className={HEADER_CLASS_NAME}>
-        <Activity className="w-4 h-4" />
-        操作
-      </div>
-    ),
+    header: () => tableHeader("操作", <Activity className="w-4 h-4" />),
     cell: ({ row }) => (
       <div className="flex justify-center">
         <DataTableRowActions row={row} />
