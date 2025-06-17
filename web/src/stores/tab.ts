@@ -11,11 +11,14 @@ interface CounterState {
   removeTab: (tab: Tab) => void
 }
 
+// 设置不缓存的路由
+const noCacheRoutes = ['/'];
+
 export const useCounterStore = create<CounterState>((set) => ({
   tabList: [],
   addTab: (tab: Tab) => set((state) => {
     // 如果存在则不添加
-    if (state.tabList.some((t) => t.path === tab.path)) {
+    if (state.tabList.some((t) => t.path === tab.path) || noCacheRoutes.includes(tab.path)) {
       return { tabList: state.tabList };
     }
     const newTabList = [...new Set([...state.tabList, tab])];
