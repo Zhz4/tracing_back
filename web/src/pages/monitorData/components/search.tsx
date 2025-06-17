@@ -7,10 +7,10 @@ import EventTypeFilter from "./events/event-type-filter";
 import { Loader2, SearchIcon } from "lucide-react";
 
 interface SearchProps {
-  setSearchParams: (searchParams: SearchParamsType) => void;
   handleSearch: (searchParams: SearchParamsType) => void;
   searchParams: SearchParamsType;
   isFetching: boolean;
+  setSearchParams: (searchParams: SearchParamsType) => void;
 }
 
 const Search = ({
@@ -22,15 +22,6 @@ const Search = ({
   const form = useForm<SearchParamsType>({
     defaultValues: searchParams,
   });
-
-  const handleEventTypeChange = (eventTypes: string[]) => {
-    const newSearchParams = {
-      ...form.getValues(),
-      eventTypeList: eventTypes.length > 0 ? eventTypes : undefined,
-    };
-    setSearchParams(newSearchParams);
-  };
-
   return (
     <div className="flex w-full items-center gap-2">
       <Form {...form}>
@@ -46,7 +37,28 @@ const Search = ({
               </FormItem>
             )}
           />
-          <Button className="cursor-pointer" type="submit" disabled={isFetching}>
+          <FormField
+            control={form.control}
+            name="eventTypeList"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <EventTypeFilter
+                    selectedEventTypes={field.value || []}
+                    onEventTypeChange={(eventTypes) => {
+                      field.onChange(eventTypes);
+                      setSearchParams(form.getValues());
+                    }}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Button
+            className="cursor-pointer"
+            type="submit"
+            disabled={isFetching}
+          >
             {isFetching ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
@@ -56,10 +68,6 @@ const Search = ({
           </Button>
         </form>
       </Form>
-      <EventTypeFilter
-        selectedEventTypes={searchParams.eventTypeList || []}
-        onEventTypeChange={handleEventTypeChange}
-      />
     </div>
   );
 };

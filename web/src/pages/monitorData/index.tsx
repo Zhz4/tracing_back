@@ -34,7 +34,8 @@ const MonitorData = () => {
     placeholderData: keepPreviousData,
   });
 
-  const handleSearch = () => {
+  const handleSearch = (searchParams: SearchParamsType) => {
+    setSearchParams(searchParams);
     setPagination({
       pageIndex: 0,
       pageSize: 10,
@@ -51,10 +52,10 @@ const MonitorData = () => {
         </div>
         <div className="flex items-center gap-2">
           <Search
-            setSearchParams={setSearchParams}
             handleSearch={handleSearch}
             isFetching={isFetching}
             searchParams={searchParams}
+            setSearchParams={setSearchParams}
           />
         </div>
       </div>
