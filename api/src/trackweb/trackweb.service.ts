@@ -207,7 +207,6 @@ export class TrackwebService {
     const data = await this.prisma.eventInfo.findUnique({
       where: { id },
     });
-    console.log(data);
     if (!data) {
       throw new NotFoundException('未找到该事件');
     }
