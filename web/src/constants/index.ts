@@ -51,6 +51,7 @@ export const APP_NAME = {
   "OA-PC": "OA-PC",
   "OA新后台": "OA新后台",
   "OA-移动端": "OA-移动端",
+  "OA-移动端-测试":"OA-移动端-测试"
 } as const;
 
 // 初始化标签页路由路径
