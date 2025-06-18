@@ -108,11 +108,13 @@ export function getFirstScreen(): object | void {
 /**
  * 主动触发error事件上报
  * @param options 自定义配置信息
+ * @param flush 是否立即发送
+ * @param segmentCount 录屏时间段数量，默认取最近2个时间段
  */
-export function traceError(options = {}, flush = false) {
+export function traceError(options = {}, flush = false, segmentCount?: number) {
   if (!validateMethods('traceError')) return
 
-  return handleSendError(options, flush)
+  return handleSendError(options, segmentCount, flush)
 }
 
 /**

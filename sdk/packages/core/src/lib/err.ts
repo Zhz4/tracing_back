@@ -223,13 +223,14 @@ function isIgnoreErrors(error: any): boolean {
 
 /**
  * 获取错误录屏数据
+ * @param segmentCount 录屏时间段数量，默认取最近2个时间段
  */
-function getRecordEvent(): RecordEventScope[] {
+function getRecordEvent(segmentCount = 2): RecordEventScope[] {
   const _recordscreenList: RecordEventScope[] = JSON.parse(
     JSON.stringify(getEventList())
   )
   return _recordscreenList
-    .slice(-2)
+    .slice(-segmentCount)
     .map(item => item.eventList)
     .flat()
 }
@@ -237,12 +238,16 @@ function getRecordEvent(): RecordEventScope[] {
 /**
  * 发送错误事件信息
  * @param errorInfo 信息源
+ * @param flush 是否立即发送
+ * @param segmentCount 录屏时间段数量，默认取最近2个时间段
  */
-function emit(errorInfo: any, flush = false): void {
+function emit(errorInfo: any, segmentCount?: number, flush = false): void {
   const info = {
     ...errorInfo,
     eventType: SEDNEVENTTYPES.ERROR,
-    recordscreen: options.value.recordScreen ? zip(getRecordEvent()) : null,
+    recordscreen: options.value.recordScreen
+      ? zip(getRecordEvent(segmentCount))
+      : null,
     triggerPageUrl: getLocationHref(),
     triggerTime: getTimestamp()
   }
@@ -303,12 +308,16 @@ function initError(): void {
 
 /**
  * 主动触发错误上报
- * @param eventId 事件ID
- * @param message 错误信息
  * @param options 自定义配置信息
+ * @param flush 是否立即发送
+ * @param segmentCount 录屏时间段数量，默认取最近2个时间段
  */
-function handleSendError(options = {}, flush = false): void {
-  emit(options, flush)
+function handleSendError(
+  options = {},
+  segmentCount?: number,
+  flush = false
+): void {
+  emit(options, segmentCount, flush)
 }
 
 export { initError, handleSendError, parseError }

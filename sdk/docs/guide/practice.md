@@ -131,12 +131,24 @@ setTimeout(() => {
 
 // 手动发送错误
 setTimeout(() => {
-  traceError('自定义错误ID', '自定义错误message', {
+  traceError({
+    eventId: '自定义错误ID',
+    errMessage: '自定义错误message',
     src: '/interface/order',
     params: {
       id: '12121'
     }
   })
+}, 3000)
+
+// 手动发送错误 - 控制录屏时间段数量
+setTimeout(() => {
+  // 指定录屏时间段数量
+  traceError({
+    eventId: '自定义错误ID',
+    errMessage: '自定义错误message',
+    params: { userId: '123' }
+  }, false, 3)  // 取最近3个时间段的录屏，默认是2个
 }, 3000)
 
 // 手动发送资源事件
@@ -776,6 +788,18 @@ function sendBizErr() {
       id: '12121'
     }
   })
+  emitMessage()
+}
+
+function sendBizErrWithCustomRecord() {
+  sendMessage()
+
+  // 使用自定义录屏时间段数量
+  traceError({
+    eventId: '自定义错误ID',
+    errMessage: '带自定义录屏时间段的错误',
+    params: { userId: '123' }
+  }, false, 4)  // 取最近4个时间段的录屏数据
   emitMessage()
 }
 

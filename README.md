@@ -103,7 +103,7 @@ app.mount('#app')
 #### 1.5 自定义埋点-手动上报（举例）
 
 ```javascript
-//  主动触发错误信
+// 主动触发错误信息
 import { traceError } from '@smooth_zhz/web-tracing-core'
 traceError({
   message: 'xxx',
@@ -120,6 +120,15 @@ tracePerformance({
     name: 'aa'
   }
 })
+
+// 手动控制录屏时间段数量的错误上报
+import { traceError } from '@smooth_zhz/web-tracing-core'
+
+// 指定录屏时间段数量（取最近N个时间段）
+traceError({
+  message: '自定义错误',
+  params: { userId: '123' }
+}, false, 3)  // 取最近3个时间段的录屏，默认是2个
 
 ```
 

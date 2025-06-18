@@ -100,12 +100,17 @@ afterSendData(data) {
 
 ### traceError
 + 作用: 主动触发错误信息
-+ 入参: options - 对象内任意属性
++ 入参: 
+  - options - 对象内任意属性
+  - flush - 是否立即发送（可选）
+  - segmentCount - 录屏时间段数量，默认取最近2个时间段（可选）
 + 备注: 调用此方法，有以下参数会固定附加
   + eventType: error
   + recordscreen: 错误录屏信息
   + triggerPageUrl: 发生错误的页面
   + triggerTime: 发生错误的时间
+
+#### 基础使用
 ``` js
 import { traceError } from '@web-tracing/core'
 traceError({
@@ -114,6 +119,17 @@ traceError({
     name: 'aa'
   }
 })
+```
+
+#### 控制录屏时间段数量
+``` js
+import { traceError } from '@web-tracing/core'
+
+// 指定录屏时间段数量（取最近N个时间段）
+traceError({
+  message: '自定义错误',
+  params: { userId: '123' }
+}, false, 3)  // 取最近3个时间段的录屏，默认是2个
 ```
 
 ### tracePerformance
@@ -179,6 +195,8 @@ import { unzipRecordscreen } from '@web-tracing/core'
 
 unzipRecordscreen(recordscreen)
 ```
+
+
 
 ### getBaseInfo
 + 作用: 获取在sdk中记录的所有基础的信息（包括硬件，地理位置等等）
