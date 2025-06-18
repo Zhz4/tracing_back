@@ -16,6 +16,7 @@ export enum EventIdEnum {
   PAGE_ID = 'pageId',
   CONSOLEERROR = 'console.error',
   PAGE = 'page',
+  USER = 'user',
 }
 
 type PrismaField = Prisma.EventInfoGetPayload<object>;
@@ -126,6 +127,16 @@ export const EventNames = {
     'requestStart',
     'responseStart',
     'responseEnd',
+  ],
+  // 主动上报错误录屏
+  [`${EventIdEnum.USER}-${EventTypeEnum.ERROR}`]: [
+    ...baseFields,
+    'errMessage',
+    'errStack',
+    'line',
+    'col',
+    'recordscreen',
+    'params',
   ],
 } as const satisfies Partial<
   Record<`${EventIdEnum}-${EventTypeEnum}`, (keyof PrismaField)[]>
