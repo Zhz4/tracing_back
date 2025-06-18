@@ -34,7 +34,11 @@ const renderEventComponent = (
 
     case EventStatusEnum.代码错误:
     case EventStatusEnum.控制台错误:
-      return <EventErrorPage event={item as EventError} />;
+      return (
+        <EventErrorPage
+          event={item as EventError}
+        />
+      );
 
     case EventStatusEnum.页面跳转:
     case EventStatusEnum.页面停留:

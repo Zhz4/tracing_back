@@ -5,12 +5,18 @@ import React, {
   useState,
   useCallback,
 } from "react";
+import { EventError, EventRoute, EventRequest } from "@/types";
 import { useSearchParams } from "react-router-dom";
 import { unzip } from "@/utils/record";
 import rrwebPlayer from "rrweb-player";
 import "rrweb-player/dist/style.css";
 import { useQuery } from "@tanstack/react-query";
-import { getRecordscreenDataByEventId } from "@/api/monitor";
+import { getRecordscreenDataByEventId, getEventById } from "@/api/monitor";
+import { getEventName } from "@/utils/checkEventAll";
+import { EventStatusEnum } from "@/constants";
+import EventRequestPage from "@/pages/monitorData/components/events/Event-request";
+import EventErrorPage from "@/pages/monitorData/components/events/Event-error";
+import MonitorDataProvider from "@/pages/monitorData/context/monitor-data-context";
 
 // 加载动画组件
 const LoadingSpinner: React.FC = () => (
@@ -42,6 +48,7 @@ const RecordscreenPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const playerRef = useRef<rrwebPlayer | null>(null);
   const rowId = searchParams.get("rowId");
+  const errorId = searchParams.get("currentRowId");
   const [isPlayerInitialized, setIsPlayerInitialized] = useState(false);
   const [isPageVisible, setIsPageVisible] = useState(!document.hidden);
 
@@ -58,6 +65,30 @@ const RecordscreenPage: React.FC = () => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
+  const { data: eventData } = useQuery({
+    queryKey: ["event", errorId],
+    queryFn: () => getEventById(errorId as string),
+    enabled: !!errorId,
+  });
+  // 渲染事件组件的函数
+  const renderEventComponent = (
+    item: EventError | EventRoute | EventRequest
+  ) => {
+    const eventName = getEventName(item.eventType, item.eventId);
+    switch (eventName) {
+      case EventStatusEnum.代码错误:
+      case EventStatusEnum.控制台错误:
+        return <EventErrorPage event={item as EventError} isScreen={true} />;
+
+      case EventStatusEnum.请求事件:
+      case EventStatusEnum.请求失败:
+        return (
+          <EventRequestPage event={item as EventRequest} isScreen={true} />
+        );
+      default:
+        return null;
+    }
+  };
 
   // 清理播放器的函数
   // const cleanupPlayer = useCallback(() => {
@@ -179,6 +210,13 @@ const RecordscreenPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
+      {eventData?.map((item, index) => (
+        <div key={`${item.eventId}-${index}`}>
+          <MonitorDataProvider>
+            {renderEventComponent(item)}
+          </MonitorDataProvider>
+        </div>
+      ))}
       <div className="flex items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold text-foreground">错误录屏回放</h1>
       </div>
