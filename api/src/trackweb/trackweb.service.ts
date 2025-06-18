@@ -109,27 +109,22 @@ export class TrackwebService {
   private buildWhereCondition(
     query: PageQueryDto,
   ): Prisma.TrackingDataWhereInput {
-    const { appName, userName, eventTypeList } = query;
+    const { appNameList, userName, eventTypeList } = query;
     const where: Prisma.TrackingDataWhereInput = {
       // 基础过滤条件：去除脏数据
       userName: { not: '' },
       userUuid: { not: '' },
     };
-
-    // 应用名称过滤（模糊搜索）
-    if (appName) {
-      where.appName = {
-        contains: appName,
-        mode: 'insensitive',
-      };
-    }
-
     // 用户名过滤（模糊搜索）
     if (userName) {
       where.userName = {
         contains: userName,
         mode: 'insensitive',
       };
+    }
+    // 应用名称过滤
+    if (appNameList?.length) {
+      where.appName = { in: appNameList };
     }
 
     // 事件类型过滤

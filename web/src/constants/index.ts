@@ -47,6 +47,12 @@ export const EventNames = {
   Record<`${EventIdEnum}-${EventTypeEnum}`, keyof typeof EventStatusEnum>
 >;
 
+export const APP_NAME = {
+  "OA-PC": "OA-PC",
+  "OA新后台": "OA新后台",
+  "OA-移动端": "OA-移动端",
+} as const;
+
 // 初始化标签页路由路径
 export const INIT_TABS_ROUTE_PATH = "/home";
 // 最多显示的标签页数量

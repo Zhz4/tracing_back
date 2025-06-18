@@ -9,6 +9,7 @@ export type MonitorDataResponse = TableData<MonitorData>;
 export interface SearchParamsType {
   userName?: string;
   eventTypeList?: string[];
+  appNameList?: string[];
 }
 export const getMonitorData = async (
   page: number,
