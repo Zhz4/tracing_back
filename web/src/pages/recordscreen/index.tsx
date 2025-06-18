@@ -14,9 +14,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getRecordscreenDataByEventId, getEventById } from "@/api/monitor";
 import { getEventName } from "@/utils/checkEventAll";
 import { EventStatusEnum } from "@/constants";
-import EventRequestPage from "@/pages/monitorData/components/events/Event-request";
-import EventErrorPage from "@/pages/monitorData/components/events/Event-error";
 import MonitorDataProvider from "@/pages/monitorData/context/monitor-data-context";
+import Mycomponent from "./mycomponent";
 
 // 加载动画组件
 const LoadingSpinner: React.FC = () => (
@@ -76,17 +75,10 @@ const RecordscreenPage: React.FC = () => {
   ) => {
     const eventName = getEventName(item.eventType, item.eventId);
     switch (eventName) {
-      case EventStatusEnum.代码错误:
       case EventStatusEnum.控制台错误:
-        return <EventErrorPage event={item as EventError} isScreen={true} />;
-
-      case EventStatusEnum.请求事件:
       case EventStatusEnum.请求失败:
-        return (
-          <EventRequestPage event={item as EventRequest} isScreen={true} />
-        );
-      default:
-        return null;
+      case EventStatusEnum.主动上报错误录屏:
+        return <Mycomponent event={recordscreenData as EventError | EventRequest} />;
     }
   };
 
