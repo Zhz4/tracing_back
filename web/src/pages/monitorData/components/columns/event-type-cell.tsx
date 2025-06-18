@@ -11,7 +11,6 @@ import {
 
 type EventNameValues = (typeof EventNames)[keyof typeof EventNames];
 type BadgeVariants = VariantProps<typeof badgeVariants>["variant"];
-
 const eventNameVariants: Record<
   EventNameValues,
   { variant: BadgeVariants; icon?: React.ReactNode; priority: number }
@@ -30,6 +29,11 @@ const eventNameVariants: Record<
     variant: "destructive",
     icon: "🚫",
     priority: 3,
+  },
+  [EventStatusEnum.主动上报错误录屏]: {
+    variant: "destructive",
+    icon: "🎥",
+    priority: 4,
   },
   [EventStatusEnum.点击事件]: { variant: "secondary", icon: "👆", priority: 4 },
   [EventStatusEnum.页面跳转]: { variant: "default", icon: "🔗", priority: 5 },

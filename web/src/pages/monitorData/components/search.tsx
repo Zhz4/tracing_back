@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import EventTypeFilter from "./events/event-type-filter";
+import EventTypeFilter from "./event-type-filter";
 import { Loader2, SearchIcon } from "lucide-react";
+import AppNameFilter from "./appName-filter";
 
 interface SearchProps {
   handleSearch: (searchParams: SearchParamsType) => void;
@@ -47,6 +48,23 @@ const Search = ({
                     selectedEventTypes={field.value || []}
                     onEventTypeChange={(eventTypes) => {
                       field.onChange(eventTypes);
+                      setSearchParams(form.getValues());
+                    }}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="appNameList"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <AppNameFilter
+                    selectedAppNames={field.value || []}
+                    onAppNameChange={(appNames) => {
+                      field.onChange(appNames);
                       setSearchParams(form.getValues());
                     }}
                   />

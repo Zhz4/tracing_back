@@ -12,7 +12,7 @@ import { type PaginationState } from "@tanstack/react-table";
 import { keepPreviousData } from "@tanstack/react-query";
 import Search from "./components/search";
 import MonitorDataProvider from "./context/monitor-data-context";
-import CheckDraw from "./components/check-draw";
+import CheckDraw from "./components/events/check-draw";
 
 const MonitorData = () => {
   const [pagination, setPagination] = useState<PaginationState>({

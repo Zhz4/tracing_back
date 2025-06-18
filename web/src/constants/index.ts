@@ -14,6 +14,7 @@ export enum EventIdEnum {
   PAGE_ID = "pageId",
   PAGE = "page",
   CONSOLEERROR = "console.error",
+  USER="user"
 }
 
 export enum EventStatusEnum {
@@ -26,6 +27,7 @@ export enum EventStatusEnum {
   "请求事件" = "请求事件",
   "请求失败" = "请求失败",
   "资源加载" = "资源加载",
+  "主动上报错误录屏" = "主动上报错误录屏"
 }
 
 export const EventNames = {
@@ -43,9 +45,17 @@ export const EventNames = {
     EventStatusEnum.资源首次加载,
   [`${EventIdEnum.RESOURCE}-${EventTypeEnum.PERFORMANCE}`]:
     EventStatusEnum.资源加载,
+  [`${EventIdEnum.USER}-${EventTypeEnum.ERROR}`]:EventStatusEnum.主动上报错误录屏
 } as const satisfies Partial<
   Record<`${EventIdEnum}-${EventTypeEnum}`, keyof typeof EventStatusEnum>
 >;
+
+export const APP_NAME = {
+  "OA-PC": "OA-PC",
+  "OA新后台": "OA新后台",
+  "OA-移动端": "OA-移动端",
+  "OA-移动端-测试":"OA-移动端-测试"
+} as const;
 
 // 初始化标签页路由路径
 export const INIT_TABS_ROUTE_PATH = "/home";

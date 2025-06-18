@@ -5,12 +5,12 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useMonitorData } from "../context/monitor-data-context";
-import EventClickPage from "./events/Event-click";
-import EventRoutePage from "./events/Event-route";
-import EventRequestPage from "./events/Event-request";
+import { useMonitorData } from "../../context/monitor-data-context";
+import EventClickPage from "./Event-click";
+import EventRoutePage from "./Event-route";
+import EventRequestPage from "./Event-request";
 import { getEventName } from "@/utils/checkEventAll";
-import EventErrorPage from "./events/Event-error";
+import EventErrorPage from "./Event-error";
 import { EventStatusEnum } from "@/constants";
 import {
   EventClick,
@@ -19,7 +19,7 @@ import {
   EventRequest,
   EventResource,
 } from "@/types";
-import EventResourcePage from "./events/Event-resource";
+import EventResourcePage from "./Event-resource";
 import { getEventById } from "@/api/monitor";
 import { useQuery } from "@tanstack/react-query";
 
@@ -34,11 +34,8 @@ const renderEventComponent = (
 
     case EventStatusEnum.代码错误:
     case EventStatusEnum.控制台错误:
-      return (
-        <EventErrorPage
-          event={item as EventError}
-        />
-      );
+    case EventStatusEnum.主动上报错误录屏:
+      return <EventErrorPage event={item as EventError} />;
 
     case EventStatusEnum.页面跳转:
     case EventStatusEnum.页面停留:

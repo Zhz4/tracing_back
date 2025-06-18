@@ -25,9 +25,9 @@ export class PageQueryDto {
   limit: number;
 
   @ApiProperty({ description: '应用名称', required: false })
-  @IsString()
+  @IsArray()
   @IsOptional()
-  appName?: string;
+  appNameList?: string[];
 
   @ApiProperty({ description: '用户名', required: false })
   @IsString()
