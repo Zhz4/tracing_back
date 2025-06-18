@@ -82,7 +82,7 @@ const AppNameFilter = ({
         align="end"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        <DropdownMenuLabel>选择事件类型</DropdownMenuLabel>
+        <DropdownMenuLabel>选择应用名称</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="flex gap-2 p-2">
           <Button
