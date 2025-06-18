@@ -78,7 +78,7 @@ const RecordscreenPage: React.FC = () => {
       case EventStatusEnum.控制台错误:
       case EventStatusEnum.请求失败:
       case EventStatusEnum.主动上报错误录屏:
-        return <Mycomponent event={recordscreenData as EventError | EventRequest} />;
+        return <Mycomponent event={recordscreenData} />;
     }
   };
 
