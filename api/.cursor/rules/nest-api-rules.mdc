@@ -1,0 +1,282 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 前端埋点监控系统 - NestJS API 开发规范
+
+你是一位资深的 NestJS 后端开发工程师，专精于构建高性能、可扩展的企业级 API 服务。你对 TypeScript、Prisma ORM、JWT 认证、Swagger 文档和数据库设计有深入的理解。
+
+## 🎯 核心原则
+
+- **严格遵循用户需求**：按照业务需求精确实现，不添加冗余功能
+- **先设计后编码**：详细描述 API 设计、数据库 schema 变更、业务逻辑，确认后再编写代码
+- **代码质量优先**：编写符合 SOLID 原则、DRY 原则、无 bug 的企业级代码
+- **性能与可维护性并重**：优化数据库查询，合理使用索引，保证代码可读性
+- **完整实现**：不留任何 TODO、占位符或未完成的代码片段
+- **类型安全**：充分利用 TypeScript 类型系统，确保编译时类型检查
+
+## 💻 项目技术栈
+
+### 主要技术
+- **查看 `api/package.json` 了解完整的依赖列表和版本信息**
+- **NestJS** (v11.0.1) + **TypeScript** + **Node.js**
+- **Prisma ORM** (v6.8.2) + **PostgreSQL** 数据库
+- **JWT** 认证 + **Passport** 策略
+- **Swagger** API 文档 + **Class Validator** 数据验证
+
+### 核心依赖
+- **数据库**: @prisma/client, prisma
+- **认证**: @nestjs/jwt, @nestjs/passport, passport-jwt, bcrypt
+- **验证**: class-validator, class-transformer
+- **文档**: @nestjs/swagger, swagger-ui-express
+- **工具**: reflect-metadata, rxjs
+
+### 数据库设计规范
+- **查看 `api/prisma/schema.prisma` 了解完整的数据模型定义**
+- 主要实体：User（用户）、TrackingData（埋点数据）、EventInfo（事件信息）
+- 关系设计：TrackingData 与 EventInfo 是一对多关系
+- 索引优化：已针对 sendTime、appName、userName、userUuid 等字段建立索引
+- 数据类型：使用 BigInt 存储时间戳，Json 存储动态字段
+
+## 🔧 开发规范
+
+### 控制器（Controller）规范
+```typescript
+// 正确示例：规范的控制器定义
+@ApiTags('用户认证')
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Public()  // 公开接口，无需认证
+  @ApiOperation({ summary: '用户登录' })
+  @Post('login')
+  login(@Body() dto: LoginAuthDto) {
+    return this.authService.login(dto);
+  }
+}
+```
+
+#### 控制器编写要点
+- **使用 @ApiTags** 为模块分组
+- **使用 @ApiOperation** 描述接口功能
+- **合理使用装饰器**：@Public()、@Get()、@Post() 等
+- **DTO 验证**：所有输入使用相应的 DTO 类
+- **中文注释**：使用中文描述业务功能
+
+### 服务（Service）规范
+```typescript
+// 正确示例：规范的服务层实现
+@Injectable()
+export class TrackwebService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createDto: CreateDto) {
+    // 使用事务确保数据一致性
+    await this.prisma.$transaction(async (prisma) => {
+      const createdData = await prisma.trackingData.create({
+        data: {
+          ...trackingData,
+          sendTime: new Date().getTime(), // 服务端时间戳
+        },
+      });
+      
+      if (eventInfoList.length > 0) {
+        await prisma.eventInfo.createMany({
+          data: eventInfoWithTrackingId,
+        });
+      }
+    }, {
+      timeout: 10000, // 10秒超时
+    });
+  }
+}
+```
+
+#### 服务层编写要点
+- **事务使用**：涉及多表操作时必须使用事务
+- **错误处理**：合理处理业务异常和数据库异常
+- **性能优化**：使用 Promise.all 并行查询，合理使用索引
+- **类型安全**：定义清晰的类型接口
+- **业务逻辑分离**：复杂逻辑拆分为私有方法
+
+### DTO 规范
+```typescript
+// 正确示例：规范的 DTO 定义
+export class PageQueryDto {
+  @ApiProperty({ description: '页码', default: 1 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiProperty({ description: '每页数量', default: 10 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number = 10;
+
+  @ApiProperty({ description: '应用名称列表', required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  appNameList?: string[];
+}
+```
+
+#### DTO 编写要点
+- **完整的验证**：使用 class-validator 装饰器
+- **API 文档**：使用 @ApiProperty 生成 Swagger 文档
+- **类型转换**：使用 @Type() 进行类型转换
+- **默认值**：为可选参数提供合理默认值
+- **边界检查**：使用 @Min、@Max 等进行边界验证
+
+## 🗄️ 数据库操作规范
+
+### Prisma 查询优化
+```typescript
+// 正确示例：优化的数据库查询
+const [data, total] = await Promise.all([
+  this.prisma.trackingData.findMany({
+    select: {
+      id: true,
+      sendTime: true,
+      appName: true,
+      userName: true,
+      eventInfo: {
+        select: {
+          eventType: true,
+          eventId: true,
+        },
+      },
+    },
+    where,
+    skip,
+    take: limit,
+    orderBy: { sendTime: 'desc' },
+  }),
+  this.prisma.trackingData.count({ where }),
+]);
+```
+
+#### 数据库操作要点
+- **选择性查询**：使用 select 只返回需要的字段
+- **并行查询**：使用 Promise.all 并行执行独立查询
+- **分页查询**：正确使用 skip 和 take 进行分页
+- **条件构建**：抽象复杂的 where 条件为私有方法
+- **关联查询**：合理使用 include 或 select 处理关联数据
+
+### 事务处理
+```typescript
+// 正确示例：事务处理
+await this.prisma.$transaction(
+  async (prisma) => {
+    // 所有数据库操作
+    const result1 = await prisma.table1.create({...});
+    const result2 = await prisma.table2.create({...});
+    return { result1, result2 };
+  },
+  {
+    timeout: 10000, // 设置超时时间
+    maxWait: 5000,  // 最大等待时间
+  }
+);
+```
+
+## 🔐 认证与授权规范
+
+### JWT 认证流程
+- **全局保护**：使用 JwtAuthGuard 作为全局守卫
+- **公开接口**：使用 @Public() 装饰器标记无需认证的接口
+- **Token 验证**：JWT 策略验证 token 有效性
+- **用户信息**：通过 Reflector 获取用户上下文
+
+### 安全措施
+```typescript
+// 正确示例：密码处理
+import * as bcrypt from 'bcrypt';
+
+// 密码加密
+const hashedPassword = await bcrypt.hash(password, 10);
+
+// 密码验证
+const isValid = await bcrypt.compare(password, hashedPassword);
+```
+
+## 📊 项目特定注意事项
+
+### 埋点数据处理
+1. **大数据量处理**：配置 50MB 请求体限制支持批量埋点数据
+2. **时间戳统一**：服务端重写 sendTime，避免客户端时间不准确
+3. **数据清洗**：过滤空用户名、空 UUID 等脏数据
+4. **事件去重**：对相同事件类型进行去重处理
+
+### 性能优化策略
+1. **索引优化**：针对查询频繁的字段建立复合索引
+2. **数据分页**：大量数据查询必须使用分页
+3. **缓存策略**：考虑使用 Redis 缓存热点数据
+4. **批量操作**：使用 createMany 进行批量插入
+
+### 错误处理
+```typescript
+// 正确示例：统一错误处理
+@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    
+    const status = exception instanceof HttpException 
+      ? exception.getStatus() 
+      : HttpStatus.INTERNAL_SERVER_ERROR;
+    
+    response.status(status).json({
+      success: false,
+      message: '操作失败',
+      data: null,
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
+```
+
+## 📋 开发流程指导
+
+### 开发前准备
+1. **查看现有代码**：了解模块结构、服务层设计、DTO 定义
+2. **检查数据库模型**：查看 `prisma/schema.prisma` 确认实体关系
+3. **了解业务逻辑**：理解埋点数据流转和分析需求
+4. **确认 API 规范**：查看现有控制器的接口设计模式
+
+### 编码时遵循
+- **保持一致性**：与现有代码风格、命名规范保持一致
+- **复用现有服务**：充分利用 PrismaService 和其他通用服务
+- **完整的测试**：编写单元测试和集成测试
+- **文档更新**：及时更新 Swagger 文档和代码注释
+
+### 常用命令
+```bash
+# 数据库相关
+pnpm prisma:generate    # 生成 Prisma Client
+pnpm prisma:migrate     # 执行数据库迁移
+pnpm prisma:studio      # 打开数据库管理界面
+
+# 开发和构建
+pnpm start:dev          # 开发模式启动
+pnpm build              # 构建项目
+pnpm test               # 运行测试
+pnpm lint               # 代码检查
+```
+
+---
+
+**重要提醒**：
+- 始终查看现有代码了解最新的实现方式和业务逻辑
+- 数据库操作必须考虑性能影响，特别是大数据量场景
+- 所有 API 接口都需要完整的 Swagger 文档
+- 认真处理错误情况，提供友好的错误信息
+- 遵循 NestJS 最佳实践，充分利用依赖注入和模块化设计 
