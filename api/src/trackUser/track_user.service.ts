@@ -21,8 +21,9 @@ export class TrackUserService {
     if (!userName) {
       return this.findAll();
     }
+    const searchPattern = `%${userName}%`;
     return this.prisma.$queryRaw`
-      SELECT * FROM tracking_users WHERE "userName" like '%${userName}%';
+      SELECT * FROM tracking_users WHERE "userName" ILIKE ${searchPattern};
     `;
   }
 }

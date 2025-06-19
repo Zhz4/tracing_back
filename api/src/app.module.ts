@@ -3,7 +3,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { TrackwebModule } from './trackweb/trackweb.module';
 import { AuthModule } from './auth/auth.module';
 import { AnalyzeModule } from './analyze/analyze.module';
-import { TrackUserModule } from './track_user/track_user.module';
+import { TrackUserModule } from './trackUser/track_user.module';
 
 @Module({
   imports: [
