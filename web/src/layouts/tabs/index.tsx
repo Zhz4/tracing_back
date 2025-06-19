@@ -15,16 +15,13 @@ const searchRoutesName = (tree: RouteObject[], routePath: string) => {
 };
 
 const Tabs = () => {
-  const { destroy,getCacheNodes } = useKeepAliveContext();
-  console.log(getCacheNodes());
-  
+  const { destroy } = useKeepAliveContext();
   const navigate = useNavigate();
   const { tabList, removeTab } = useCounterStore();
-  const nodes = tabList
-    .map((tab) => ({
-      cacheKey: tab.path,
-      name: tab.name,
-    }));
+  const nodes = tabList.map((tab) => ({
+    cacheKey: tab.path,
+    name: tab.name,
+  }));
   const active = useLocation().pathname + useLocation().search;
 
   const handleDestroy = (cacheKey: string) => {
@@ -34,7 +31,10 @@ const Tabs = () => {
       );
       if (nodes.length === 1) {
         if (cacheKey === INIT_TABS_ROUTE_PATH) {
-          removeTab({ path: cacheKey, name: searchRoutesName(routes, cacheKey) });
+          removeTab({
+            path: cacheKey,
+            name: searchRoutesName(routes, cacheKey),
+          });
           destroy(cacheKey);
           return;
         } else {
@@ -112,7 +112,10 @@ const Tabs = () => {
                   e.stopPropagation();
                   handleDestroy(node.cacheKey);
                 }}
-                aria-label={`关闭 ${searchRoutesName(routes, node.cacheKey)} 标签页`}
+                aria-label={`关闭 ${searchRoutesName(
+                  routes,
+                  node.cacheKey
+                )} 标签页`}
               >
                 <X className="w-3 h-3" />
               </button>
