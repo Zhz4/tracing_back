@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AnalyzeService } from './analyze.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
@@ -41,18 +41,18 @@ export class AnalyzeController {
     description: '返回24小时活跃度数据',
     type: [HourlyActivityDto],
   })
-  @Get('active')
-  analyzeActive(
-    @Query() query: AnalyzeActiveDto,
+  @Get('active/day/:userUuid')
+  async analyzeActive(
+    @Param('userUuid') userUuid: string,
   ): Promise<HourlyActivityDto[]> {
-    return this.analyzeService.analyzeActive(query);
+    return await this.analyzeService.analyzeActive({ userUuid });
   }
 
   @Public()
   @ApiOperation({ summary: '用户7天活跃度分析' })
   @Get('active/weekly')
-  analyzeActiveWeekly(@Query() query: AnalyzeActiveDto) {
-    return this.analyzeService.analyzeActiveWeekly(query);
+  async analyzeActiveWeekly(@Query() query: AnalyzeActiveDto) {
+    return await this.analyzeService.analyzeActiveWeekly(query);
   }
 
   @Public()
@@ -67,9 +67,9 @@ export class AnalyzeController {
     type: WeeklyActivityTrendDto,
   })
   @Get('active/weekly-trend')
-  analyzeWeeklyActivityTrend(
+  async analyzeWeeklyActivityTrend(
     @Query() query: AnalyzeActiveDto,
   ): Promise<WeeklyActivityTrendDto> {
-    return this.analyzeService.analyzeWeeklyActivityTrend(query);
+    return await this.analyzeService.analyzeWeeklyActivityTrend(query);
   }
 }

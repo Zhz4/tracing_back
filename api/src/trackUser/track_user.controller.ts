@@ -12,8 +12,9 @@ export class TrackUserController {
   @Get(':id')
   @Public()
   @ApiOperation({ summary: '根据id获取埋点用户' })
-  findOne(@Param('id') id: string) {
-    return this.trackUserService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<any> {
+    const result = (await this.trackUserService.findOne(id)) as any[];
+    return result[0] || null;
   }
 
   @Get()

@@ -7,3 +7,9 @@ export interface PageErrorData {
   appName: string;
   errorCount: number;
 }
+
+export interface HourlyActivityResponse {
+  hour: string;
+  pageViews: number;
+  events: number;
+}

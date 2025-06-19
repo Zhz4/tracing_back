@@ -11,9 +11,9 @@ export class TrackUserService {
     `;
   }
 
-  findOne(id: number) {
+  findOne(userUuid: string) {
     return this.prisma.$queryRaw`
-      SELECT * FROM tracking_users WHERE "userUuid" = ${id};
+      SELECT * FROM tracking_users WHERE "userUuid" = ${userUuid};
     `;
   }
 

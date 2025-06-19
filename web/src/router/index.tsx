@@ -49,7 +49,7 @@ export const routes: RouteObject[] = [
         },
       },
       {
-        path: "/user-behavior/:userId",
+        path: "/user-behavior/:userUuid",
         element: <UserBehaviorAnalysis />,
         handle: {
           icon: User,

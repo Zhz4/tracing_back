@@ -1,5 +1,6 @@
 import service from "@/utils/axios/service";
 import { PageData, PageErrorData } from "./type";
+import { HourlyActivityResponse } from "@/api/analyze/type";
 /**
  * 获取页面统计数据
  * @returns
@@ -19,6 +20,15 @@ export const getPageData = async () => {
 export const getPageErrorData = async () => {
   const result = await service.request<PageErrorData[]>({
     url: `/analyze/error`,
+    method: "get",
+  });
+  return result.data;
+};
+
+// 用户24小时活跃度分析
+export const getUser24HourActive = async (userUuid: string) => {
+  const result = await service.request<HourlyActivityResponse[]>({
+    url: `/analyze/active/day/${userUuid}`,
     method: "get",
   });
   return result.data;
