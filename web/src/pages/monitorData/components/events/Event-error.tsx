@@ -22,10 +22,10 @@ interface EventErrorProps {
 
 const EventErrorPage = ({ event, isScreen = false }: EventErrorProps) => {
   const navigate = useNavigate();
-  const { setOpen, currentRow } = useMonitorData();
+  const { setOpen } = useMonitorData();
 
   const handleViewRecordscreen = (rowId: string) => {
-    navigate(`/recordscreen?rowId=${rowId}&currentRowId=${currentRow?.id}`);
+    navigate(`/recordscreen?rowId=${rowId}`);
   };
 
   return (

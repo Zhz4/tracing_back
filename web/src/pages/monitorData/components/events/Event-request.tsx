@@ -25,12 +25,12 @@ interface EventRequestProps {
 }
 
 const EventRequestPage = ({ event, isScreen = false }: EventRequestProps) => {
-  const { setOpen , currentRow} = useMonitorData();
+  const { setOpen } = useMonitorData();
 
   const navigate = useNavigate();
 
   const handleViewRecordscreen = (rowId: string) => {
-    navigate(`/recordscreen?rowId=${rowId}&currentRowId=${currentRow?.id}`);
+    navigate(`/recordscreen?rowId=${rowId}`);
   };
 
   const getStatusColor = (status: number) => {
