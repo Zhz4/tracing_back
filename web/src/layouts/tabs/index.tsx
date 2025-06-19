@@ -15,9 +15,7 @@ const searchRoutesName = (tree: RouteObject[], routePath: string) => {
 };
 
 const Tabs = () => {
-  const { destroy,getCacheNodes } = useKeepAliveContext();
-  console.log(getCacheNodes());
-  
+  const { destroy } = useKeepAliveContext();
   const navigate = useNavigate();
   const { tabList, removeTab } = useCounterStore();
   const nodes = tabList

@@ -1,0 +1,218 @@
+import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { PaginationState } from "@tanstack/react-table";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Clock, 
+  MousePointer, 
+  Calendar,
+  MapPin,
+  Globe,
+  Smartphone,
+  Monitor
+} from "lucide-react";
+import { DataTable } from "@/components/table/data-table";
+import { columns } from "./components/columns";
+import UserActivityChart from "./components/UserActivityChart";
+import UserPathAnalysis from "./components/UserPathAnalysis";
+import UserEventStats from "./components/UserEventStats";
+
+const UserBehaviorAnalysis = () => {
+  const { userId } = useParams();
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  // 模拟用户基本信息
+  const userInfo = {
+    id: userId || '1',
+    name: '张三',
+    email: 'zhangsan@example.com',
+    avatar: '',
+    role: 'admin',
+    registerTime: '2024-01-15',
+    lastActiveTime: '2024-12-12 14:30:25',
+    totalSessions: 156,
+    totalPageViews: 1248,
+    totalEvents: 3567,
+    avgSessionDuration: '8m 32s',
+    deviceType: 'Desktop',
+    browser: 'Chrome',
+    location: '北京市'
+  };
+
+  // 模拟用户行为数据
+  const behaviorData = [
+    {
+      id: '1',
+      timestamp: '2024-12-12 14:25:30',
+      action: '页面访问',
+      target: '/dashboard',
+      duration: '2m 15s',
+      device: 'Desktop'
+    },
+    {
+      id: '2',
+      timestamp: '2024-12-12 14:23:15',
+      action: '按钮点击',
+      target: '导出数据按钮',
+      duration: '-',
+      device: 'Desktop'
+    },
+    {
+      id: '3',
+      timestamp: '2024-12-12 14:20:45',
+      action: '表单提交',
+      target: '用户信息表单',
+      duration: '45s',
+      device: 'Desktop'
+    },
+    {
+      id: '4',
+      timestamp: '2024-12-12 14:18:30',
+      action: '页面访问',
+      target: '/settings',
+      duration: '3m 20s',
+      device: 'Desktop'
+    },
+    {
+      id: '5',
+      timestamp: '2024-12-12 14:15:10',
+      action: '搜索操作',
+      target: '用户搜索框',
+      duration: '1m 5s',
+      device: 'Desktop'
+    }
+  ];
+
+  return (
+    <div className="container mx-auto p-6 space-y-6">
+      {/* 用户基本信息卡片 */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={userInfo.avatar} />
+              <AvatarFallback className="text-lg">
+                {userInfo.name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-2xl">{userInfo.name}</CardTitle>
+                <Badge variant={userInfo.role === 'admin' ? 'default' : 'secondary'}>
+                  {userInfo.role === 'admin' ? '管理员' : '普通用户'}
+                </Badge>
+              </div>
+              <CardDescription className="text-base">{userInfo.email}</CardDescription>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  注册时间: {userInfo.registerTime}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-4 w-4" />
+                  最后活跃: {userInfo.lastActiveTime}
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">{userInfo.totalSessions}</div>
+              <div className="text-sm text-muted-foreground">总会话数</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{userInfo.totalPageViews}</div>
+              <div className="text-sm text-muted-foreground">页面浏览量</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{userInfo.totalEvents}</div>
+              <div className="text-sm text-muted-foreground">总事件数</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">{userInfo.avgSessionDuration}</div>
+              <div className="text-sm text-muted-foreground">平均会话时长</div>
+            </div>
+            <div className="text-center flex flex-col items-center">
+              <div className="flex items-center gap-1">
+                {userInfo.deviceType === 'Desktop' ? 
+                  <Monitor className="h-5 w-5 text-purple-600" /> : 
+                  <Smartphone className="h-5 w-5 text-purple-600" />
+                }
+                <span className="font-medium">{userInfo.deviceType}</span>
+              </div>
+              <div className="text-sm text-muted-foreground">设备类型</div>
+            </div>
+            <div className="text-center flex flex-col items-center">
+              <div className="flex items-center gap-1">
+                <Globe className="h-5 w-5 text-indigo-600" />
+                <span className="font-medium">{userInfo.browser}</span>
+              </div>
+              <div className="text-sm text-muted-foreground">浏览器</div>
+            </div>
+            <div className="text-center flex flex-col items-center">
+              <div className="flex items-center gap-1">
+                <MapPin className="h-5 w-5 text-red-600" />
+                <span className="font-medium">{userInfo.location}</span>
+              </div>
+              <div className="text-sm text-muted-foreground">地理位置</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 分析内容标签页 */}
+      <Tabs defaultValue="activity" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="activity">活跃度分析</TabsTrigger>
+          <TabsTrigger value="events">事件统计</TabsTrigger>
+          <TabsTrigger value="path">路径分析</TabsTrigger>
+          <TabsTrigger value="behavior">行为记录</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="activity" className="space-y-4">
+          <UserActivityChart />
+        </TabsContent>
+
+        <TabsContent value="events" className="space-y-4">
+          <UserEventStats />
+        </TabsContent>
+
+        <TabsContent value="path" className="space-y-4">
+          <UserPathAnalysis />
+        </TabsContent>
+
+        <TabsContent value="behavior" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MousePointer className="h-5 w-5" />
+                用户行为记录
+              </CardTitle>
+              <CardDescription>
+                详细记录用户在系统中的各项操作行为
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DataTable 
+                columns={columns} 
+                data={behaviorData} 
+                pagination={pagination}
+                setPagination={setPagination}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default UserBehaviorAnalysis; 

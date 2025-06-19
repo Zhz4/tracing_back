@@ -30,6 +30,7 @@
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
     "code-inspector-plugin": "^0.20.12",
     "dayjs": "^1.11.13",
     "js-base64": "^3.7.7",
