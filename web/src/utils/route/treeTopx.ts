@@ -17,3 +17,24 @@ export const treeToPx = (tree: RouteObject[]) => {
   });
   return px_result;
 };
+
+export const matchedRoute = (tree: RouteObject[], path: string) => {
+  const routesPx = treeToPx(tree);
+  const cleanPath = path.split("?")[0];
+  // 尝试找到匹配的路由
+  const matchedRoute = routesPx.find(route => {
+    if (!route.path) return false;
+    
+    // 简单的匹配：如果路径包含参数，用正则匹配
+    if (route.path.includes(':')) {
+      const pathPattern = route.path.replace(/:[^/]+/g, '[^/]+');
+      const regex = new RegExp(`^${pathPattern}$`);
+      return regex.test(cleanPath);
+    }
+    
+    // 精确匹配
+    return route.path === cleanPath;
+  });
+  
+  return matchedRoute;
+};

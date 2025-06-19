@@ -5,15 +5,16 @@ import { useLocation, useMatches, useOutlet } from "react-router-dom";
 import { KeepAlive, useKeepAliveRef } from "keepalive-for-react";
 import { Suspense, useEffect } from "react";
 import { MAX_TABS_COUNT } from "@/constants";
-import { getKeepAliveInclude } from "./tabs/tab-utils";
 import { routes } from "@/router";
+import { getKeepAliveInclude } from "./tabs/tab-utils";
+
 import { useCounterStore } from "@/stores/tab";
 export default function Layout() {
   const aliveRef = useKeepAliveRef();
   const outlet = useOutlet();
-  const {  addTab } = useCounterStore();
-  const { pathname, search,  } = useLocation();
-  const matches = useMatches()
+  const { addTab } = useCounterStore();
+  const { pathname, search } = useLocation();
+  const matches = useMatches();
   const currentCacheKey = pathname + search;
   const keepAliveInclude = getKeepAliveInclude(routes) as RegExp[];
 
@@ -21,7 +22,7 @@ export default function Layout() {
   useEffect(() => {
     const lastMatch = matches.at(-1);
     const handle = lastMatch?.handle as { title?: string } | undefined;
-    const title = handle?.title || '未知页面';
+    const title = handle?.title || "未知页面";
     addTab({ path: currentCacheKey, name: title });
   }, [currentCacheKey, addTab, matches]);
 

@@ -1,22 +1,23 @@
 import { cn } from "@/lib/utils";
 import { routes } from "@/router";
-import { treeToPx } from "@/utils/route/treeTopx";
+import { matchedRoute } from "@/utils/route/treeTopx";
 import { useKeepAliveContext } from "keepalive-for-react";
 import { X } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { RouteObject, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { INIT_TABS_ROUTE_PATH, MAX_TABS_COUNT } from "@/constants";
 import { toast } from "sonner";
 import { useCounterStore } from "@/stores/tab";
 
-const searchRoutesName = (routePath: string) => {
-  const routesPx = treeToPx(routes);
-  const route = routesPx.find((item) => item.path === routePath.split("?")[0]);
-  return route?.handle?.title;
+const searchRoutesName = (tree: RouteObject[], routePath: string) => {
+  const matchedRouteResult = matchedRoute(tree, routePath);
+  return matchedRouteResult?.handle?.title || routePath.split("?")[0];
 };
 
 const Tabs = () => {
-  const { destroy } = useKeepAliveContext();
+  const { destroy,getCacheNodes } = useKeepAliveContext();
+  console.log(getCacheNodes());
+  
   const navigate = useNavigate();
   const { tabList, removeTab } = useCounterStore();
   const nodes = tabList
@@ -33,7 +34,7 @@ const Tabs = () => {
       );
       if (nodes.length === 1) {
         if (cacheKey === INIT_TABS_ROUTE_PATH) {
-          removeTab({ path: cacheKey, name: searchRoutesName(cacheKey) });
+          removeTab({ path: cacheKey, name: searchRoutesName(routes, cacheKey) });
           destroy(cacheKey);
           return;
         } else {
@@ -58,7 +59,7 @@ const Tabs = () => {
     }
 
     setTimeout(() => {
-      removeTab({ path: cacheKey, name: searchRoutesName(cacheKey) });
+      removeTab({ path: cacheKey, name: searchRoutesName(routes, cacheKey) });
       destroy(cacheKey);
     }, 0);
   };
@@ -96,7 +97,7 @@ const Tabs = () => {
           >
             <span className="flex items-center gap-2">
               <div className="truncate max-w-32">
-                {searchRoutesName(node.cacheKey)}
+                {searchRoutesName(routes, node.cacheKey)}
               </div>
               <button
                 className={cn(
@@ -111,7 +112,7 @@ const Tabs = () => {
                   e.stopPropagation();
                   handleDestroy(node.cacheKey);
                 }}
-                aria-label={`关闭 ${searchRoutesName(node.cacheKey)} 标签页`}
+                aria-label={`关闭 ${searchRoutesName(routes, node.cacheKey)} 标签页`}
               >
                 <X className="w-3 h-3" />
               </button>

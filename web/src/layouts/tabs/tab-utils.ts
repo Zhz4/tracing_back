@@ -5,5 +5,8 @@ export const getKeepAliveInclude = (routes: RouteObject[]) => {
   const routesPx = treeToPx(routes);
   return routesPx
     .filter((route) => route.handle?.keepAlive && route.path)
-    .map((item) => new RegExp(`^${item.path!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\?.*)?$`));
+    .map((item) => {
+      const path = item.path?.replace(/:[^/]+/g, "[^/]+");
+      return new RegExp(`^${path}(/[^/?]+)?(\\?.*)?$`);
+    });
 };
