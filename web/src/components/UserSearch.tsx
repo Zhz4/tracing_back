@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Search, User, Crown, Shield } from "lucide-react";
+import { Search, User } from "lucide-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -11,12 +12,13 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { usePlatform } from "@/hooks/use-platform";
+import { getTrackingUser } from "@/api/trackingUser";
 
 const UserSearch = () => {
   const [commandOpen, setCommandOpen] = useState(false);
+  const [searchQuery] = useState("");
   const navigate = useNavigate();
   const platform = usePlatform();
-
   // 键盘快捷键监听
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -30,25 +32,20 @@ const UserSearch = () => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const handleUserAction = (action: string, userId?: string) => {
-    console.log("用户操作:", action, userId ? `用户ID: ${userId}` : "");
+  // 使用 useQuery 来处理用户搜索
+  const { data: users } = useQuery({
+    queryKey: ["searchUsers", searchQuery],
+    queryFn: () => getTrackingUser(),
+    refetchOnWindowFocus: false,
+    staleTime: 24 * 60 * 60 * 1000, // 24小时不重新获取
+  });
 
-    if (action === "view-user" && userId) {
-      // 跳转到用户行为分析页面
-      navigate(`/user-behavior/${userId}`);
+  const handleUserAction = (action: string, userUuid?: string) => {
+    if (action === "view-user" && userUuid) {
+      navigate(`/user-behavior/${userUuid}`);
     }
-
     setCommandOpen(false);
   };
-
-  // 模拟用户数据
-  const mockUsers = [
-    { id: "1", name: "张三", email: "zhangsan@example.com", role: "admin" },
-    { id: "2", name: "李四", email: "lisi@example.com", role: "user" },
-    { id: "3", name: "王五", email: "wangwu@example.com", role: "editor" },
-    { id: "4", name: "赵六", email: "zhaoliu@example.com", role: "user" },
-  ];
-
   return (
     <>
       {/* 搜索按钮 */}
@@ -70,34 +67,20 @@ const UserSearch = () => {
       <CommandDialog open={commandOpen} onOpenChange={setCommandOpen}>
         <CommandInput placeholder="输入用户名进行搜索..." />
         <CommandList>
-          <CommandEmpty>没有找到匹配的用户</CommandEmpty>
-
-          <CommandGroup heading="用户列表">
-            {mockUsers.map((user) => (
-              <CommandItem
-                key={user.id}
-                onSelect={() => handleUserAction("view-user", user.id)}
-              >
-                <User className="mr-2 h-4 w-4" />
-                <div className="flex flex-col">
-                  <span className="font-medium">{user.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {user.email}
-                  </span>
-                </div>
-                <div className="ml-auto flex items-center">
-                  {user.role === "admin" && (
-                    <Crown className="h-3 w-3 text-yellow-500" />
-                  )}
-                  {user.role === "editor" && (
-                    <Shield className="h-3 w-3 text-blue-500" />
-                  )}
-                  {user.role === "user" && (
-                    <User className="h-3 w-3 text-gray-500" />
-                  )}
-                </div>
-              </CommandItem>
-            ))}
+          <CommandGroup heading="搜索结果">
+            <CommandEmpty>没有找到匹配的用户</CommandEmpty>
+            {users &&
+              users.map((user) => (
+                <CommandItem
+                  key={user.userUuid}
+                  onSelect={() => handleUserAction("view-user", user.userUuid)}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">{user.userName}</span>
+                  </div>
+                </CommandItem>
+              ))}
           </CommandGroup>
         </CommandList>
       </CommandDialog>
