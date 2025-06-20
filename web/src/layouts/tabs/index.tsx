@@ -72,7 +72,7 @@ const Tabs = () => {
   };
 
   return (
-    <div className="w-full h-12 bg-background border-b border-border flex items-center px-4 gap-1 overflow-x-auto scrollbar-hide">
+    <div className="w-full h-12 bg-background border-b border-border flex items-center px-4 gap-1 overflow-x-auto [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-muted/50 [&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 [&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground/50">
       <AnimatePresence mode="popLayout">
         {nodes.map((node) => (
           <motion.div
