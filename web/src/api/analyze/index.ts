@@ -31,7 +31,7 @@ export const getPageErrorData = async () => {
 // 用户24小时活跃度分析
 export const getUser24HourActive = async (userUuid: string) => {
   const result = await service.request<HourlyActivityResponse[]>({
-    url: `/analyze/active/day/${userUuid}`,
+    url: `/analyze/active/${userUuid}/day`,
     method: "get",
   });
   return result.data;
@@ -40,7 +40,7 @@ export const getUser24HourActive = async (userUuid: string) => {
 // 近7天用户活跃度变化趋势
 export const getUserWeeklyActivityTrend = async (userUuid: string) => {
   const result = await service.request<WeeklyActivityTrendResponse>({
-    url: `/analyze/active/weekly-trend/${userUuid}`,
+    url: `/analyze/active/${userUuid}/weekly-trend`,
     method: "get",
   });
   return result.data;

@@ -5,7 +5,6 @@ import {
   HourlyActivityDto,
   WeeklyActivityTrendDto,
 } from './dto/analyzeActive.dto';
-import { Public } from '@/auth/decorators/public.decorator';
 
 @ApiTags('数据分析')
 @Controller('analyze')
@@ -30,7 +29,6 @@ export class AnalyzeController {
     return this.analyzeService.analyzeError();
   }
 
-  @Public()
   @ApiOperation({
     summary: '用户24小时活跃度分析',
     description: '返回指定用户在当天24小时内每小时的页面浏览量和事件数量分布',
@@ -40,14 +38,13 @@ export class AnalyzeController {
     description: '返回24小时活跃度数据',
     type: [HourlyActivityDto],
   })
-  @Get('active/day/:userUuid')
+  @Get('active/:userUuid/day')
   async analyzeActive(
     @Param('userUuid') userUuid: string,
   ): Promise<HourlyActivityDto[]> {
     return await this.analyzeService.analyzeActive({ userUuid });
   }
 
-  @Public()
   @ApiOperation({
     summary: '近7天用户活跃度变化趋势',
     description:
@@ -58,7 +55,7 @@ export class AnalyzeController {
     description: '返回7天活跃度趋势分析数据',
     type: WeeklyActivityTrendDto,
   })
-  @Get('active/weekly-trend/:userUuid')
+  @Get('active/:userUuid/weekly-trend')
   async analyzeWeeklyActivityTrend(
     @Param('userUuid') userUuid: string,
   ): Promise<WeeklyActivityTrendDto> {
