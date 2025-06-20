@@ -11,7 +11,7 @@ export const HEADER_HEIGHT = "120px";
 
 const Header = () => {
   const { state, isMobile } = useSidebar();
-  
+
   const leftPositionClass = useMemo(() => {
     if (isMobile || state === "collapsed") {
       return "left-0";
@@ -33,9 +33,8 @@ const Header = () => {
       >
         <header className="flex items-center justify-between h-16 px-4 w-full border-b">
           <SidebarTrigger />
-          
           <div className="flex items-center gap-2">
-          <UserSearch />
+            <UserSearch />
             <ModeToggle />
           </div>
         </header>

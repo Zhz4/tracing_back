@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils";
 import { routes } from "@/router";
 import { matchedRoute } from "@/utils/route/treeTopx";
-import { useKeepAliveContext } from "keepalive-for-react";
 import { X } from "lucide-react";
 import { RouteObject, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
@@ -15,14 +14,12 @@ const searchRoutesName = (tree: RouteObject[], routePath: string) => {
 };
 
 const Tabs = () => {
-  const { destroy } = useKeepAliveContext();
   const navigate = useNavigate();
   const { tabList, removeTab } = useCounterStore();
-  const nodes = tabList
-    .map((tab) => ({
-      cacheKey: tab.path,
-      name: tab.name,
-    }));
+  const nodes = tabList.map((tab) => ({
+    cacheKey: tab.path,
+    name: tab.name,
+  }));
   const active = useLocation().pathname + useLocation().search;
 
   const handleDestroy = (cacheKey: string) => {
@@ -32,8 +29,10 @@ const Tabs = () => {
       );
       if (nodes.length === 1) {
         if (cacheKey === INIT_TABS_ROUTE_PATH) {
-          removeTab({ path: cacheKey, name: searchRoutesName(routes, cacheKey) });
-          destroy(cacheKey);
+          removeTab({
+            path: cacheKey,
+            name: searchRoutesName(routes, cacheKey),
+          });
           return;
         } else {
           navigate(INIT_TABS_ROUTE_PATH);
@@ -58,7 +57,6 @@ const Tabs = () => {
 
     setTimeout(() => {
       removeTab({ path: cacheKey, name: searchRoutesName(routes, cacheKey) });
-      destroy(cacheKey);
     }, 0);
   };
 
@@ -110,7 +108,10 @@ const Tabs = () => {
                   e.stopPropagation();
                   handleDestroy(node.cacheKey);
                 }}
-                aria-label={`关闭 ${searchRoutesName(routes, node.cacheKey)} 标签页`}
+                aria-label={`关闭 ${searchRoutesName(
+                  routes,
+                  node.cacheKey
+                )} 标签页`}
               >
                 <X className="w-3 h-3" />
               </button>
