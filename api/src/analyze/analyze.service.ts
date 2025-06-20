@@ -124,17 +124,6 @@ export class AnalyzeService {
     return hourlyData;
   }
 
-  // 用户7天活跃度分析
-  async analyzeActiveWeekly(
-    query: AnalyzeActiveDto,
-  ): Promise<HourlyActivityDto[]> {
-    const { userUuid } = query;
-    const result = await this.prisma.$queryRaw`
-      SELECT * FROM "active_info" WHERE "userUuid" = ${userUuid}
-    `;
-    return result as HourlyActivityDto[];
-  }
-
   // 近7天用户活跃度变化趋势分析
   async analyzeWeeklyActivityTrend(
     query: AnalyzeActiveDto,

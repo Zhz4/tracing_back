@@ -13,14 +13,18 @@ import {
 } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useEffect, useState } from "react";
-import { getUser24HourActive } from "@/api/analyze";
+import { getUser24HourActive, getUserWeeklyActivityTrend } from "@/api/analyze";
 import { useQuery } from "@tanstack/react-query";
-import { HourlyActivityResponse } from "@/api/analyze/type";
+import {
+  HourlyActivityResponse,
+  WeeklyActivityTrendResponse,
+} from "@/api/analyze/type";
 import { useParams } from "react-router-dom";
 
 const UserActivityChart = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { userUuid } = useParams();
+  // 用户24小时活跃度分布
   const { data: activityData } = useQuery<HourlyActivityResponse[]>({
     queryKey: ["user24HourActive", userUuid],
     queryFn: () => getUser24HourActive(userUuid || ""),
@@ -30,6 +34,17 @@ const UserActivityChart = () => {
     refetchOnWindowFocus: false,
     retry: false,
   });
+  // 用户近7天用户活跃度变化趋势
+  const { data: weeklyActivityTrendData } =
+    useQuery<WeeklyActivityTrendResponse>({
+      queryKey: ["userWeeklyActivityTrend", userUuid],
+      queryFn: () => getUserWeeklyActivityTrend(userUuid || ""),
+      staleTime: 24 * 60 * 60 * 1000, // 24小时不重新获取
+      gcTime: 24 * 60 * 60 * 1000, // 24小时后清除缓存
+      enabled: !!userUuid,
+      refetchOnWindowFocus: false,
+      retry: false,
+    });
   // 延迟渲染图表，确保容器已经准备好
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -112,13 +127,17 @@ const UserActivityChart = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 border rounded-lg">
-                <div className="text-2xl font-bold text-green-600">+15%</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {weeklyActivityTrendData?.pageViewGrowth}%
+                </div>
                 <div className="text-sm text-muted-foreground">
                   页面浏览增长
                 </div>
               </div>
               <div className="text-center p-4 border rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">+23%</div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {weeklyActivityTrendData?.eventGrowth}%
+                </div>
                 <div className="text-sm text-muted-foreground">
                   事件交互增长
                 </div>
@@ -127,15 +146,21 @@ const UserActivityChart = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm">最活跃时段</span>
-                <span className="font-medium">14:00 - 16:00</span>
+                <span className="font-medium">
+                  {weeklyActivityTrendData?.mostActiveHour}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">平均在线时长</span>
-                <span className="font-medium">8分32秒</span>
+                <span className="font-medium">
+                  {weeklyActivityTrendData?.averageOnlineTime}分
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">活跃天数</span>
-                <span className="font-medium">7天内5天</span>
+                <span className="font-medium">
+                  {weeklyActivityTrendData?.activeDays}天
+                </span>
               </div>
             </div>
           </div>

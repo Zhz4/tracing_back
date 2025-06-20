@@ -1,6 +1,9 @@
 import service from "@/utils/axios/service";
 import { PageData, PageErrorData } from "./type";
-import { HourlyActivityResponse } from "@/api/analyze/type";
+import {
+  HourlyActivityResponse,
+  WeeklyActivityTrendResponse,
+} from "@/api/analyze/type";
 /**
  * 获取页面统计数据
  * @returns
@@ -29,6 +32,15 @@ export const getPageErrorData = async () => {
 export const getUser24HourActive = async (userUuid: string) => {
   const result = await service.request<HourlyActivityResponse[]>({
     url: `/analyze/active/day/${userUuid}`,
+    method: "get",
+  });
+  return result.data;
+};
+
+// 近7天用户活跃度变化趋势
+export const getUserWeeklyActivityTrend = async (userUuid: string) => {
+  const result = await service.request<WeeklyActivityTrendResponse>({
+    url: `/analyze/active/weekly-trend/${userUuid}`,
     method: "get",
   });
   return result.data;

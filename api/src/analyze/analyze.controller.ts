@@ -1,8 +1,7 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { AnalyzeService } from './analyze.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  AnalyzeActiveDto,
   HourlyActivityDto,
   WeeklyActivityTrendDto,
 } from './dto/analyzeActive.dto';
@@ -49,13 +48,6 @@ export class AnalyzeController {
   }
 
   @Public()
-  @ApiOperation({ summary: '用户7天活跃度分析' })
-  @Get('active/weekly')
-  async analyzeActiveWeekly(@Query() query: AnalyzeActiveDto) {
-    return await this.analyzeService.analyzeActiveWeekly(query);
-  }
-
-  @Public()
   @ApiOperation({
     summary: '近7天用户活跃度变化趋势',
     description:
@@ -66,10 +58,10 @@ export class AnalyzeController {
     description: '返回7天活跃度趋势分析数据',
     type: WeeklyActivityTrendDto,
   })
-  @Get('active/weekly-trend')
+  @Get('active/weekly-trend/:userUuid')
   async analyzeWeeklyActivityTrend(
-    @Query() query: AnalyzeActiveDto,
+    @Param('userUuid') userUuid: string,
   ): Promise<WeeklyActivityTrendDto> {
-    return await this.analyzeService.analyzeWeeklyActivityTrend(query);
+    return await this.analyzeService.analyzeWeeklyActivityTrend({ userUuid });
   }
 }
