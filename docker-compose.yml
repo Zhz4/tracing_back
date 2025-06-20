@@ -23,7 +23,10 @@ services:
       - "3000"
     environment:
       - NODE_ENV=production
+      - TZ=Asia/Shanghai
       - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     depends_on:
       - database
     restart: unless-stopped
