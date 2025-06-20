@@ -5,6 +5,7 @@ import {
   HourlyActivityDto,
   WeeklyActivityTrendDto,
 } from './dto/analyzeActive.dto';
+import * as dayjs from 'dayjs'; // 使用 * as 导入，避免类型冲突
 
 // 定义事件数据的类型接口
 interface EventData {
@@ -313,11 +314,8 @@ export class AnalyzeService {
   // 计算活跃天数
   private calculateActiveDays(events: EventData[]): number {
     const activeDates = new Set<string>();
-
     events.forEach((event) => {
-      const date = new Date(Number(event.triggerTime))
-        .toISOString()
-        .split('T')[0];
+      const date = dayjs(Number(event.triggerTime)).format('YYYY-MM-DD');
       activeDates.add(date);
     });
 
@@ -363,7 +361,7 @@ export class AnalyzeService {
     const onlineTime = this.calculateAverageOnlineTime(dayEvents);
 
     return {
-      date: date.toISOString().split('T')[0],
+      date: dayjs(date).format('YYYY-MM-DD'),
       pageViews,
       events: totalEvents,
       onlineTime,

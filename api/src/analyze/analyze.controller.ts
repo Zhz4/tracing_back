@@ -1,6 +1,11 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { AnalyzeService } from './analyze.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   HourlyActivityDto,
   WeeklyActivityTrendDto,
@@ -13,22 +18,26 @@ export class AnalyzeController {
 
   @ApiOperation({ summary: '页面统计' })
   @Get('page')
+  @ApiBearerAuth('auth')
   analyzePage() {
     return this.analyzeService.analyzePage();
   }
 
   @ApiOperation({ summary: '点击统计' })
   @Get('click')
+  @ApiBearerAuth('auth')
   analyzeClick() {
     return this.analyzeService.analyzeClick();
   }
 
   @ApiOperation({ summary: '错误统计' })
   @Get('error')
+  @ApiBearerAuth('auth')
   analyzeError() {
     return this.analyzeService.analyzeError();
   }
 
+  @ApiBearerAuth('auth')
   @ApiOperation({
     summary: '用户24小时活跃度分析',
     description: '返回指定用户在当天24小时内每小时的页面浏览量和事件数量分布',
@@ -45,6 +54,7 @@ export class AnalyzeController {
     return await this.analyzeService.analyzeActive({ userUuid });
   }
 
+  @ApiBearerAuth('auth')
   @ApiOperation({
     summary: '近7天用户活跃度变化趋势',
     description:
