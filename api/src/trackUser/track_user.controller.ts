@@ -18,6 +18,6 @@ export class TrackUserController {
   @Get()
   @ApiOperation({ summary: '根据用户名获取埋点用户' })
   findByUserName(@Query() getTrackUserDto: GetTrackUserDto) {
-    return this.trackUserService.findByUserName(getTrackUserDto.userName);
+    return this.trackUserService.findByUserName(getTrackUserDto);
   }
 }

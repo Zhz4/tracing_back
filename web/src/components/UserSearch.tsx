@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Search, User } from "lucide-react";
+import { Loader2, Search, User } from "lucide-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/command";
 import { usePlatform } from "@/hooks/use-platform";
 import { getTrackingUser } from "@/api/trackingUser";
+import { useDebounce } from "use-debounce";
 
 const UserSearch = () => {
   const [commandOpen, setCommandOpen] = useState(false);
-  const [searchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const platform = usePlatform();
   // 键盘快捷键监听
@@ -32,10 +33,10 @@ const UserSearch = () => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  // 使用 useQuery 来处理用户搜索
-  const { data: users } = useQuery({
-    queryKey: ["searchUsers", searchQuery],
-    queryFn: () => getTrackingUser(),
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 500); // 防抖 500ms
+  const { data: users, isLoading } = useQuery({
+    queryKey: ["searchUsers", debouncedSearchQuery],
+    queryFn: () => getTrackingUser({ userName: debouncedSearchQuery }),
     refetchOnWindowFocus: false,
     staleTime: 24 * 60 * 60 * 1000, // 24小时不重新获取
   });
@@ -62,13 +63,26 @@ const UserSearch = () => {
           <span className="text-xs">K</span>
         </kbd>
       </Button>
-
       {/* 用户搜索对话框 */}
       <CommandDialog open={commandOpen} onOpenChange={setCommandOpen}>
-        <CommandInput placeholder="输入用户名进行搜索..." />
+        <CommandInput
+          placeholder="输入用户名进行搜索..."
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+        />
         <CommandList>
           <CommandGroup heading="搜索结果">
-            <CommandEmpty>没有找到匹配的用户</CommandEmpty>
+            {isLoading ? (
+              <CommandEmpty className="flex items-center justify-center py-6">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                加载中...
+              </CommandEmpty>
+            ) : (
+              <CommandEmpty className="flex items-center justify-center py-6">
+                <Search className="mr-2 h-4 w-4" />
+                没有找到匹配的用户
+              </CommandEmpty>
+            )}
             {users &&
               users.map((user) => (
                 <CommandItem
