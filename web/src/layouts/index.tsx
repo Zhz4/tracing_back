@@ -5,18 +5,15 @@ import { useLocation, useMatches, useOutlet } from "react-router-dom";
 import { KeepAlive, useKeepAliveRef } from "keepalive-for-react";
 import { Suspense, useEffect } from "react";
 import { MAX_TABS_COUNT } from "@/constants";
-import { routes } from "@/router";
-import { getKeepAliveInclude } from "./tabs/tab-utils";
 
 import { useCounterStore } from "@/stores/tab";
 export default function Layout() {
   const aliveRef = useKeepAliveRef();
   const outlet = useOutlet();
-  const { addTab } = useCounterStore();
+  const { addTab, keepAliveInclude } = useCounterStore();
   const { pathname, search } = useLocation();
   const matches = useMatches();
   const currentCacheKey = pathname + search;
-  const keepAliveInclude = getKeepAliveInclude(routes) as RegExp[];
 
   // 添加tab缓存标签
   useEffect(() => {
@@ -38,6 +35,7 @@ export default function Layout() {
           } as React.CSSProperties
         }
       >
+        <Header />
         <KeepAlive
           aliveRef={aliveRef}
           activeCacheKey={currentCacheKey}
@@ -45,7 +43,6 @@ export default function Layout() {
           cacheNodeClassName="w-full h-full"
           max={MAX_TABS_COUNT}
         >
-          <Header />
           <main className="flex-1 p-6 mt-[var(--header-height)]">
             <Suspense fallback={null}>{outlet}</Suspense>
           </main>

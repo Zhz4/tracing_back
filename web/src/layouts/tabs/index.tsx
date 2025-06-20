@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils";
 import { routes } from "@/router";
 import { matchedRoute } from "@/utils/route/treeTopx";
-import { useKeepAliveContext } from "keepalive-for-react";
 import { X } from "lucide-react";
 import { RouteObject, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
@@ -15,7 +14,6 @@ const searchRoutesName = (tree: RouteObject[], routePath: string) => {
 };
 
 const Tabs = () => {
-  const { destroy } = useKeepAliveContext();
   const navigate = useNavigate();
   const { tabList, removeTab } = useCounterStore();
   const nodes = tabList.map((tab) => ({
@@ -35,7 +33,6 @@ const Tabs = () => {
             path: cacheKey,
             name: searchRoutesName(routes, cacheKey),
           });
-          destroy(cacheKey);
           return;
         } else {
           navigate(INIT_TABS_ROUTE_PATH);
@@ -60,7 +57,6 @@ const Tabs = () => {
 
     setTimeout(() => {
       removeTab({ path: cacheKey, name: searchRoutesName(routes, cacheKey) });
-      destroy(cacheKey);
     }, 0);
   };
 
@@ -76,7 +72,7 @@ const Tabs = () => {
   };
 
   return (
-    <div className="w-full h-12 bg-background border-b border-border flex items-center px-4 gap-1 overflow-x-auto scrollbar-hide">
+    <div className="w-full h-12 bg-background border-b border-border flex items-center px-4 gap-1 overflow-x-auto [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-muted/50 [&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 [&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground/50">
       <AnimatePresence mode="popLayout">
         {nodes.map((node) => (
           <motion.div

@@ -11,5 +11,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async onModuleInit() {
     await this.$connect();
+
+    // 设置数据库连接的默认时区为东八区
+    await this.$executeRaw`SET timezone = 'Asia/Shanghai'`;
   }
 }

@@ -4,9 +4,10 @@ import Layout from "@/layouts";
 import Login from "@/pages/login";
 import MonitorData from "@/pages/monitorData";
 import RecordscreenPage from "@/pages/recordscreen";
+import UserBehaviorAnalysis from "@/pages/userBehavior";
 import type { RouteObject } from "react-router-dom";
 import AuthRoute from "@/components/AuthRoute";
-import { BarChart, House } from "lucide-react";
+import { BarChart, House, User } from "lucide-react";
 export const routes: RouteObject[] = [
   {
     path: "/",
@@ -45,6 +46,15 @@ export const routes: RouteObject[] = [
         element: <RecordscreenPage />,
         handle: {
           title: "记录屏幕",
+        },
+      },
+      {
+        path: "/user-behavior/:userUuid",
+        element: <UserBehaviorAnalysis />,
+        handle: {
+          icon: User,
+          keepAlive: true,
+          title: "用户行为分析",
         },
       },
     ],
