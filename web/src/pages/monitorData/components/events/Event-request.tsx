@@ -21,10 +21,9 @@ import CopyText from "@/utils/util";
 
 interface EventRequestProps {
   event: EventRequest;
-  isScreen?: boolean;
 }
 
-const EventRequestPage = ({ event, isScreen = false }: EventRequestProps) => {
+const EventRequestPage = ({ event }: EventRequestProps) => {
   const { setOpen } = useMonitorData();
 
   const navigate = useNavigate();
@@ -202,7 +201,7 @@ const EventRequestPage = ({ event, isScreen = false }: EventRequestProps) => {
           </div>
         )}
 
-        {event.recordscreen && !isScreen && (
+        {event.recordscreen && (
           <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
             <div className="flex items-center gap-2 text-sm mb-2">
               <Video className="h-4 w-4 text-blue-600 dark:text-blue-400" />

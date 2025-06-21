@@ -17,10 +17,9 @@ import { useMonitorData } from "../../context/monitor-data-context";
 
 interface EventErrorProps {
   event: EventError;
-  isScreen?: boolean;
 }
 
-const EventErrorPage = ({ event, isScreen = false }: EventErrorProps) => {
+const EventErrorPage = ({ event }: EventErrorProps) => {
   const navigate = useNavigate();
   const { setOpen } = useMonitorData();
 
@@ -120,7 +119,7 @@ const EventErrorPage = ({ event, isScreen = false }: EventErrorProps) => {
           </div>
         </div>
 
-        {event.recordscreen && !isScreen && (
+        {event.recordscreen && (
           <div className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 p-3 rounded-lg border">
             <div className="flex items-center gap-2 text-sm mb-2">
               <Video className="h-4 w-4 text-blue-600 dark:text-blue-400" />
