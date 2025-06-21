@@ -5,6 +5,7 @@ import { useLocation, useMatches, useOutlet } from "react-router-dom";
 import { KeepAlive, useKeepAliveRef } from "keepalive-for-react";
 import { Suspense, useEffect } from "react";
 import { MAX_TABS_COUNT } from "@/constants";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 
 import { useCounterStore } from "@/stores/tab";
 export default function Layout() {
@@ -15,13 +16,18 @@ export default function Layout() {
   const matches = useMatches();
   const currentCacheKey = pathname + search;
 
+  // 获取当前页面标题
+  const lastMatch = matches.at(-1);
+  const handle = lastMatch?.handle as { title?: string } | undefined;
+  const currentTitle = handle?.title || "未知页面";
+
+  // 动态更新文档标题
+  useDocumentTitle(currentTitle);
+
   // 添加tab缓存标签
   useEffect(() => {
-    const lastMatch = matches.at(-1);
-    const handle = lastMatch?.handle as { title?: string } | undefined;
-    const title = handle?.title || "未知页面";
-    addTab({ path: currentCacheKey, name: title });
-  }, [currentCacheKey, addTab, matches]);
+    addTab({ path: currentCacheKey, name: currentTitle });
+  }, [currentCacheKey, addTab, currentTitle]);
 
   return (
     <SidebarProvider>

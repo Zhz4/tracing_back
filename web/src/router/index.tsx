@@ -62,6 +62,9 @@ export const routes: RouteObject[] = [
   {
     path: "/login",
     element: <Login />,
+    handle: {
+      title: "登录",
+    },
   },
 ];
 

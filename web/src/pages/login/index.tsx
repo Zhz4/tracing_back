@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
@@ -8,6 +9,9 @@ export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState("login");
+
+  // 设置页面标题
+  useDocumentTitle(tab === "login" ? "登录" : "注册");
 
   const handleLoginSuccess = () => {
     const redirect = searchParams.get("redirect") || "/home";
