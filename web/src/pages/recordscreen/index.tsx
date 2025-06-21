@@ -11,6 +11,10 @@ import rrwebPlayer from "rrweb-player";
 import "rrweb-player/dist/style.css";
 import { useQuery } from "@tanstack/react-query";
 import { getRecordscreenDataByEventId } from "@/api/monitor";
+import { getEventName } from "@/utils/checkEventAll";
+import { EventStatusEnum } from "@/constants";
+import MonitorDataProvider from "@/pages/monitorData/context/monitor-data-context";
+import ErrorInfo from "./errorInfo";
 
 // 加载动画组件
 const LoadingSpinner: React.FC = () => (
@@ -58,6 +62,22 @@ const RecordscreenPage: React.FC = () => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
+  console.log("recordscreenData", recordscreenData);
+  // 渲染事件组件的函数
+  const renderEventComponent = () => {
+    const eventName = getEventName(
+      recordscreenData?.eventType || "",
+      recordscreenData?.eventId || ""
+    );
+    switch (eventName) {
+      case EventStatusEnum.控制台错误:
+      case EventStatusEnum.请求失败:
+      case EventStatusEnum.主动上报错误录屏:
+        return <ErrorInfo event={recordscreenData} />;
+      default:
+        return null;
+    }
+  };
 
   // 清理播放器的函数
   // const cleanupPlayer = useCallback(() => {
@@ -179,6 +199,9 @@ const RecordscreenPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
+      <MonitorDataProvider>
+        {renderEventComponent()}
+      </MonitorDataProvider>
       <div className="flex items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold text-foreground">错误录屏回放</h1>
       </div>
