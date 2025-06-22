@@ -6,13 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  BarChart3,
-  TrendingUp,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-} from "lucide-react";
+import { BarChart3, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -21,7 +15,7 @@ import {
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useEffect, useState } from "react";
 import { getUser24HourActive, getUserWeeklyActivityTrend } from "@/api/analyze";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   HourlyActivityResponse,
   WeeklyActivityTrendResponse,
@@ -71,6 +65,7 @@ const UserActivityChart = () => {
     enabled: !!userUuid,
     refetchOnWindowFocus: false,
     retry: false,
+    placeholderData: keepPreviousData,
   });
   // 用户近7天用户活跃度变化趋势
   const { data: weeklyActivityTrendData } =
@@ -140,7 +135,7 @@ const UserActivityChart = () => {
         </CardHeader>
         <CardContent>
           <div className="w-full h-[300px]">
-            {isVisible ? (
+            {isVisible && (
               <ChartContainer config={chartConfig} className="w-full h-full">
                 <BarChart
                   data={activityData || []}
@@ -166,13 +161,6 @@ const UserActivityChart = () => {
                   />
                 </BarChart>
               </ChartContainer>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-muted/10 rounded-lg">
-                <div className="text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  加载图表中...
-                </div>
-              </div>
             )}
           </div>
         </CardContent>
