@@ -24,12 +24,9 @@ import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import "dayjs/locale/zh-cn";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
-dayjs.locale("zh-cn");
-
 const UserActivityChart = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [currentDate, setCurrentDate] = useState(dayjs());
