@@ -12,6 +12,7 @@ import {
   PageVisitStatsWrapperDto,
 } from './dto/analyzeActive.dto';
 import { Public } from '@/auth/decorators/public.decorator';
+import { UserUuidValidationPipe } from '@/common/pipes/user-uuid-validation.pipe';
 
 @ApiTags('数据分析')
 @Controller('analyze')
@@ -51,7 +52,7 @@ export class AnalyzeController {
   })
   @Get('active/:userUuid/day')
   async analyzeActive(
-    @Param('userUuid') userUuid: string,
+    @Param('userUuid', UserUuidValidationPipe) userUuid: string,
   ): Promise<HourlyActivityDto[]> {
     return await this.analyzeService.analyzeActive({ userUuid });
   }
@@ -69,7 +70,7 @@ export class AnalyzeController {
   })
   @Get('active/:userUuid/weekly-trend')
   async analyzeWeeklyActivityTrend(
-    @Param('userUuid') userUuid: string,
+    @Param('userUuid', UserUuidValidationPipe) userUuid: string,
   ): Promise<WeeklyActivityTrendDto> {
     return await this.analyzeService.analyzeWeeklyActivityTrend({ userUuid });
   }
@@ -83,7 +84,7 @@ export class AnalyzeController {
   @Get('page-visit-stats/:userUuid')
   @Public()
   async analyzePageVisitStats(
-    @Param('userUuid') userUuid: string,
+    @Param('userUuid', UserUuidValidationPipe) userUuid: string,
   ): Promise<PageVisitStatsWrapperDto> {
     return await this.analyzeService.analyzePageVisitStats({ userUuid });
   }
