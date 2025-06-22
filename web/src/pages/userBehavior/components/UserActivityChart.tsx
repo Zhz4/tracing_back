@@ -22,11 +22,7 @@ import {
 } from "@/api/analyze/type";
 import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
-dayjs.extend(isSameOrAfter);
-dayjs.extend(isSameOrBefore);
 const UserActivityChart = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [currentDate, setCurrentDate] = useState(dayjs());
