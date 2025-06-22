@@ -1,11 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 
 // 活跃度分析请求 DTO
 export class AnalyzeActiveDto {
   @ApiProperty({ description: '用户UUID' })
   @IsString()
   userUuid: string;
+
+  @ApiProperty({
+    description: '查询日期的时间戳（毫秒），不传则默认为今天',
+    example: 1704067200000,
+    required: false,
+  })
+  @IsOptional()
+  timestamp?: number;
 }
 
 // 24小时活跃度分析响应 DTO

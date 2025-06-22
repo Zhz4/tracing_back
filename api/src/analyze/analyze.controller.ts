@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AnalyzeService } from './analyze.service';
 import {
   ApiBearerAuth,
@@ -43,7 +43,8 @@ export class AnalyzeController {
   @ApiBearerAuth('auth')
   @ApiOperation({
     summary: '用户24小时活跃度分析',
-    description: '返回指定用户在当天24小时内每小时的页面浏览量和事件数量分布',
+    description:
+      '返回指定用户在指定日期（或当天）24小时内每小时的页面浏览量和事件数量分布',
   })
   @ApiResponse({
     status: 200,
@@ -53,8 +54,13 @@ export class AnalyzeController {
   @Get('active/:userUuid/day')
   async analyzeActive(
     @Param('userUuid', UserUuidValidationPipe) userUuid: string,
+    @Query('timestamp') timestamp?: string,
   ): Promise<HourlyActivityDto[]> {
-    return await this.analyzeService.analyzeActive({ userUuid });
+    const timestampNumber = timestamp ? parseInt(timestamp, 10) : undefined;
+    return await this.analyzeService.analyzeActive({
+      userUuid,
+      timestamp: timestampNumber,
+    });
   }
 
   @ApiBearerAuth('auth')

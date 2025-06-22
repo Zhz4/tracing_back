@@ -5,7 +5,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  BarChart3,
+  TrendingUp,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+} from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -20,14 +27,45 @@ import {
   WeeklyActivityTrendResponse,
 } from "@/api/analyze/type";
 import { useParams } from "react-router-dom";
+import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import "dayjs/locale/zh-cn";
+
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+dayjs.locale("zh-cn");
 
 const UserActivityChart = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [currentDate, setCurrentDate] = useState(dayjs());
   const { userUuid } = useParams();
+  // 获取可以查看的最早日期（7天前）
+  const getMinDate = () => {
+    return dayjs().subtract(6, "day");
+  };
+  // 获取可以查看的最晚日期（今天）
+  const getMaxDate = () => {
+    return dayjs();
+  };
+  // 切换到前一天
+  const handlePreviousDay = () => {
+    const previousDay = currentDate.subtract(1, "day");
+    if (previousDay.isSameOrAfter(getMinDate(), "day")) {
+      setCurrentDate(previousDay);
+    }
+  };
+  // 切换到下一天
+  const handleNextDay = () => {
+    const nextDay = currentDate.add(1, "day");
+    if (nextDay.isSameOrBefore(getMaxDate(), "day")) {
+      setCurrentDate(nextDay);
+    }
+  };
   // 用户24小时活跃度分布
   const { data: activityData } = useQuery<HourlyActivityResponse[]>({
-    queryKey: ["user24HourActive", userUuid],
-    queryFn: () => getUser24HourActive(userUuid || ""),
+    queryKey: ["user24HourActive", userUuid, currentDate.valueOf()],
+    queryFn: () => getUser24HourActive(userUuid || "", currentDate.valueOf()),
     staleTime: 24 * 60 * 60 * 1000, // 24小时不重新获取
     gcTime: 24 * 60 * 60 * 1000, // 24小时后清除缓存
     enabled: !!userUuid,
@@ -75,6 +113,30 @@ const UserActivityChart = () => {
           <CardDescription>
             展示用户在一天中不同时间段的活跃程度
           </CardDescription>
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePreviousDay}
+                disabled={currentDate.isSameOrBefore(getMinDate(), "day")}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm font-medium min-w-[100px] text-center">
+                {currentDate.format("M月D日 ddd")}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNextDay}
+                disabled={currentDate.isSameOrAfter(getMaxDate(), "day")}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="text-xs text-muted-foreground">可查看近7天数据</div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="w-full h-[300px]">
@@ -107,6 +169,7 @@ const UserActivityChart = () => {
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-muted/10 rounded-lg">
                 <div className="text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   加载图表中...
                 </div>
               </div>

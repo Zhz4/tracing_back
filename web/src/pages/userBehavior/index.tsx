@@ -34,24 +34,6 @@ const UserBehaviorAnalysis = () => {
     pageSize: 10,
   });
 
-  // 模拟用户基本信息
-  // const userInfo = {
-  //   id: userId || '1',
-  //   name: '张三',
-  //   email: 'zhangsan@example.com',
-  //   avatar: '',
-  //   role: 'admin',
-  //   registerTime: '2024-01-15',
-  //   lastActiveTime: '2024-12-12 14:30:25',
-  //   totalSessions: 156,
-  //   totalPageViews: 1248,
-  //   totalEvents: 3567,
-  //   avgSessionDuration: '8m 32s',
-  //   deviceType: 'Desktop',
-  //   browser: 'Chrome',
-  //   location: '北京市'
-  // };
-
   // 模拟用户行为数据
   const behaviorData = [
     {

@@ -79,14 +79,34 @@ export class AnalyzeService {
 
   // 用户24小时活跃度分析
   async analyzeActive(query: AnalyzeActiveDto): Promise<HourlyActivityDto[]> {
-    const { userUuid } = query;
+    const { userUuid, timestamp } = query;
 
-    // 获取当天的开始和结束时间戳（毫秒）
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const startOfDay = today.getTime();
-    const endOfDay = startOfDay + 24 * 60 * 60 * 1000;
+    let startOfDay: number;
+    let endOfDay: number;
 
+    if (timestamp) {
+      // 如果提供了时间戳，使用指定时间戳对应的那一天
+      const targetDate = new Date(timestamp);
+      targetDate.setHours(0, 0, 0, 0);
+      startOfDay = targetDate.getTime();
+      endOfDay = startOfDay + 24 * 60 * 60 * 1000;
+    } else {
+      // 如果没有提供时间戳，使用今天
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      startOfDay = today.getTime();
+      endOfDay = startOfDay + 24 * 60 * 60 * 1000;
+    }
+
+    return this.getHourlyActivityData(userUuid, startOfDay, endOfDay);
+  }
+
+  // 提取的获取小时活跃度数据的通用方法
+  private async getHourlyActivityData(
+    userUuid: string,
+    startOfDay: number,
+    endOfDay: number,
+  ): Promise<HourlyActivityDto[]> {
     // 使用原生SQL查询24小时活跃度数据
     const hourlyStatsResult = await this.prisma.$queryRaw<
       Array<{
