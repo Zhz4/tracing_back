@@ -37,23 +37,23 @@ const UserEventStats = () => {
   const chartConfig = {
     pageViews: {
       label: "页面访问",
-      color: "hsl(var(--chart-1))",
+      color: "var(--chart-1)",
     },
     buttonClicks: {
       label: "按钮点击",
-      color: "hsl(var(--chart-2))",
+      color: "var(--chart-2)",
     },
     formSubmissions: {
       label: "表单提交",
-      color: "hsl(var(--chart-3))",
+      color: "var(--chart-3)",
     },
     searches: {
       label: "搜索操作",
-      color: "hsl(var(--chart-4))",
+      color: "var(--chart-4)",
     },
     downloads: {
       label: "文件下载",
-      color: "hsl(var(--chart-5))",
+      color: "var(--chart-5)",
     },
   };
 
@@ -75,11 +75,11 @@ const UserEventStats = () => {
   };
 
   const COLORS = [
-    "hsl(var(--chart-1))",
-    "hsl(var(--chart-2))",
-    "hsl(var(--chart-3))",
-    "hsl(var(--chart-4))",
-    "hsl(var(--chart-5))",
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
   ];
 
   return (

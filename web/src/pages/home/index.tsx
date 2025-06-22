@@ -26,6 +26,7 @@ const Home = () => {
           label="访问量"
           labelKey="url"
           valueKey="views"
+          chartColor="var(--chart-2)"
         />
         <PageViewChart
           isLoading={pageErrorLoading}
@@ -35,6 +36,7 @@ const Home = () => {
           label="错误量"
           labelKey="appName"
           valueKey="errorCount"
+          chartColor="var(--chart-5)"
         />
       </div>
     </div>

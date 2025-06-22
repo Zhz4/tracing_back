@@ -82,11 +82,11 @@ const UserActivityChart = () => {
   const chartConfig = {
     pageViews: {
       label: "页面浏览",
-      color: "hsl(var(--chart-1))",
+      color: "var(--chart-1)",
     },
     events: {
       label: "用户事件",
-      color: "hsl(var(--chart-2))",
+      color: "var(--chart-3)",
     },
   };
 

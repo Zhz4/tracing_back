@@ -16,7 +16,7 @@ const App = () => {
   });
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+      <ThemeProvider defaultTheme="dark">
         <Toaster position="top-center" />
         {import.meta.env.DEV && (
           <ReactQueryDevtools

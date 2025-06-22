@@ -21,6 +21,7 @@ interface PageViewChartProps<T> {
   label: string;
   labelKey: keyof T;
   valueKey: keyof T;
+  chartColor?: string;
 }
 
 const PageViewChart = <T,>({
@@ -31,6 +32,7 @@ const PageViewChart = <T,>({
   label,
   labelKey,
   valueKey,
+  chartColor = "var(--chart-1)",
 }: PageViewChartProps<T>) => {
   const data = pageData?.map((item) => ({
     name: item[labelKey] as string,
@@ -41,7 +43,7 @@ const PageViewChart = <T,>({
   const config = {
     uv: {
       label: label,
-      color: "oklch(var(--primary))",
+      color: chartColor,
     },
   } satisfies ChartConfig;
 
