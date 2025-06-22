@@ -5,7 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BarChart3, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -14,25 +15,50 @@ import {
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useEffect, useState } from "react";
 import { getUser24HourActive, getUserWeeklyActivityTrend } from "@/api/analyze";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   HourlyActivityResponse,
   WeeklyActivityTrendResponse,
 } from "@/api/analyze/type";
 import { useParams } from "react-router-dom";
+import dayjs from "dayjs";
 
 const UserActivityChart = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [currentDate, setCurrentDate] = useState(dayjs());
   const { userUuid } = useParams();
+  // 获取可以查看的最早日期（7天前）
+  const getMinDate = () => {
+    return dayjs().subtract(6, "day");
+  };
+  // 获取可以查看的最晚日期（今天）
+  const getMaxDate = () => {
+    return dayjs();
+  };
+  // 切换到前一天
+  const handlePreviousDay = () => {
+    const previousDay = currentDate.subtract(1, "day");
+    if (previousDay.isSameOrAfter(getMinDate(), "day")) {
+      setCurrentDate(previousDay);
+    }
+  };
+  // 切换到下一天
+  const handleNextDay = () => {
+    const nextDay = currentDate.add(1, "day");
+    if (nextDay.isSameOrBefore(getMaxDate(), "day")) {
+      setCurrentDate(nextDay);
+    }
+  };
   // 用户24小时活跃度分布
   const { data: activityData } = useQuery<HourlyActivityResponse[]>({
-    queryKey: ["user24HourActive", userUuid],
-    queryFn: () => getUser24HourActive(userUuid || ""),
+    queryKey: ["user24HourActive", userUuid, currentDate.valueOf()],
+    queryFn: () => getUser24HourActive(userUuid || "", currentDate.valueOf()),
     staleTime: 24 * 60 * 60 * 1000, // 24小时不重新获取
     gcTime: 24 * 60 * 60 * 1000, // 24小时后清除缓存
     enabled: !!userUuid,
     refetchOnWindowFocus: false,
     retry: false,
+    placeholderData: keepPreviousData,
   });
   // 用户近7天用户活跃度变化趋势
   const { data: weeklyActivityTrendData } =
@@ -56,11 +82,11 @@ const UserActivityChart = () => {
   const chartConfig = {
     pageViews: {
       label: "页面浏览",
-      color: "hsl(var(--chart-1))",
+      color: "var(--chart-1)",
     },
     events: {
       label: "用户事件",
-      color: "hsl(var(--chart-2))",
+      color: "var(--chart-3)",
     },
   };
 
@@ -75,10 +101,34 @@ const UserActivityChart = () => {
           <CardDescription>
             展示用户在一天中不同时间段的活跃程度
           </CardDescription>
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePreviousDay}
+                disabled={currentDate.isSameOrBefore(getMinDate(), "day")}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm font-medium min-w-[100px] text-center">
+                {currentDate.format("M月D日 ddd")}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNextDay}
+                disabled={currentDate.isSameOrAfter(getMaxDate(), "day")}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="text-xs text-muted-foreground">可查看近7天数据</div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="w-full h-[300px]">
-            {isVisible ? (
+            {isVisible && (
               <ChartContainer config={chartConfig} className="w-full h-full">
                 <BarChart
                   data={activityData || []}
@@ -104,12 +154,6 @@ const UserActivityChart = () => {
                   />
                 </BarChart>
               </ChartContainer>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-muted/10 rounded-lg">
-                <div className="text-sm text-muted-foreground">
-                  加载图表中...
-                </div>
-              </div>
             )}
           </div>
         </CardContent>

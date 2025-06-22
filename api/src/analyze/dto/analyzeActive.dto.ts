@@ -1,11 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 
 // 活跃度分析请求 DTO
 export class AnalyzeActiveDto {
   @ApiProperty({ description: '用户UUID' })
   @IsString()
   userUuid: string;
+
+  @ApiProperty({
+    description: '查询日期的时间戳（毫秒），不传则默认为今天',
+    example: 1704067200000,
+    required: false,
+  })
+  @IsOptional()
+  timestamp?: number;
 }
 
 // 24小时活跃度分析响应 DTO
@@ -60,4 +68,40 @@ export class WeeklyActivityTrendDto {
     events: number;
     onlineTime: number;
   }>;
+}
+
+// 页面访问统计响应 DTO
+export class PageVisitStatsDto {
+  @ApiProperty({ description: '页面标题', example: '首页' })
+  title: string;
+
+  @ApiProperty({ description: '访问量', example: 108 })
+  visitCount: number;
+
+  @ApiProperty({ description: '跳出率（百分比）', example: 12 })
+  bounceRate: number;
+
+  @ApiProperty({ description: '平均停留时间（毫秒）', example: 135000 })
+  avgStayTimeMs: number;
+}
+
+// 页面访问统计总体响应 DTO
+export class PageVisitStatsWrapperDto {
+  @ApiProperty({
+    description: '页面统计数据（访问量最多的前4个）',
+    type: [PageVisitStatsDto],
+  })
+  pageStats: PageVisitStatsDto[];
+
+  @ApiProperty({ description: '总访问量', example: 272 })
+  totalVisits: number;
+
+  @ApiProperty({ description: '平均跳出率（百分比）', example: 22 })
+  avgBounceRate: number;
+
+  @ApiProperty({ description: '平均停留时间（毫秒）', example: 188000 })
+  avgStayTimeMs: number;
+
+  @ApiProperty({ description: '总停留时间（毫秒）', example: 51136000 })
+  totalStayTimeMs: number;
 }

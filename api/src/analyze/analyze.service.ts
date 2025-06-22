@@ -4,33 +4,34 @@ import {
   AnalyzeActiveDto,
   HourlyActivityDto,
   WeeklyActivityTrendDto,
+  PageVisitStatsWrapperDto,
 } from './dto/analyzeActive.dto';
-import * as dayjs from 'dayjs'; // 使用 * as 导入，避免类型冲突
+import * as dayjs from 'dayjs';
+import * as duration from 'dayjs/plugin/duration';
 
-// 定义事件数据的类型接口
-interface EventData {
-  eventType: string;
-  triggerTime: bigint;
-  durationTime: bigint | null;
-}
-
-// 定义时间范围的类型接口
-interface TimeRange {
-  start: Date;
-  end: Date;
-}
-
-// 定义每日详情的类型接口
-interface DailyDetail {
-  date: string;
-  pageViews: number;
-  events: number;
-  onlineTime: number;
-}
+// 配置 dayjs 插件
+dayjs.extend(duration);
 
 @Injectable()
 export class AnalyzeService {
   constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * 计算增长率
+   * @param current 当前值
+   * @param previous 之前值
+   * @returns 增长率百分比，保留2位小数
+   */
+  private calculateGrowthRate(current: number, previous: number): number {
+    // 如果之前有数据，计算增长率
+    if (previous > 0) {
+      const growthRate = ((current - previous) / previous) * 100;
+      return Number(growthRate.toFixed(2));
+    }
+
+    // 如果之前没有数据，当前有数据则增长100%，否则0%
+    return current > 0 ? 100 : 0;
+  }
 
   async analyzePage() {
     const data = await this.prisma.$queryRaw`
@@ -78,29 +79,54 @@ export class AnalyzeService {
 
   // 用户24小时活跃度分析
   async analyzeActive(query: AnalyzeActiveDto): Promise<HourlyActivityDto[]> {
-    const { userUuid } = query;
-    // 获取当天的开始和结束时间戳（毫秒）
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const startOfDay = today.getTime();
-    const endOfDay = startOfDay + 24 * 60 * 60 * 1000; // 加一天
+    const { userUuid, timestamp } = query;
 
-    // 获取用户今天的事件数据
-    const events = await this.prisma.eventInfo.findMany({
-      where: {
-        TrackingData: {
-          userUuid: userUuid,
-        },
-        triggerTime: {
-          gte: BigInt(startOfDay),
-          lt: BigInt(endOfDay),
-        },
-      },
-      select: {
-        eventType: true,
-        triggerTime: true,
-      },
-    });
+    let startOfDay: number;
+    let endOfDay: number;
+
+    if (timestamp) {
+      // 如果提供了时间戳，使用指定时间戳对应的那一天
+      const targetDate = new Date(timestamp);
+      targetDate.setHours(0, 0, 0, 0);
+      startOfDay = targetDate.getTime();
+      endOfDay = startOfDay + 24 * 60 * 60 * 1000;
+    } else {
+      // 如果没有提供时间戳，使用今天
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      startOfDay = today.getTime();
+      endOfDay = startOfDay + 24 * 60 * 60 * 1000;
+    }
+
+    return this.getHourlyActivityData(userUuid, startOfDay, endOfDay);
+  }
+
+  // 提取的获取小时活跃度数据的通用方法
+  private async getHourlyActivityData(
+    userUuid: string,
+    startOfDay: number,
+    endOfDay: number,
+  ): Promise<HourlyActivityDto[]> {
+    // 使用原生SQL查询24小时活跃度数据
+    const hourlyStatsResult = await this.prisma.$queryRaw<
+      Array<{
+        hour: number;
+        pageViews: bigint;
+        events: bigint;
+      }>
+    >`
+      SELECT 
+        EXTRACT(HOUR FROM TO_TIMESTAMP(e."triggerTime"::bigint / 1000)) as hour,
+        COUNT(CASE WHEN e."eventType" = 'pv' THEN 1 END) as "pageViews",
+        COUNT(*) as events
+      FROM "event_info" e
+      JOIN "tracking_data" t ON e."trackingDataId" = t."id"
+      WHERE t."userUuid" = ${userUuid}
+        AND e."triggerTime" >= ${BigInt(startOfDay)}
+        AND e."triggerTime" < ${BigInt(endOfDay)}
+      GROUP BY EXTRACT(HOUR FROM TO_TIMESTAMP(e."triggerTime"::bigint / 1000))
+      ORDER BY hour
+    `;
 
     // 初始化24小时的数据结构
     const hourlyData: HourlyActivityDto[] = [];
@@ -111,17 +137,16 @@ export class AnalyzeService {
         events: 0,
       });
     }
-    // 处理查询到的事件数据
-    events.forEach((event) => {
-      const eventDate = new Date(Number(event.triggerTime));
-      const hour = eventDate.getHours();
+
+    // 填充查询结果
+    hourlyStatsResult.forEach((result) => {
+      const hour = Number(result.hour);
       if (hour >= 0 && hour < 24) {
-        hourlyData[hour].events += 1;
-        if (event.eventType === 'pv') {
-          hourlyData[hour].pageViews += 1;
-        }
+        hourlyData[hour].pageViews = Number(result.pageViews);
+        hourlyData[hour].events = Number(result.events);
       }
     });
+
     return hourlyData;
   }
 
@@ -130,35 +155,169 @@ export class AnalyzeService {
     query: AnalyzeActiveDto,
   ): Promise<WeeklyActivityTrendDto> {
     const { userUuid } = query;
-    // 获取时间范围
-    const { currentWeekRange, previousWeekRange } = this.getWeekTimeRanges();
-    // 查询当前周和前一周的事件数据
-    const currentWeekEvents = await this.getEventsInRange(
+
+    // 计算时间范围
+    const {
+      currentWeekStart,
+      currentWeekEnd,
+      previousWeekStart,
+      previousWeekEnd,
+    } = this.calculateWeekTimeRange();
+
+    // 获取周统计数据
+    const weeklyStats = await this.getWeeklyStatsData(
       userUuid,
-      currentWeekRange,
-    );
-    const previousWeekEvents = await this.getEventsInRange(
-      userUuid,
-      previousWeekRange,
+      currentWeekStart,
+      currentWeekEnd,
+      previousWeekStart,
+      previousWeekEnd,
     );
 
-    // 计算各项指标
-    const pageViewGrowth = this.calculatePageViewGrowth(
-      currentWeekEvents,
-      previousWeekEvents,
+    // 获取每日详情数据
+    const dailyDetails = await this.getDailyDetailsData(
+      userUuid,
+      currentWeekStart,
+      currentWeekEnd,
     );
-    const eventGrowth = this.calculateEventGrowth(
-      currentWeekEvents,
-      previousWeekEvents,
+
+    return {
+      pageViewGrowth: weeklyStats.pageViewGrowth,
+      eventGrowth: weeklyStats.eventGrowth,
+      mostActiveHour: weeklyStats.mostActiveHour,
+      averageOnlineTime: weeklyStats.averageOnlineTime,
+      activeDays: weeklyStats.activeDays,
+      dailyDetails,
+    };
+  }
+
+  /**
+   * 计算当前周和前一周的时间范围
+   */
+  private calculateWeekTimeRange() {
+    const currentWeekEnd = new Date();
+    currentWeekEnd.setHours(23, 59, 59, 999);
+
+    const currentWeekStart = new Date(currentWeekEnd);
+    currentWeekStart.setDate(currentWeekStart.getDate() - 6);
+    currentWeekStart.setHours(0, 0, 0, 0);
+
+    const previousWeekEnd = new Date(currentWeekStart);
+    previousWeekEnd.setMilliseconds(previousWeekEnd.getMilliseconds() - 1);
+
+    const previousWeekStart = new Date(previousWeekEnd);
+    previousWeekStart.setDate(previousWeekStart.getDate() - 6);
+    previousWeekStart.setHours(0, 0, 0, 0);
+
+    return {
+      currentWeekStart,
+      currentWeekEnd,
+      previousWeekStart,
+      previousWeekEnd,
+    };
+  }
+
+  /**
+   * 获取周统计数据（当前周和前一周的对比数据）
+   */
+  private async getWeeklyStatsData(
+    userUuid: string,
+    currentWeekStart: Date,
+    currentWeekEnd: Date,
+    previousWeekStart: Date,
+    previousWeekEnd: Date,
+  ) {
+    const weeklyStatsResult = await this.prisma.$queryRaw<
+      Array<{
+        week_type: string;
+        page_views: bigint;
+        total_events: bigint;
+        most_active_hour: number;
+        avg_duration_ms: bigint;
+        active_days: bigint;
+      }>
+    >`
+      WITH weekly_data AS (
+        SELECT 
+          CASE 
+            WHEN e."triggerTime" >= ${BigInt(currentWeekStart.getTime())} 
+                 AND e."triggerTime" <= ${BigInt(currentWeekEnd.getTime())} 
+            THEN 'current'
+            ELSE 'previous'
+          END as week_type,
+          e."eventType",
+          e."triggerTime",
+          e."durationTime",
+          EXTRACT(HOUR FROM TO_TIMESTAMP(e."triggerTime"::bigint / 1000)) as hour,
+          DATE(TO_TIMESTAMP(e."triggerTime"::bigint / 1000)) as event_date
+        FROM "event_info" e
+        JOIN "tracking_data" t ON e."trackingDataId" = t."id"
+        WHERE t."userUuid" = ${userUuid}
+          AND (
+            (e."triggerTime" >= ${BigInt(previousWeekStart.getTime())} 
+             AND e."triggerTime" <= ${BigInt(previousWeekEnd.getTime())})
+            OR
+            (e."triggerTime" >= ${BigInt(currentWeekStart.getTime())} 
+             AND e."triggerTime" <= ${BigInt(currentWeekEnd.getTime())})
+          )
+      ),
+      hourly_stats AS (
+        SELECT 
+          week_type,
+          hour,
+          COUNT(*) as hour_events
+        FROM weekly_data 
+        WHERE week_type = 'current'
+        GROUP BY week_type, hour
+      ),
+      most_active AS (
+        SELECT hour
+        FROM hourly_stats
+        ORDER BY hour_events DESC
+        LIMIT 1
+      )
+      SELECT 
+        w.week_type,
+        COUNT(CASE WHEN w."eventType" = 'pv' THEN 1 END) as page_views,
+        COUNT(*) as total_events,
+        COALESCE((SELECT hour FROM most_active), 0) as most_active_hour,
+        COALESCE(AVG(CASE WHEN w."durationTime" > 0 THEN w."durationTime" END), 0)::bigint as avg_duration_ms,
+        COUNT(DISTINCT w.event_date) as active_days
+      FROM weekly_data w
+      GROUP BY w.week_type
+      ORDER BY w.week_type
+    `;
+
+    // 处理统计结果
+    const currentWeekStats = weeklyStatsResult.find(
+      (row) => row.week_type === 'current',
     );
-    const mostActiveHour = this.findMostActiveHour(currentWeekEvents);
-    const averageOnlineTime =
-      this.calculateAverageOnlineTime(currentWeekEvents);
-    const activeDays = this.calculateActiveDays(currentWeekEvents);
-    const dailyDetails = this.generateDailyDetails(
-      currentWeekEvents,
-      currentWeekRange.start,
+    const previousWeekStats = weeklyStatsResult.find(
+      (row) => row.week_type === 'previous',
     );
+
+    const currentPageViews = Number(currentWeekStats?.page_views || 0);
+    const previousPageViews = Number(previousWeekStats?.page_views || 0);
+    const currentEvents = Number(currentWeekStats?.total_events || 0);
+    const previousEvents = Number(previousWeekStats?.total_events || 0);
+
+    // 计算增长率
+    const pageViewGrowth = this.calculateGrowthRate(
+      currentPageViews,
+      previousPageViews,
+    );
+    const eventGrowth = this.calculateGrowthRate(currentEvents, previousEvents);
+
+    // 格式化最活跃时段
+    const mostActiveHourNum = Number(currentWeekStats?.most_active_hour || 0);
+    const startHour = mostActiveHourNum.toString().padStart(2, '0');
+    const endHour = (mostActiveHourNum + 1).toString().padStart(2, '0');
+    const mostActiveHour = `${startHour}:00-${endHour}:00`;
+
+    // 计算平均在线时长（分钟）
+    const averageOnlineTime = Number(
+      (Number(currentWeekStats?.avg_duration_ms || 0) / 1000 / 60).toFixed(2),
+    );
+    const activeDays = Number(currentWeekStats?.active_days || 0);
 
     return {
       pageViewGrowth,
@@ -166,205 +325,149 @@ export class AnalyzeService {
       mostActiveHour,
       averageOnlineTime,
       activeDays,
-      dailyDetails,
     };
   }
 
-  // 获取近7天和前7天的时间范围
-  private getWeekTimeRanges(): {
-    currentWeekRange: TimeRange;
-    previousWeekRange: TimeRange;
-  } {
-    const endDate = new Date();
-    endDate.setHours(23, 59, 59, 999);
-
-    const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - 6);
-    startDate.setHours(0, 0, 0, 0);
-
-    // 前一周时间范围
-    const previousEndDate = new Date(startDate);
-    previousEndDate.setMilliseconds(previousEndDate.getMilliseconds() - 1);
-
-    const previousStartDate = new Date(previousEndDate);
-    previousStartDate.setDate(previousStartDate.getDate() - 6);
-    previousStartDate.setHours(0, 0, 0, 0);
-
-    return {
-      currentWeekRange: {
-        start: startDate,
-        end: endDate,
-      },
-      previousWeekRange: {
-        start: previousStartDate,
-        end: previousEndDate,
-      },
-    };
-  }
-
-  // 查询指定时间范围内的事件数据
-  private async getEventsInRange(
+  /**
+   * 获取每日详情数据
+   */
+  private async getDailyDetailsData(
     userUuid: string,
-    timeRange: TimeRange,
-  ): Promise<EventData[]> {
-    return await this.prisma.eventInfo.findMany({
-      where: {
-        TrackingData: {
-          userUuid: userUuid,
-        },
-        triggerTime: {
-          gte: BigInt(timeRange.start.getTime()),
-          lte: BigInt(timeRange.end.getTime()),
-        },
-      },
-      select: {
-        eventType: true,
-        triggerTime: true,
-        durationTime: true,
-      },
-      orderBy: {
-        triggerTime: 'asc',
-      },
-    });
-  }
+    currentWeekStart: Date,
+    currentWeekEnd: Date,
+  ) {
+    const dailyDetailsResult = await this.prisma.$queryRaw<
+      Array<{
+        event_date: string;
+        page_views: bigint;
+        total_events: bigint;
+        avg_duration_ms: bigint;
+      }>
+    >`
+      SELECT 
+        TO_CHAR(DATE(TO_TIMESTAMP(e."triggerTime"::bigint / 1000)), 'YYYY-MM-DD') as event_date,
+        COUNT(CASE WHEN e."eventType" = 'pv' THEN 1 END) as page_views,
+        COUNT(*) as total_events,
+        COALESCE(AVG(CASE WHEN e."durationTime" > 0 THEN e."durationTime" END), 0)::bigint as avg_duration_ms
+      FROM "event_info" e
+      JOIN "tracking_data" t ON e."trackingDataId" = t."id"
+      WHERE t."userUuid" = ${userUuid}
+        AND e."triggerTime" >= ${BigInt(currentWeekStart.getTime())}
+        AND e."triggerTime" <= ${BigInt(currentWeekEnd.getTime())}
+      GROUP BY DATE(TO_TIMESTAMP(e."triggerTime"::bigint / 1000))
+      ORDER BY event_date
+    `;
 
-  // 计算页面浏览增长率
-  private calculatePageViewGrowth(
-    currentEvents: EventData[],
-    previousEvents: EventData[],
-  ): number {
-    const currentPageViews = currentEvents.filter(
-      (e) => e.eventType === 'pv',
-    ).length;
-    const previousPageViews = previousEvents.filter(
-      (e) => e.eventType === 'pv',
-    ).length;
-
-    if (previousPageViews === 0) {
-      return currentPageViews > 0 ? 100 : 0;
-    }
-
-    const growthRate =
-      ((currentPageViews - previousPageViews) / previousPageViews) * 100;
-    return Number(growthRate.toFixed(2));
-  }
-
-  // 计算事件交互增长率
-  private calculateEventGrowth(
-    currentEvents: EventData[],
-    previousEvents: EventData[],
-  ): number {
-    const currentEventCount = currentEvents.length;
-    const previousEventCount = previousEvents.length;
-
-    if (previousEventCount === 0) {
-      return currentEventCount > 0 ? 100 : 0;
-    }
-
-    const growthRate =
-      ((currentEventCount - previousEventCount) / previousEventCount) * 100;
-    return Number(growthRate.toFixed(2));
-  }
-
-  // 找出最活跃时段
-  private findMostActiveHour(events: EventData[]): string {
-    const hourlyStats: Record<number, number> = {};
-
-    // 统计每小时的事件数量
-    events.forEach((event) => {
-      const hour = new Date(Number(event.triggerTime)).getHours();
-      hourlyStats[hour] = (hourlyStats[hour] || 0) + 1;
-    });
-
-    // 找出事件最多的小时
-    const mostActiveHourNum = Object.keys(hourlyStats).reduce(
-      (maxHour, currentHour) => {
-        const maxCount = hourlyStats[Number(maxHour)] || 0;
-        const currentCount = hourlyStats[Number(currentHour)] || 0;
-        return currentCount > maxCount ? currentHour : maxHour;
-      },
-      '0',
-    );
-
-    const startHour = mostActiveHourNum.padStart(2, '0');
-    const endHour = String(Number(mostActiveHourNum) + 1).padStart(2, '0');
-    return `${startHour}:00-${endHour}:00`;
-  }
-
-  // 计算平均在线时长（分钟）
-  private calculateAverageOnlineTime(events: EventData[]): number {
-    const validDurations = events
-      .filter((event) => event.durationTime && event.durationTime > 0)
-      .map((event) => Number(event.durationTime));
-
-    if (validDurations.length === 0) {
-      return 0;
-    }
-
-    const totalDuration = validDurations.reduce(
-      (sum, duration) => sum + duration,
-      0,
-    );
-    const averageDurationMs = totalDuration / validDurations.length;
-    const averageDurationMinutes = averageDurationMs / 1000 / 60;
-
-    return Number(averageDurationMinutes.toFixed(2));
-  }
-
-  // 计算活跃天数
-  private calculateActiveDays(events: EventData[]): number {
-    const activeDates = new Set<string>();
-    events.forEach((event) => {
-      const date = dayjs(Number(event.triggerTime)).format('YYYY-MM-DD');
-      activeDates.add(date);
-    });
-
-    return activeDates.size;
-  }
-
-  // 生成每日详情数据
-  private generateDailyDetails(
-    events: EventData[],
-    startDate: Date,
-  ): DailyDetail[] {
-    const dailyDetails: DailyDetail[] = [];
+    // 生成每日详情
+    const dailyDetails: Array<{
+      date: string;
+      pageViews: number;
+      events: number;
+      onlineTime: number;
+    }> = [];
 
     for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-      const currentDate = new Date(startDate);
+      const currentDate = new Date(currentWeekStart);
       currentDate.setDate(currentDate.getDate() + dayIndex);
+      const dateStr = currentDate.toISOString().split('T')[0];
 
-      const dayData = this.calculateDayData(events, currentDate);
-      dailyDetails.push(dayData);
+      const dayData = dailyDetailsResult.find(
+        (row) => row.event_date === dateStr,
+      );
+
+      dailyDetails.push({
+        date: currentDate.getTime().toString(),
+        pageViews: Number(dayData?.page_views || 0),
+        events: Number(dayData?.total_events || 0),
+        onlineTime: Number(
+          (Number(dayData?.avg_duration_ms || 0) / 1000 / 60).toFixed(2),
+        ),
+      });
     }
 
     return dailyDetails;
   }
 
-  // 计算单日数据
-  private calculateDayData(events: EventData[], date: Date): DailyDetail {
-    const dayStart = new Date(date);
-    dayStart.setHours(0, 0, 0, 0);
+  // 页面访问统计分析
+  async analyzePageVisitStats(
+    query: AnalyzeActiveDto,
+  ): Promise<PageVisitStatsWrapperDto> {
+    const { userUuid } = query;
 
-    const dayEnd = new Date(date);
-    dayEnd.setHours(23, 59, 59, 999);
+    // 查询页面统计数据（访问量最多的前4个）
+    const pageStatsResult = await this.prisma.$queryRaw<
+      Array<{
+        title: string;
+        visitCount: bigint;
+        bounceRate: number;
+        avgStayTimeMs: bigint;
+      }>
+    >`
+      SELECT 
+        e."title",
+        COUNT(*) as "visitCount",
+        ROUND(
+          (COUNT(CASE WHEN e."referer" IS NULL OR e."referer" = '' THEN 1 END) * 100.0 / COUNT(*))::numeric, 
+          2
+        ) as "bounceRate",
+        COALESCE(AVG(CASE WHEN e."durationTime" > 0 THEN e."durationTime" END), 0)::bigint as "avgStayTimeMs"
+      FROM "event_info" e
+      JOIN "tracking_data" t ON e."trackingDataId" = t."id"
+      WHERE t."userUuid" = ${userUuid}
+        AND e."title" IS NOT NULL 
+        AND e."title" != '' 
+        AND e."title" != ' '
+      GROUP BY e."title"
+      ORDER BY COUNT(*) DESC
+      LIMIT 4
+    `;
 
-    // 筛选当日事件
-    const dayEvents = events.filter((event) => {
-      const eventTime = Number(event.triggerTime);
-      return eventTime >= dayStart.getTime() && eventTime <= dayEnd.getTime();
-    });
+    // 查询总统计数据（基于所有页面）
+    const totalStatsResult = await this.prisma.$queryRaw<
+      Array<{
+        totalVisits: bigint;
+        avgBounceRate: number;
+        avgStayTimeMs: bigint;
+        totalStayTimeMs: bigint;
+      }>
+    >`
+      SELECT 
+        COUNT(*) as "totalVisits",
+        ROUND(
+          (COUNT(CASE WHEN e."referer" IS NULL OR e."referer" = '' THEN 1 END) * 100.0 / COUNT(*))::numeric, 
+          2
+        ) as "avgBounceRate",
+        COALESCE(AVG(CASE WHEN e."durationTime" > 0 THEN e."durationTime" END), 0)::bigint as "avgStayTimeMs",
+        COALESCE(SUM(CASE WHEN e."durationTime" > 0 THEN e."durationTime" END), 0)::bigint as "totalStayTimeMs"
+      FROM "event_info" e
+      JOIN "tracking_data" t ON e."trackingDataId" = t."id"
+      WHERE t."userUuid" = ${userUuid}
+        AND e."title" IS NOT NULL 
+        AND e."title" != '' 
+        AND e."title" != ' '
+    `;
 
-    const pageViews = dayEvents.filter(
-      (event) => event.eventType === 'pv',
-    ).length;
-    const totalEvents = dayEvents.length;
-    const onlineTime = this.calculateAverageOnlineTime(dayEvents);
+    // 处理查询结果
+    const pageStats = pageStatsResult.map((row) => ({
+      title: row.title,
+      visitCount: Number(row.visitCount),
+      bounceRate: Number(row.bounceRate),
+      avgStayTimeMs: Number(row.avgStayTimeMs),
+    }));
+
+    const totalStats = totalStatsResult[0] || {
+      totalVisits: BigInt(0),
+      avgBounceRate: 0,
+      avgStayTimeMs: BigInt(0),
+      totalStayTimeMs: BigInt(0),
+    };
 
     return {
-      date: dayjs(date).format('YYYY-MM-DD'),
-      pageViews,
-      events: totalEvents,
-      onlineTime,
+      pageStats,
+      totalVisits: Number(totalStats.totalVisits),
+      avgBounceRate: Number(totalStats.avgBounceRate),
+      avgStayTimeMs: Number(totalStats.avgStayTimeMs),
+      totalStayTimeMs: Number(totalStats.totalStayTimeMs),
     };
   }
 }
