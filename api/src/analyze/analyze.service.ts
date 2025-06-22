@@ -410,7 +410,7 @@ export class AnalyzeService {
           (COUNT(CASE WHEN e."referer" IS NULL OR e."referer" = '' THEN 1 END) * 100.0 / COUNT(*))::numeric, 
           2
         ) as "bounceRate",
-        COALESCE(AVG(e."durationTime"), 0)::bigint as "avgStayTimeMs"
+        COALESCE(AVG(CASE WHEN e."durationTime" > 0 THEN e."durationTime" END), 0)::bigint as "avgStayTimeMs"
       FROM "event_info" e
       JOIN "tracking_data" t ON e."trackingDataId" = t."id"
       WHERE t."userUuid" = ${userUuid}
@@ -428,6 +428,7 @@ export class AnalyzeService {
         totalVisits: bigint;
         avgBounceRate: number;
         avgStayTimeMs: bigint;
+        totalStayTimeMs: bigint;
       }>
     >`
       SELECT 
@@ -436,7 +437,8 @@ export class AnalyzeService {
           (COUNT(CASE WHEN e."referer" IS NULL OR e."referer" = '' THEN 1 END) * 100.0 / COUNT(*))::numeric, 
           2
         ) as "avgBounceRate",
-        COALESCE(AVG(e."durationTime"), 0)::bigint as "avgStayTimeMs"
+        COALESCE(AVG(CASE WHEN e."durationTime" > 0 THEN e."durationTime" END), 0)::bigint as "avgStayTimeMs",
+        COALESCE(SUM(CASE WHEN e."durationTime" > 0 THEN e."durationTime" END), 0)::bigint as "totalStayTimeMs"
       FROM "event_info" e
       JOIN "tracking_data" t ON e."trackingDataId" = t."id"
       WHERE t."userUuid" = ${userUuid}
@@ -457,6 +459,7 @@ export class AnalyzeService {
       totalVisits: BigInt(0),
       avgBounceRate: 0,
       avgStayTimeMs: BigInt(0),
+      totalStayTimeMs: BigInt(0),
     };
 
     return {
@@ -464,6 +467,7 @@ export class AnalyzeService {
       totalVisits: Number(totalStats.totalVisits),
       avgBounceRate: Number(totalStats.avgBounceRate),
       avgStayTimeMs: Number(totalStats.avgStayTimeMs),
+      totalStayTimeMs: Number(totalStats.totalStayTimeMs),
     };
   }
 }

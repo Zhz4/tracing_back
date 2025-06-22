@@ -144,7 +144,7 @@ const UserBehaviorAnalysis = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="activity">活跃度分析</TabsTrigger>
           <TabsTrigger value="events">事件统计</TabsTrigger>
-          <TabsTrigger value="path">路径分析</TabsTrigger>
+          <TabsTrigger value="path">页面分析</TabsTrigger>
           <TabsTrigger value="behavior">行为记录</TabsTrigger>
         </TabsList>
 

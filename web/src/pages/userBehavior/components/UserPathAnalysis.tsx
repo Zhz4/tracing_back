@@ -6,23 +6,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  ArrowRight,
-  Home,
-  Settings,
-  BarChart3,
-  Users,
-  Loader2,
-} from "lucide-react";
+import { BarChart3, Clock, Eye, TrendingDown, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getPageVisitStats } from "@/api/analyze";
 import { PageVisitStatsWrapperResponse } from "@/api/analyze/type";
 import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
-
-// 扩展 dayjs 插件
-dayjs.extend(duration);
 
 const UserPathAnalysis = () => {
   const { userUuid } = useParams();
@@ -44,154 +33,49 @@ const UserPathAnalysis = () => {
     return `${minutes}m ${seconds}s`;
   };
 
-  // 模拟用户路径数据
-  const userPaths = [
-    {
-      id: 1,
-      path: [
-        { page: "首页", icon: Home, visits: 45 },
-        { page: "数据分析", icon: BarChart3, visits: 32 },
-        { page: "用户管理", icon: Users, visits: 28 },
-        { page: "设置", icon: Settings, visits: 15 },
-      ],
-      frequency: 28,
-      conversionRate: "62%",
-    },
-    {
-      id: 2,
-      path: [
-        { page: "首页", icon: Home, visits: 38 },
-        { page: "用户管理", icon: Users, visits: 35 },
-        { page: "数据分析", icon: BarChart3, visits: 22 },
-      ],
-      frequency: 22,
-      conversionRate: "58%",
-    },
-    {
-      id: 3,
-      path: [
-        { page: "首页", icon: Home, visits: 25 },
-        { page: "设置", icon: Settings, visits: 20 },
-        { page: "数据分析", icon: BarChart3, visits: 12 },
-      ],
-      frequency: 18,
-      conversionRate: "48%",
-    },
-  ];
-
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>用户路径分析</CardTitle>
-          <CardDescription>
-            用户在系统中的主要访问路径和流转情况
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {userPaths.map((pathData) => (
-              <div key={pathData.id} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <Badge variant="secondary">路径 {pathData.id}</Badge>
-                  <div className="flex gap-4 text-sm">
-                    <span>
-                      频次: <strong>{pathData.frequency}</strong>
-                    </span>
-                    <span>
-                      转化率: <strong>{pathData.conversionRate}</strong>
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 overflow-x-auto">
-                  {pathData.path.map((step, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 flex-shrink-0"
-                    >
-                      <div className="flex items-center gap-2 bg-secondary/50 rounded-lg px-3 py-2">
-                        <step.icon className="h-4 w-4" />
-                        <span className="text-sm font-medium">{step.page}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {step.visits}
-                        </Badge>
-                      </div>
-                      {index < pathData.path.length - 1 && (
-                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>页面访问统计</CardTitle>
-          <CardDescription>
-            各页面的访问量、跳出率和平均停留时间
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isPageStatsLoading ? (
-            <div className="flex items-center justify-center h-40">
-              <div className="text-sm text-muted-foreground flex items-center gap-2">
-                <Loader2 className="animate-spin" />
-                加载中...
-              </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BarChart3 className="h-5 w-5" />
+          页面访问统计
+        </CardTitle>
+        <CardDescription>
+          各页面的访问量、跳出率和平均停留时间分析
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {isPageStatsLoading ? (
+          <div className="flex items-center justify-center h-40">
+            <div className="text-sm text-muted-foreground flex items-center gap-2">
+              <Loader2 className="animate-spin h-4 w-4" />
+              加载中...
             </div>
-          ) : (
-            <>
-              <div className="space-y-4">
-                {pageStatsData?.pageStats &&
-                pageStatsData.pageStats.length > 0 ? (
-                  pageStatsData.pageStats.map((stat, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 border rounded-lg"
-                    >
-                      <div className="font-medium">{stat.title}</div>
-                      <div className="flex gap-4 text-sm">
-                        <div className="text-center">
-                          <div className="font-semibold text-blue-600">
-                            {stat.visitCount}
-                          </div>
-                          <div className="text-muted-foreground">访问量</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold text-orange-600">
-                            {stat.bounceRate}%
-                          </div>
-                          <div className="text-muted-foreground">跳出率</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold text-green-600">
-                            {formatStayTime(stat.avgStayTimeMs)}
-                          </div>
-                          <div className="text-muted-foreground">停留时间</div>
-                        </div>
-                      </div>
+          </div>
+        ) : (
+          <>
+            {/* 总体统计概览 */}
+            {pageStatsData && (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 border">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-500 rounded-lg">
+                      <Eye className="h-4 w-4 text-white" />
                     </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    暂无页面访问数据
-                  </div>
-                )}
-              </div>
-              {pageStatsData && (
-                <div className="mt-4 pt-4 border-t">
-                  <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-primary">
+                      <div className="text-2xl font-bold text-blue-600">
                         {pageStatsData.totalVisits}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         总访问量
                       </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-4 border">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-orange-500 rounded-lg">
+                      <TrendingDown className="h-4 w-4 text-white" />
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-orange-600">
@@ -200,6 +84,13 @@ const UserPathAnalysis = () => {
                       <div className="text-sm text-muted-foreground">
                         平均跳出率
                       </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4 border">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-500 rounded-lg">
+                      <Clock className="h-4 w-4 text-white" />
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-green-600">
@@ -211,12 +102,80 @@ const UserPathAnalysis = () => {
                     </div>
                   </div>
                 </div>
+                <div className="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-4 border">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-500 rounded-lg">
+                      <Clock className="h-4 w-4 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-purple-600">
+                        {formatStayTime(pageStatsData.totalStayTimeMs)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        总停留时间
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 详细页面统计 */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold mb-4">页面详细统计</h3>
+              {pageStatsData?.pageStats &&
+              pageStatsData.pageStats.length > 0 ? (
+                pageStatsData.pageStats.map((stat, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline" className="text-xs">
+                        {index + 1}
+                      </Badge>
+                      <div className="font-medium text-base">{stat.title}</div>
+                    </div>
+                    <div className="flex gap-6 text-sm">
+                      <div className="text-center">
+                        <div className="font-semibold text-blue-600 text-lg">
+                          {stat.visitCount}
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          访问量
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-orange-600 text-lg">
+                          {stat.bounceRate}%
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          跳出率
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-green-600 text-lg">
+                          {formatStayTime(stat.avgStayTimeMs)}
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          停留时间
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-12 text-muted-foreground bg-muted/30 rounded-lg">
+                  <BarChart3 className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <div className="text-base">暂无页面访问数据</div>
+                  <div className="text-sm mt-1">用户还未产生页面访问记录</div>
+                </div>
               )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

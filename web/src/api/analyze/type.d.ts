@@ -66,4 +66,6 @@ export interface PageVisitStatsWrapperResponse {
   avgBounceRate: number;
   // 平均停留时间（毫秒）
   avgStayTimeMs: number;
+  // 总停留时间（毫秒）
+  totalStayTimeMs: number;
 }

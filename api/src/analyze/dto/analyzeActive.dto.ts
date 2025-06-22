@@ -101,4 +101,7 @@ export class PageVisitStatsWrapperDto {
 
   @ApiProperty({ description: '平均停留时间（毫秒）', example: 188000 })
   avgStayTimeMs: number;
+
+  @ApiProperty({ description: '总停留时间（毫秒）', example: 51136000 })
+  totalStayTimeMs: number;
 }

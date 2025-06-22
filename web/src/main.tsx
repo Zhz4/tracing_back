@@ -6,9 +6,10 @@ import App from "./App.tsx";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import duration from "dayjs/plugin/duration";
 import "dayjs/locale/zh-cn";
 
-// 扩展 dayjs 插件
+dayjs.extend(duration);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 dayjs.locale("zh-cn");
