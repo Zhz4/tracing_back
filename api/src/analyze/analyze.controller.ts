@@ -9,7 +9,9 @@ import {
 import {
   HourlyActivityDto,
   WeeklyActivityTrendDto,
+  PageVisitStatsWrapperDto,
 } from './dto/analyzeActive.dto';
+import { Public } from '@/auth/decorators/public.decorator';
 
 @ApiTags('数据分析')
 @Controller('analyze')
@@ -70,5 +72,19 @@ export class AnalyzeController {
     @Param('userUuid') userUuid: string,
   ): Promise<WeeklyActivityTrendDto> {
     return await this.analyzeService.analyzeWeeklyActivityTrend({ userUuid });
+  }
+
+  @ApiOperation({ summary: '页面访问统计' })
+  @ApiResponse({
+    status: 200,
+    description: '返回指定用户访问量最多的前4个页面统计及总体数据',
+    type: PageVisitStatsWrapperDto,
+  })
+  @Get('page-visit-stats/:userUuid')
+  @Public()
+  async analyzePageVisitStats(
+    @Param('userUuid') userUuid: string,
+  ): Promise<PageVisitStatsWrapperDto> {
+    return await this.analyzeService.analyzePageVisitStats({ userUuid });
   }
 }

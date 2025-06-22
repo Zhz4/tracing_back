@@ -44,3 +44,26 @@ export interface WeeklyActivityTrendResponse {
     onlineTime: number;
   }>;
 }
+
+export interface PageVisitStatsResponse {
+  // 页面标题
+  title: string;
+  // 访问量
+  visitCount: number;
+  // 跳出率（百分比）
+  bounceRate: number;
+  // 平均停留时间（毫秒）
+  avgStayTimeMs: number;
+}
+
+// 页面访问统计包装器响应
+export interface PageVisitStatsWrapperResponse {
+  // 页面统计数据（访问量最多的前4个）
+  pageStats: PageVisitStatsResponse[];
+  // 总访问量
+  totalVisits: number;
+  // 平均跳出率（百分比）
+  avgBounceRate: number;
+  // 平均停留时间（毫秒）
+  avgStayTimeMs: number;
+}
