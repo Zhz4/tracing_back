@@ -69,3 +69,27 @@ export interface PageVisitStatsWrapperResponse {
   // 总停留时间（毫秒）
   totalStayTimeMs: number;
 }
+
+// 用户概览统计数据响应
+export interface UserOverviewStatsResponse {
+  // 用户姓名
+  userName: string;
+  // 总会话数
+  totalSessions: number;
+  // 总页面浏览量
+  totalPageViews: number;
+  // 总事件数
+  totalEvents: number;
+  // 平均会话时长（分钟）
+  avgSessionDuration: number;
+  // 设备类型
+  deviceType: string;
+  // 浏览器类型
+  browserType: string;
+  // IP地址（地理位置信息）
+  location: string;
+  // 首次访问时间
+  firstVisit: string;
+  // 最近访问时间
+  lastVisit: string;
+}

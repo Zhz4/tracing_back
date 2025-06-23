@@ -5,9 +5,11 @@ import {
   HourlyActivityDto,
   WeeklyActivityTrendDto,
   PageVisitStatsWrapperDto,
+  UserOverviewStatsDto,
 } from './dto/analyzeActive.dto';
 import * as dayjs from 'dayjs';
 import * as duration from 'dayjs/plugin/duration';
+import * as geoip from 'geoip-lite';
 
 // 配置 dayjs 插件
 dayjs.extend(duration);
@@ -31,6 +33,25 @@ export class AnalyzeService {
 
     // 如果之前没有数据，当前有数据则增长100%，否则0%
     return current > 0 ? 100 : 0;
+  }
+
+  /**
+   * 根据IP地址获取地理位置信息
+   * @param ip IP地址
+   * @returns 格式化的地理位置字符串
+   */
+  private getLocationFromIP(ip: string): string {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const geo = geoip.lookup(ip);
+      if (geo?.city) {
+        const city = String(geo.city || '');
+        return city;
+      }
+    } catch (error: unknown) {
+      console.warn('地理位置查询失败:', error);
+    }
+    return `${ip} (位置未知)`;
   }
 
   async analyzePage() {
@@ -314,9 +335,7 @@ export class AnalyzeService {
     const mostActiveHour = `${startHour}:00-${endHour}:00`;
 
     // 计算平均在线时长（分钟）
-    const averageOnlineTime = Number(
-      (Number(currentWeekStats?.avg_duration_ms || 0) / 1000 / 60).toFixed(2),
-    );
+    const averageOnlineTime = Number(currentWeekStats?.avg_duration_ms || 0);
     const activeDays = Number(currentWeekStats?.active_days || 0);
 
     return {
@@ -379,9 +398,7 @@ export class AnalyzeService {
         date: currentDate.getTime().toString(),
         pageViews: Number(dayData?.page_views || 0),
         events: Number(dayData?.total_events || 0),
-        onlineTime: Number(
-          (Number(dayData?.avg_duration_ms || 0) / 1000 / 60).toFixed(2),
-        ),
+        onlineTime: Number(dayData?.avg_duration_ms || 0),
       });
     }
 
@@ -468,6 +485,95 @@ export class AnalyzeService {
       avgBounceRate: Number(totalStats.avgBounceRate),
       avgStayTimeMs: Number(totalStats.avgStayTimeMs),
       totalStayTimeMs: Number(totalStats.totalStayTimeMs),
+    };
+  }
+
+  // 获取用户概览统计数据
+  async getUserOverviewStats(userUuid: string): Promise<UserOverviewStatsDto> {
+    // 获取用户基本信息和会话数据
+    const userInfoResult = await this.prisma.$queryRaw<
+      Array<{
+        userName: string;
+        totalSessions: bigint;
+        deviceType: string;
+        browserType: string;
+        ip: string;
+        firstVisit: bigint;
+        lastVisit: bigint;
+      }>
+    >`
+      SELECT DISTINCT
+        t."userName",
+        COUNT(DISTINCT t."sessionId") as "totalSessions",
+        t."platform" as "deviceType",
+        t."vendor" as "browserType", 
+        t."ip",
+        MIN(t."sendTime") as "firstVisit",
+        MAX(t."sendTime") as "lastVisit"
+      FROM "tracking_data" t
+      WHERE t."userUuid" = ${userUuid}
+      GROUP BY t."userName", t."platform", t."vendor", t."ip"
+      LIMIT 1
+    `;
+
+    // 获取页面浏览量和总事件数
+    const eventStatsResult = await this.prisma.$queryRaw<
+      Array<{
+        totalPageViews: bigint;
+        totalEvents: bigint;
+      }>
+    >`
+      SELECT 
+        COUNT(CASE WHEN e."eventType" = 'pv' THEN 1 END) as "totalPageViews",
+        COUNT(*) as "totalEvents"
+      FROM "event_info" e
+      JOIN "tracking_data" t ON e."trackingDataId" = t."id"
+      WHERE t."userUuid" = ${userUuid}
+    `;
+
+    // 计算平均会话时长
+    const sessionDurationResult = await this.prisma.$queryRaw<
+      Array<{ avgSessionDuration: number }>
+    >`
+      SELECT 
+        COALESCE(AVG(session_duration), 0) as "avgSessionDuration"
+      FROM (
+        SELECT 
+          t."sessionId",
+          SUM(COALESCE(e."durationTime", 0)) as session_duration
+        FROM "tracking_data" t
+        JOIN "event_info" e ON t."id" = e."trackingDataId"
+        WHERE t."userUuid" = ${userUuid}
+          AND e."durationTime" IS NOT NULL
+          AND e."durationTime" > 0
+        GROUP BY t."sessionId"
+        HAVING SUM(COALESCE(e."durationTime", 0)) > 0
+      ) session_durations
+    `;
+
+    const userInfo = userInfoResult[0];
+    const eventStats = eventStatsResult[0];
+    const avgDuration = sessionDurationResult[0];
+
+    if (!userInfo) {
+      throw new Error('用户不存在');
+    }
+
+    // 使用 geoip-lite 获取地理位置信息
+    const location = this.getLocationFromIP(userInfo.ip);
+
+    return {
+      userName: userInfo.userName || '未知用户',
+      totalSessions: Number(userInfo.totalSessions),
+      totalPageViews: Number(eventStats?.totalPageViews || 0),
+      totalEvents: Number(eventStats?.totalEvents || 0),
+      avgSessionDuration: Number(avgDuration?.avgSessionDuration || 0),
+      deviceType: userInfo.deviceType || '未知设备',
+      browserType: userInfo.browserType || '未知浏览器',
+      location: location,
+      ip: userInfo.ip,
+      firstVisit: new Date(Number(userInfo.firstVisit)).toISOString(),
+      lastVisit: new Date(Number(userInfo.lastVisit)).toISOString(),
     };
   }
 }

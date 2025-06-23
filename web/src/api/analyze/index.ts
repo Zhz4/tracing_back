@@ -4,6 +4,7 @@ import {
   HourlyActivityResponse,
   WeeklyActivityTrendResponse,
   PageVisitStatsWrapperResponse,
+  UserOverviewStatsResponse,
 } from "@/api/analyze/type";
 /**
  * 获取页面统计数据
@@ -55,6 +56,15 @@ export const getUserWeeklyActivityTrend = async (userUuid: string) => {
 export const getPageVisitStats = async (userUuid: string) => {
   const result = await service.request<PageVisitStatsWrapperResponse>({
     url: `/analyze/page-visit-stats/${userUuid}`,
+    method: "get",
+  });
+  return result.data;
+};
+
+// 获取用户概览统计数据
+export const getUserOverviewStats = async (userUuid: string) => {
+  const result = await service.request<UserOverviewStatsResponse>({
+    url: `/analyze/${userUuid}/user-overview`,
     method: "get",
   });
   return result.data;

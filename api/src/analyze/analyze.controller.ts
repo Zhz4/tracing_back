@@ -10,6 +10,7 @@ import {
   HourlyActivityDto,
   WeeklyActivityTrendDto,
   PageVisitStatsWrapperDto,
+  UserOverviewStatsDto,
 } from './dto/analyzeActive.dto';
 import { Public } from '@/auth/decorators/public.decorator';
 import { UserUuidValidationPipe } from '@/common/pipes/user-uuid-validation.pipe';
@@ -85,7 +86,6 @@ export class AnalyzeController {
   @ApiResponse({
     status: 200,
     description: '返回指定用户访问量最多的前4个页面统计及总体数据',
-    type: PageVisitStatsWrapperDto,
   })
   @Get('page-visit-stats/:userUuid')
   @Public()
@@ -93,5 +93,23 @@ export class AnalyzeController {
     @Param('userUuid', UserUuidValidationPipe) userUuid: string,
   ): Promise<PageVisitStatsWrapperDto> {
     return await this.analyzeService.analyzePageVisitStats({ userUuid });
+  }
+
+  @ApiBearerAuth('auth')
+  @ApiOperation({
+    summary: '用户概览统计',
+    description:
+      '获取用户的总会话数、页面浏览量、平均会话时长、设备类型、浏览器和地理位置等概览信息',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '返回用户概览统计数据',
+    type: UserOverviewStatsDto,
+  })
+  @Get(':userUuid/user-overview')
+  async getUserOverviewStats(
+    @Param('userUuid', UserUuidValidationPipe) userUuid: string,
+  ): Promise<UserOverviewStatsDto> {
+    return await this.analyzeService.getUserOverviewStats(userUuid);
   }
 }

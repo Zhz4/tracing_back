@@ -105,3 +105,42 @@ export class PageVisitStatsWrapperDto {
   @ApiProperty({ description: '总停留时间（毫秒）', example: 51136000 })
   totalStayTimeMs: number;
 }
+
+// 用户概览统计数据响应 DTO
+export class UserOverviewStatsDto {
+  @ApiProperty({ description: '用户姓名', example: '张三' })
+  userName: string;
+
+  @ApiProperty({ description: '总会话数', example: 15 })
+  totalSessions: number;
+
+  @ApiProperty({ description: '总页面浏览量', example: 108 })
+  totalPageViews: number;
+
+  @ApiProperty({ description: '总事件数', example: 245 })
+  totalEvents: number;
+
+  @ApiProperty({ description: '平均会话时长（分钟）', example: 25.5 })
+  avgSessionDuration: number;
+
+  @ApiProperty({ description: '设备类型', example: 'Win32' })
+  deviceType: string;
+
+  @ApiProperty({ description: '浏览器类型', example: 'Google Inc.' })
+  browserType: string;
+
+  @ApiProperty({
+    description: 'IP地址（地理位置信息）',
+    example: '192.168.1.1',
+  })
+  location: string;
+
+  @ApiProperty({ description: 'IP地址', example: '192.168.1.1' })
+  ip: string;
+
+  @ApiProperty({ description: '首次访问时间', example: '2024-01-15T10:30:00Z' })
+  firstVisit: string;
+
+  @ApiProperty({ description: '最近访问时间', example: '2024-01-20T16:45:00Z' })
+  lastVisit: string;
+}
