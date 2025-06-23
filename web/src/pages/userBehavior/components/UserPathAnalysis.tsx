@@ -158,7 +158,7 @@ const UserPathAnalysis = () => {
                           {formatStayTime(stat.avgStayTimeMs)}
                         </div>
                         <div className="text-muted-foreground text-xs">
-                          停留时间
+                          平均停留时间
                         </div>
                       </div>
                     </div>

@@ -5,9 +5,11 @@ import Login from "@/pages/login";
 import MonitorData from "@/pages/monitorData";
 import RecordscreenPage from "@/pages/recordscreen";
 import UserBehaviorAnalysis from "@/pages/userBehavior";
+import NotFoundPage from "@/pages/404";
 import type { RouteObject } from "react-router-dom";
 import AuthRoute from "@/components/AuthRoute";
 import { BarChart, House, User } from "lucide-react";
+
 export const routes: RouteObject[] = [
   {
     path: "/",
@@ -64,6 +66,13 @@ export const routes: RouteObject[] = [
     element: <Login />,
     handle: {
       title: "登录",
+    },
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
+    handle: {
+      title: "页面未找到",
     },
   },
 ];
