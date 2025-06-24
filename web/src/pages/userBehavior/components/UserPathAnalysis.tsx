@@ -6,12 +6,65 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Clock, Eye, TrendingDown, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { BarChart3, Clock, Eye, TrendingDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getPageVisitStats } from "@/api/analyze";
 import { PageVisitStatsWrapperResponse } from "@/api/analyze/type";
-import dayjs from "dayjs";
+import { formatMilliseconds } from "@/utils/time";
+
+// 页面访问统计骨架屏
+const PageStatsAnalysisSkeleton = () => {
+  return (
+    <>
+      {/* 总体统计概览骨架屏 */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="rounded-lg p-4 border">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 详细页面统计骨架屏 */}
+      <div className="space-y-3">
+        <Skeleton className="h-6 w-32 mb-4" />
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div
+            key={index}
+            className="flex items-center justify-between p-4 border rounded-lg"
+          >
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-6 w-8" />
+              <Skeleton className="h-5 w-32" />
+            </div>
+            <div className="flex gap-6">
+              <div className="text-center space-y-2">
+                <Skeleton className="h-6 w-12" />
+                <Skeleton className="h-3 w-10" />
+              </div>
+              <div className="text-center space-y-2">
+                <Skeleton className="h-6 w-12" />
+                <Skeleton className="h-3 w-10" />
+              </div>
+              <div className="text-center space-y-2">
+                <Skeleton className="h-6 w-16" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
 
 const UserPathAnalysis = () => {
   const { userUuid } = useParams();
@@ -24,14 +77,6 @@ const UserPathAnalysis = () => {
       refetchOnWindowFocus: false,
       retry: false,
     });
-
-  // 使用 dayjs 转换平均停留时间（毫秒转为分钟和秒）
-  const formatStayTime = (timeMs: number) => {
-    const dur = dayjs.duration(timeMs);
-    const minutes = Math.floor(dur.asMinutes());
-    const seconds = dur.seconds();
-    return `${minutes}m ${seconds}s`;
-  };
 
   return (
     <Card>
@@ -46,12 +91,7 @@ const UserPathAnalysis = () => {
       </CardHeader>
       <CardContent>
         {isPageStatsLoading ? (
-          <div className="flex items-center justify-center h-40">
-            <div className="text-sm text-muted-foreground flex items-center gap-2">
-              <Loader2 className="animate-spin h-4 w-4" />
-              加载中...
-            </div>
-          </div>
+          <PageStatsAnalysisSkeleton />
         ) : (
           <>
             {/* 总体统计概览 */}
@@ -94,7 +134,7 @@ const UserPathAnalysis = () => {
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-green-600">
-                        {formatStayTime(pageStatsData.avgStayTimeMs)}
+                        {formatMilliseconds(pageStatsData.avgStayTimeMs, false)}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         平均停留时间
@@ -109,7 +149,10 @@ const UserPathAnalysis = () => {
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-purple-600">
-                        {formatStayTime(pageStatsData.totalStayTimeMs)}
+                        {formatMilliseconds(
+                          pageStatsData.totalStayTimeMs,
+                          false
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         总停留时间
@@ -155,7 +198,7 @@ const UserPathAnalysis = () => {
                       </div>
                       <div className="text-center">
                         <div className="font-semibold text-green-600 text-lg">
-                          {formatStayTime(stat.avgStayTimeMs)}
+                          {formatMilliseconds(stat.avgStayTimeMs, false)}
                         </div>
                         <div className="text-muted-foreground text-xs">
                           平均停留时间

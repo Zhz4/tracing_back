@@ -25,7 +25,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useDeferredValue, useState } from "react";
 import { EventStatusEnum } from "@/constants";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -36,7 +36,6 @@ import { useParams } from "react-router-dom";
 
 const UserEventStats = () => {
   const { userUuid } = useParams();
-  const [isVisible, setIsVisible] = useState(false);
   const [showAll, setShowAll] = useState(false);
 
   // 获取用户事件统计数据
@@ -52,13 +51,8 @@ const UserEventStats = () => {
     retry: false,
   });
 
-  // 延迟渲染图表，确保容器已经准备好
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
+  // 使用 useDeferredValue 延迟渲染图表，优先级最低
+  const deferredUserEventData = useDeferredValue(userEventData);
 
   // 事件类型图标映射
   const getEventIcon = (eventName: string) => {
@@ -89,9 +83,9 @@ const UserEventStats = () => {
     return colors[index % colors.length];
   };
 
-  // 构建事件配置数据
+  // 构建事件配置数据 - 使用延迟的数据
   const eventConfigs =
-    userEventData?.eventStats?.map((stat, index) => ({
+    deferredUserEventData?.eventStats?.map((stat, index) => ({
       name: stat.eventName,
       value: stat.count,
       percentage: stat.percentage,
@@ -238,31 +232,29 @@ const UserEventStats = () => {
         </CardHeader>
         <CardContent>
           <div className="w-full h-[300px]">
-            {isVisible && (
-              <ChartContainer config={chartConfig} className="w-full h-full">
-                <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
-                  <Pie
-                    data={eventData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    dataKey="value"
-                    label={({ name, percent }) =>
-                      `${name}: ${(percent * 100).toFixed(0)}%`
-                    }
-                  >
-                    {eventData.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </PieChart>
-              </ChartContainer>
-            )}
+            <ChartContainer config={chartConfig} className="w-full h-full">
+              <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                <Pie
+                  data={eventData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  dataKey="value"
+                  label={({ name, percent }) =>
+                    `${name}: ${(percent * 100).toFixed(0)}%`
+                  }
+                >
+                  {eventData.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <ChartTooltip content={<ChartTooltipContent />} />
+              </PieChart>
+            </ChartContainer>
           </div>
         </CardContent>
       </Card>
@@ -320,7 +312,7 @@ const UserEventStats = () => {
           <div className="mt-4 pt-4 border-t">
             <div className="flex justify-between items-center font-semibold">
               <span>总事件数</span>
-              <span>{userEventData.totalEvents}</span>
+              <span>{deferredUserEventData?.totalEvents || 0}</span>
             </div>
           </div>
         </CardContent>
