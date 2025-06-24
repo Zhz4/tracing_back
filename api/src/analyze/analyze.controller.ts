@@ -11,6 +11,7 @@ import {
   WeeklyActivityTrendDto,
   PageVisitStatsWrapperDto,
   UserOverviewStatsDto,
+  UserEventStatsDto,
 } from './dto/analyzeActive.dto';
 import { Public } from '@/auth/decorators/public.decorator';
 import { UserUuidValidationPipe } from '@/common/pipes/user-uuid-validation.pipe';
@@ -111,5 +112,24 @@ export class AnalyzeController {
     @Param('userUuid', UserUuidValidationPipe) userUuid: string,
   ): Promise<UserOverviewStatsDto> {
     return await this.analyzeService.getUserOverviewStats(userUuid);
+  }
+
+  @ApiBearerAuth('auth')
+  @ApiOperation({
+    summary: '用户事件统计',
+    description:
+      '统计指定用户各类事件的个数和比例，包括点击事件、错误事件、页面访问等',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '返回用户事件统计数据',
+    type: UserEventStatsDto,
+  })
+  @Get(':userUuid/event-stats')
+  @Public()
+  async getUserEventStats(
+    @Param('userUuid', UserUuidValidationPipe) userUuid: string,
+  ): Promise<UserEventStatsDto> {
+    return await this.analyzeService.getUserEventStats(userUuid);
   }
 }

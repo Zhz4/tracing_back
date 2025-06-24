@@ -6,10 +6,14 @@ import {
   WeeklyActivityTrendDto,
   PageVisitStatsWrapperDto,
   UserOverviewStatsDto,
+  UserEventStatsDto,
+  UserEventStatsItemDto,
 } from './dto/analyzeActive.dto';
 import * as dayjs from 'dayjs';
 import * as duration from 'dayjs/plugin/duration';
 import * as geoip from 'geoip-lite';
+import { getEventName } from '@/utils/checkEventAll';
+import { EventTypeEnum } from '@/constants';
 
 // 配置 dayjs 插件
 dayjs.extend(duration);
@@ -42,7 +46,6 @@ export class AnalyzeService {
    */
   private getLocationFromIP(ip: string): string {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const geo = geoip.lookup(ip);
       if (geo?.city) {
         const city = String(geo.city || '');
@@ -574,6 +577,52 @@ export class AnalyzeService {
       ip: userInfo.ip,
       firstVisit: new Date(Number(userInfo.firstVisit)).toISOString(),
       lastVisit: new Date(Number(userInfo.lastVisit)).toISOString(),
+    };
+  }
+
+  // 获取用户事件统计数据
+  async getUserEventStats(userUuid: string): Promise<UserEventStatsDto> {
+    const eventStatsResult = await this.prisma.eventInfo.findMany({
+      where: {
+        TrackingData: {
+          userUuid: userUuid,
+        },
+      },
+      select: {
+        eventId: true,
+        eventType: true,
+      },
+    });
+
+    // 计算总事件数
+    const totalEvents = eventStatsResult.length;
+
+    // 记录各类事件数量
+    const eventCount = eventStatsResult.reduce(
+      (acc, item) => {
+        const eventId = item.eventId;
+        const eventType = item.eventType;
+        const eventName = getEventName(
+          eventType as `${EventTypeEnum}`,
+          eventId,
+        );
+        acc[eventName] = (acc[eventName] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    const eventStats: UserEventStatsItemDto[] = Object.entries(eventCount).map(
+      ([eventName, count]) => ({
+        eventName,
+        count,
+        percentage: Number(((count / totalEvents) * 100).toFixed(2)),
+      }),
+    );
+
+    return {
+      totalEvents,
+      eventStats,
     };
   }
 }

@@ -144,3 +144,27 @@ export class UserOverviewStatsDto {
   @ApiProperty({ description: '最近访问时间', example: '2024-01-20T16:45:00Z' })
   lastVisit: string;
 }
+
+// 用户事件统计项 DTO
+export class UserEventStatsItemDto {
+  @ApiProperty({ description: '事件名称', example: '点击事件' })
+  eventName: string;
+
+  @ApiProperty({ description: '事件数量', example: 45 })
+  count: number;
+
+  @ApiProperty({ description: '占比（百分比）', example: 25.5 })
+  percentage: number;
+}
+
+// 用户事件统计响应 DTO
+export class UserEventStatsDto {
+  @ApiProperty({ description: '总事件数', example: 176 })
+  totalEvents: number;
+
+  @ApiProperty({
+    description: '各类事件统计详情',
+    type: [UserEventStatsItemDto],
+  })
+  eventStats: UserEventStatsItemDto[];
+}

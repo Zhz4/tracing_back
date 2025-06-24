@@ -93,3 +93,27 @@ export interface UserOverviewStatsResponse {
   // 最近访问时间
   lastVisit: string;
 }
+
+// 用户事件统计项
+export interface UserEventStatsItemResponse {
+  // 事件类型名称
+  eventName: string;
+  // 事件数量
+  count: number;
+  // 占比（百分比）
+  percentage: number;
+  // 事件类型代码
+  eventCode: string;
+}
+
+// 用户事件统计响应
+export interface UserEventStatsResponse {
+  // 用户UUID
+  userUuid: string;
+  // 用户姓名
+  userName: string;
+  // 总事件数
+  totalEvents: number;
+  // 各类事件统计详情
+  eventStats: UserEventStatsItemResponse[];
+}

@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getPageVisitStats } from "@/api/analyze";
 import { PageVisitStatsWrapperResponse } from "@/api/analyze/type";
-import { formatMilliseconds } from "@/utils/time";
+import dayjs from "dayjs";
 
 const UserPathAnalysis = () => {
   const { userUuid } = useParams();
@@ -24,6 +24,14 @@ const UserPathAnalysis = () => {
       refetchOnWindowFocus: false,
       retry: false,
     });
+
+  // 使用 dayjs 转换平均停留时间（毫秒转为分钟和秒）
+  const formatStayTime = (timeMs: number) => {
+    const dur = dayjs.duration(timeMs);
+    const minutes = Math.floor(dur.asMinutes());
+    const seconds = dur.seconds();
+    return `${minutes}m ${seconds}s`;
+  };
 
   return (
     <Card>
@@ -41,6 +49,7 @@ const UserPathAnalysis = () => {
           <div className="flex items-center justify-center h-40">
             <div className="text-sm text-muted-foreground flex items-center gap-2">
               <Loader2 className="animate-spin h-4 w-4" />
+              加载中...
             </div>
           </div>
         ) : (
@@ -85,7 +94,7 @@ const UserPathAnalysis = () => {
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-green-600">
-                        {formatMilliseconds(pageStatsData.avgStayTimeMs, false)}
+                        {formatStayTime(pageStatsData.avgStayTimeMs)}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         平均停留时间
@@ -100,10 +109,7 @@ const UserPathAnalysis = () => {
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-purple-600">
-                        {formatMilliseconds(
-                          pageStatsData.totalStayTimeMs,
-                          false
-                        )}
+                        {formatStayTime(pageStatsData.totalStayTimeMs)}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         总停留时间
@@ -149,7 +155,7 @@ const UserPathAnalysis = () => {
                       </div>
                       <div className="text-center">
                         <div className="font-semibold text-green-600 text-lg">
-                          {formatMilliseconds(stat.avgStayTimeMs, false)}
+                          {formatStayTime(stat.avgStayTimeMs)}
                         </div>
                         <div className="text-muted-foreground text-xs">
                           平均停留时间

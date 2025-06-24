@@ -21,9 +21,9 @@ import {
   HourlyActivityResponse,
   WeeklyActivityTrendResponse,
 } from "@/api/analyze/type";
-import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { formatMilliseconds } from "@/utils/time";
+import { useParams } from "react-router-dom";
 
 // 活跃度趋势分析骨架屏
 const TrendAnalysisSkeleton = () => {
@@ -52,9 +52,9 @@ const TrendAnalysisSkeleton = () => {
 };
 
 const UserActivityChart = () => {
+  const { userUuid } = useParams();
   const [isVisible, setIsVisible] = useState(false);
   const [currentDate, setCurrentDate] = useState(dayjs());
-  const { userUuid } = useParams();
   // 获取可以查看的最早日期（7天前）
   const getMinDate = () => {
     return dayjs().subtract(6, "day");
