@@ -41,6 +41,7 @@ export const EventNames = {
     'errStack',
     'line',
     'col',
+    'recordscreen',
   ],
   // 控制台错误
   [`${EventIdEnum.CONSOLEERROR}-${EventTypeEnum.ERROR}`]: [
