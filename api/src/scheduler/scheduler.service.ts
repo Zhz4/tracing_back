@@ -8,7 +8,7 @@ export class SchedulerService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
+  @Cron(CronExpression.EVERY_2_HOURS, {
     name: 'refresh-tracking-users-view',
     timeZone: 'Asia/Shanghai',
   })
