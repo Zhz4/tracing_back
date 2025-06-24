@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const BrowserVendor = {
+export const BrowserVendor = {
   "Google Inc.": { icon: chromeIcon, name: "Chrome", color: "text-chart-2" },
   "Mozilla Foundation": {
     icon: chromeIcon,

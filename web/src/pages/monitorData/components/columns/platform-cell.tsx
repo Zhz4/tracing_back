@@ -7,14 +7,17 @@ const PlatformIcons = {
   tablet: <Tablet className="w-4 h-4 text-chart-2" />,
 } as const;
 
-const getPlatformInfo = (platform: string) => {
+export const getPlatformInfo = (platform: string) => {
   const p = platform?.toLowerCase() || "";
   if (p.includes("win")) return { icon: PlatformIcons.pc, name: "Windows" };
-  if (p.includes("mac") || p.includes("intel")) return { icon: PlatformIcons.pc, name: "MacOS" };
+  if (p.includes("mac") || p.includes("intel"))
+    return { icon: PlatformIcons.pc, name: "MacOS" };
   if (p.includes("ipad")) return { icon: PlatformIcons.tablet, name: "iPad" };
-  if (p.includes("iphone") || p.includes("ios")) return { icon: PlatformIcons.phone, name: "iPhone" };
-  if (p.includes("linux") || p.includes("android")) return { icon: PlatformIcons.phone, name: "安卓" };
-  
+  if (p.includes("iphone") || p.includes("ios"))
+    return { icon: PlatformIcons.phone, name: "iPhone" };
+  if (p.includes("linux") || p.includes("android"))
+    return { icon: PlatformIcons.phone, name: "安卓" };
+
   return { icon: PlatformIcons.pc, name: "未知平台" };
 };
 
@@ -24,7 +27,7 @@ interface PlatformCellProps {
 
 export const PlatformCell = ({ platform }: PlatformCellProps) => {
   const { icon, name } = getPlatformInfo(platform || "");
-  
+
   return (
     <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted transition-colors">
       {icon}
