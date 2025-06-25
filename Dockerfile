@@ -75,9 +75,9 @@ COPY --from=api-builder /app/api/package.json ./api/
 # 复制 workspace 配置（运行时可能需要）
 COPY package.json pnpm-workspace.yaml ./
 
-# 复制启动脚本
+WORKDIR /app/api
+
+# 复制启动脚本到正确位置
 COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
-
-WORKDIR /app/api
 EXPOSE 3000
