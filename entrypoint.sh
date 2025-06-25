@@ -3,4 +3,4 @@
 npx prisma migrate deploy
 
 # 启动应用
-node dist/src/main.js
+pm2-runtime start dist/src/main.js --name "tracing-back-api"

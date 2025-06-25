@@ -53,6 +53,9 @@ CMD ["nginx", "-g", "daemon off;"]
 FROM node:20-alpine AS api-production
 WORKDIR /app
 
+# 安装 PM2
+RUN npm install -g pm2
+
 # 复制生产依赖（包含 NestJS 编译后的 dist 和 Prisma Client）
 COPY --from=api-builder /app/api/package.json ./
 COPY --from=api-builder /app/api/pnpm-lock.yaml ./
