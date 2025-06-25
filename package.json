@@ -1,0 +1,37 @@
+{
+    "name": "tracing-back",
+    "version": "1.0.0",
+    "description": "前端埋点监控系统",
+    "private": true,
+    "packageManager": "pnpm@9.0.6",
+    "workspaces": [
+        "api",
+        "web"
+    ],
+    "scripts": {
+        "dev": "concurrently \"pnpm --filter api run start:dev\" \"pnpm --filter web run dev\"",
+        "dev:api": "pnpm --filter api run start:dev",
+        "dev:web": "pnpm --filter web run dev",
+        "prisma:generate": "pnpm --filter api run prisma:generate",
+        "prisma:migrate": "pnpm --filter api run prisma:migrate",
+        "prisma:studio": "pnpm --filter api run prisma:studio"
+    },
+    "keywords": [
+        "埋点",
+        "监控",
+        "前端性能",
+        "异常采集",
+        "NestJS",
+        "SDK"
+    ],
+    "author": "zhz",
+    "license": "MIT",
+    "devDependencies": {
+        "concurrently": "^8.2.2",
+        "rimraf": "^5.0.5"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "pnpm": ">=8.0.0"
+    }
+}
