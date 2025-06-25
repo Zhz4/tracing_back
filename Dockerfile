@@ -39,17 +39,6 @@ ENV NODE_ENV=production
 ENV VITE_API_URL=/api
 RUN pnpm build
 
-# === 生产依赖安装阶段 ===
-FROM base AS prod-deps
-
-# 复制 workspace 配置文件
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY api/package.json ./api/
-COPY web/package.json ./web/
-
-# 只安装生产环境依赖
-RUN pnpm install --frozen-lockfile --prod
-
 # === Nginx 阶段 ===
 FROM nginx:alpine AS nginx
 
@@ -64,13 +53,11 @@ FROM node:20-alpine AS api-production
 WORKDIR /app
 
 # 复制生产依赖（从统一安装的依赖中复制，避免重复）
-COPY --from=prod-deps /app/node_modules ./node_modules
-COPY --from=prod-deps /app/api/node_modules ./api/node_modules
-
-# 复制构建产物
-COPY --from=api-builder /app/api/dist ./api/dist
-COPY --from=api-builder /app/api/prisma ./api/prisma
-COPY --from=api-builder /app/api/package.json ./api/
+COPY --from=api-builder /app/api/package.json ./
+COPY --from=api-builder /app/api/pnpm-lock.yaml ./
+COPY --from=api-builder /app/api/node_modules ./node_modules
+COPY --from=api-builder /app/api/dist ./dist
+COPY --from=api-builder /app/api/prisma ./prisma
 
 # 复制 workspace 配置（运行时可能需要）
 COPY package.json pnpm-workspace.yaml ./
