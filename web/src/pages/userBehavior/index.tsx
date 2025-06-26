@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,9 +13,13 @@ import { UserOverviewStatsResponse } from "@/api/analyze/type";
 import { getPlatformInfo } from "../monitorData/components/columns/platform-cell";
 import { BrowserVendor } from "../monitorData/components/columns/vendor-cell";
 import { formatMilliseconds } from "@/utils/time";
+import { useCounterStore } from "@/stores/tab";
+import { useEffect } from "react";
 
 const UserBehaviorAnalysis = () => {
+  const { pathname, search } = useLocation();
   const { userUuid } = useParams();
+  const { updateTabName } = useCounterStore();
   // 获取用户概览统计数据
   const { data: userOverviewStats, isLoading: isOverviewLoading } =
     useQuery<UserOverviewStatsResponse>({
@@ -25,6 +29,11 @@ const UserBehaviorAnalysis = () => {
       refetchOnWindowFocus: false,
       retry: false,
     });
+  useEffect(() => {
+    if (isOverviewLoading === false && userOverviewStats?.userName) {
+      updateTabName(pathname + search, userOverviewStats?.userName || "");
+    }
+  }, [isOverviewLoading]);
 
   return (
     <div className="container mx-auto space-y-6">

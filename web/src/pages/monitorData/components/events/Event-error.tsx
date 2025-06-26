@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import EventCardHeard from "./event-card-heard";
 import { useMonitorData } from "../../context/monitor-data-context";
+import CopyText from "@/utils/util";
 
 interface EventErrorProps {
   event: EventError;
@@ -66,7 +67,11 @@ const EventErrorPage = ({ event }: EventErrorProps) => {
         <div className="flex items-start gap-2 text-sm">
           <Globe className="h-4 w-4 text-muted-foreground mt-0.5" />
           <span className="font-medium shrink-0">页面URL:</span>
-          <span className="text-blue-600 dark:text-blue-400 break-all">
+          <span
+            title="点击复制"
+            className="text-blue-600 dark:text-blue-400 break-all cursor-pointer"
+            onClick={() => CopyText(event.triggerPageUrl)}
+          >
             {event.triggerPageUrl}
           </span>
         </div>

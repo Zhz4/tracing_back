@@ -11,6 +11,7 @@ interface CounterState {
   addTab: (tab: Tab) => void;
   removeTab: (tab: Tab) => void;
   setKeepAliveInclude: () => void;
+  updateTabName: (tabPath: string, tabName: string) => void;
 }
 
 // 设置不被tab缓存的路由
@@ -47,6 +48,18 @@ export const useCounterStore = create<CounterState>((set, get) => ({
       return { tabList: newTabList };
     });
     get().setKeepAliveInclude();
+  },
+
+  /**
+   * 更新tab名称
+   */
+  updateTabName: (tabPath: string, tabName: string) => {
+    set((state) => {
+      const newTabList = state.tabList.map((t) =>
+        t.path === tabPath ? { ...t, name: tabName } : t
+      );
+      return { tabList: newTabList };
+    });
   },
   /**
    * 设置keepalive缓存

@@ -26,13 +26,13 @@ const baseFields = [
   'triggerTime',
   'sendTime',
   'triggerPageUrl',
+  'title',
 ] as const satisfies (keyof PrismaField)[];
 
 export const EventNames = {
   // 代码错误
   [`${EventIdEnum.CODE}-${EventTypeEnum.ERROR}`]: [
     ...baseFields,
-    'title',
     'params',
     'elementPath',
     'x',
@@ -57,14 +57,12 @@ export const EventNames = {
   [`${EventIdEnum.PAGE_ID}-${EventTypeEnum.PV}`]: [
     ...baseFields,
     'referer',
-    'title',
     'action',
   ],
   // 页面停留
   [`${EventIdEnum.PAGE_ID}-${EventTypeEnum['PV-DURATION']}`]: [
     ...baseFields,
     'referer',
-    'title',
     'action',
     'durationTime',
   ],
