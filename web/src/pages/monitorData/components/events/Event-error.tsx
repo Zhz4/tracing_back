@@ -88,15 +88,15 @@ const EventErrorPage = ({ event }: EventErrorProps) => {
               <div className="text-sm font-medium text-destructive mb-1">
                 错误描述:
               </div>
-              <div className="text-sm text-secondary-foreground">
-                {event.errMessage || "无"}
-              </div>
+              <pre className="p-2 rounded border text-sm text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                {event.errMessage}
+              </pre>
             </div>
             <div className="bg-background p-2 rounded border border-gray-200 dark:border-gray-700">
               <div className="text-sm font-medium text-destructive mb-1">
                 完整的错误信息:
               </div>
-              <pre className="text-xs text-destructive overflow-x-auto whitespace-pre-wrap">
+              <pre className="p-2 rounded border text-sm text-foreground overflow-x-auto whitespace-pre-wrap break-all">
                 {event.errStack || "无"}
               </pre>
             </div>

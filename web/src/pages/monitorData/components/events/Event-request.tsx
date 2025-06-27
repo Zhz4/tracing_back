@@ -195,9 +195,9 @@ const EventRequestPage = ({ event }: EventRequestProps) => {
                 onClick={() => CopyText(event.errMessage || "无")}
               />
             </div>
-            <div className="bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700 text-sm text-foreground">
-              {event.errMessage}
-            </div>
+            <pre className="p-2 rounded border text-sm text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+              {JSON.stringify(JSON.parse(event.errMessage), null, 2)}
+            </pre>
           </div>
         )}
 
@@ -227,8 +227,18 @@ const EventRequestPage = ({ event }: EventRequestProps) => {
         {event.params && Object.keys(event.params).length > 0 && (
           <div className="bg-secondary p-3 rounded-lg">
             <div className="font-medium text-sm mb-2">请求参数:</div>
-            <pre className="text-xs bg-background p-2 rounded border border-gray-200 dark:border-gray-700 overflow-x-auto">
-              {JSON.stringify(event.params, null, 2)}
+            <pre className="p-2 rounded border text-sm text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+              {(() => {
+                try {
+                  return JSON.stringify(
+                    JSON.parse(event.params as unknown as string),
+                    null,
+                    2
+                  );
+                } catch {
+                  return String(event.params);
+                }
+              })()}
             </pre>
           </div>
         )}
