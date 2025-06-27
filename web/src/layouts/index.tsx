@@ -52,12 +52,7 @@ export default function Layout() {
           cacheNodeClassName="w-full h-full"
           max={MAX_TABS_COUNT}
         >
-          <main
-            className={cn(
-              "flex-1 p-6 mt-[var(--header-height)]",
-              isMobile && "mt-0 pt-0"
-            )}
-          >
+          <main className={cn("flex-1 p-6 mt-[var(--header-height)]")}>
             <Suspense fallback={null}>{outlet}</Suspense>
           </main>
         </KeepAlive>
