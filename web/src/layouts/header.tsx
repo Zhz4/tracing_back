@@ -8,6 +8,7 @@ import UserSearch from "@/components/UserSearch";
 
 // 头部高度常量
 export const HEADER_HEIGHT = "120px";
+export const HEADER_HEIGHT_MOBILE = "60px";
 
 const Header = () => {
   const { state, isMobile } = useSidebar();
@@ -28,7 +29,7 @@ const Header = () => {
           leftPositionClass
         )}
         style={{
-          height: "var(--header-height)",
+          height: isMobile ? HEADER_HEIGHT_MOBILE : HEADER_HEIGHT,
         }}
       >
         <header className="flex items-center justify-between h-16 px-4 w-full border-b">
@@ -38,7 +39,7 @@ const Header = () => {
             <ModeToggle />
           </div>
         </header>
-        <Tabs />
+        {!isMobile && <Tabs />}
       </div>
     </>
   );
