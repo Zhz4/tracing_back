@@ -16,14 +16,23 @@ const ErrorInfo = ({ event }: MycomponentProps) => {
   const isRequest = "requestUrl" in event;
   const [showFullParams, setShowFullParams] = useState(false);
 
-  const renderField = (label: string, value: string | number | object, isJson = false) => {
+  const renderField = (
+    label: string,
+    value: string | number | object,
+    isJson = false
+  ) => {
     if (!value) return null;
     const stringValue = isJson ? JSON.stringify(value, null, 2) : String(value);
-    const shouldTruncate = isJson && !showFullParams && stringValue.length > 300;
-    const displayValue = shouldTruncate ? stringValue.slice(0, 300) + "..." : stringValue;
+    const shouldTruncate =
+      isJson && !showFullParams && stringValue.length > 300;
+    const displayValue = shouldTruncate
+      ? stringValue.slice(0, 300) + "..."
+      : stringValue;
 
     return (
-      <div className={`flex ${ isJson ? 'flex-col' : 'justify-between'} gap-1 py-1 border-b text-sm `}>
+      <div
+        className={`flex ${isJson ? "flex-col" : "justify-between"} gap-1 py-1 border-b text-sm `}
+      >
         <span className="text-destructive font-medium">{label}</span>
         {isJson ? (
           <div className="relative">
@@ -48,14 +57,20 @@ const ErrorInfo = ({ event }: MycomponentProps) => {
             )}
           </div>
         ) : (
-          <span className="break-all text-right max-w-[60%] text-destructive">{displayValue}</span>
+          <span className="break-all text-right max-w-[60%] text-destructive">
+            {displayValue}
+          </span>
         )}
       </div>
     );
   };
 
   return (
-    <Accordion type="single" collapsible className="mb-4 border border-red-400 dark:border-destructive rounded-md bg-red-50 dark:bg-red-900/20">
+    <Accordion
+      type="single"
+      collapsible
+      className="mb-4 border border-red-400 dark:border-destructive rounded-md bg-red-50 dark:bg-red-900/20"
+    >
       <AccordionItem value="item-1">
         <AccordionTrigger className="px-4 py-2 bg-red-100 dark:bg-red-900/20 hover:bg-red-200 text-left">
           <div className="flex flex-col">
@@ -82,7 +97,10 @@ const ErrorInfo = ({ event }: MycomponentProps) => {
 
           {!isRequest && (
             <>
-              {renderField("错误信息", event.errMessage || "")}
+              {renderField(
+                "错误信息",
+                JSON.stringify(JSON.parse(event.errMessage || ""), null, 2)
+              )}
               {renderField("错误堆栈", event.errStack || "")}
               {renderField("行号", event.line || "")}
               {renderField("列号", event.col || "")}
@@ -95,13 +113,16 @@ const ErrorInfo = ({ event }: MycomponentProps) => {
               {renderField("请求方式", event.requestMethod || "")}
               {renderField("请求类型", event.requestType || "")}
               {renderField("响应状态", event.responseStatus || "")}
-              {renderField("错误信息", event.errMessage || "")}
+              {renderField(
+                "错误信息",
+                JSON.stringify(JSON.parse(event.errMessage || ""), null, 2)
+              )}
             </>
           )}
 
           {/* {renderField("附加参数", JSON.stringify(event.params || {}, null, 2))}
            */}
-            {renderField("附加参数", event.params, true)}
+          {renderField("附加参数", event.params, true)}
         </AccordionContent>
       </AccordionItem>
     </Accordion>
