@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: api-production
+      target: api-builder
     expose:
       - "3000"
     environment:
