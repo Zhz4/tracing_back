@@ -2,8 +2,11 @@ import { getPageData, getPageErrorData } from "@/api/analyze";
 import { useQuery } from "@tanstack/react-query";
 import PageHeader from "./components/PageHeader";
 import PageViewChart from "./components/PageViewChart";
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Home = () => {
+  const isMobile = useIsMobile();
   const { data: pageData, isLoading } = useQuery({
     queryKey: ["pageData"],
     queryFn: getPageData,
@@ -17,7 +20,12 @@ const Home = () => {
   return (
     <div className="w-full h-full ">
       <PageHeader />
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-6 mt-6">
+      <div
+        className={cn(
+          "grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-6 mt-6",
+          isMobile && "grid-cols-1"
+        )}
+      >
         <PageViewChart
           isLoading={isLoading}
           pageData={pageData || []}
