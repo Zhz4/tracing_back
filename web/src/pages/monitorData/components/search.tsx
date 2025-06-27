@@ -24,14 +24,17 @@ const Search = ({
     defaultValues: searchParams,
   });
   return (
-    <div className="flex w-full items-center gap-2">
+    <div className="w-full">
       <Form {...form}>
-        <form className="flex gap-2" onSubmit={form.handleSubmit(handleSearch)}>
+        <form
+          className="flex flex-wrap gap-2 items-end"
+          onSubmit={form.handleSubmit(handleSearch)}
+        >
           <FormField
             control={form.control}
             name="userName"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="min-w-48">
                 <FormControl>
                   <Input type="text" placeholder="请输入用户名" {...field} />
                 </FormControl>
@@ -42,7 +45,7 @@ const Search = ({
             control={form.control}
             name="eventTypeList"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="min-w-40">
                 <FormControl>
                   <EventTypeFilter
                     selectedEventTypes={field.value || []}
@@ -59,7 +62,7 @@ const Search = ({
             control={form.control}
             name="appNameList"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="min-w-40">
                 <FormControl>
                   <AppNameFilter
                     selectedAppNames={field.value || []}
@@ -73,7 +76,7 @@ const Search = ({
             )}
           />
           <Button
-            className="cursor-pointer"
+            className="cursor-pointer min-w-24"
             type="submit"
             disabled={isFetching}
           >

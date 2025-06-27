@@ -1,5 +1,6 @@
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -22,6 +23,8 @@ import {
 import EventResourcePage from "./Event-resource";
 import { getEventById } from "@/api/monitor";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 // 渲染事件组件的函数
 const renderEventComponent = (
@@ -68,6 +71,15 @@ const CheckDialog = () => {
       >
         <SheetHeader className="sticky w-full top-0 z-10 bg-background">
           <SheetTitle>查看操作事件</SheetTitle>
+          <SheetClose asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 hover:bg-transparent"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </SheetClose>
           <SheetDescription>查看用户操作事件详情</SheetDescription>
         </SheetHeader>
         <div className="p-4 w-full">

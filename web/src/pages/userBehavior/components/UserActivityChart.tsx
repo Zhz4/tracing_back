@@ -24,6 +24,8 @@ import {
 import dayjs from "dayjs";
 import { formatMilliseconds } from "@/utils/time";
 import { useParams } from "react-router-dom";
+import { cn } from "./../../../lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // 活跃度趋势分析骨架屏
 const TrendAnalysisSkeleton = () => {
@@ -53,6 +55,7 @@ const TrendAnalysisSkeleton = () => {
 
 const UserActivityChart = () => {
   const { userUuid } = useParams();
+  const isMobile = useIsMobile();
   const [isVisible, setIsVisible] = useState(false);
   const [currentDate, setCurrentDate] = useState(dayjs());
   // 获取可以查看的最早日期（7天前）
@@ -117,7 +120,12 @@ const UserActivityChart = () => {
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div
+      className={cn(
+        "grid gap-4 w-full",
+        isMobile ? "grid-cols-1" : "grid-cols-2"
+      )}
+    >
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -153,7 +161,7 @@ const UserActivityChart = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="w-full h-[300px]">
+          <div className="w-full h-[300px] flex items-center justify-center">
             {isVisible && (
               <ChartContainer config={chartConfig} className="w-full h-full">
                 <BarChart

@@ -33,10 +33,13 @@ import { getUserEventStats } from "@/api/analyze";
 import { UserEventStatsResponse } from "@/api/analyze/type";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useParams } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const UserEventStats = () => {
   const { userUuid } = useParams();
   const [showAll, setShowAll] = useState(false);
+  const isMobile = useIsMobile();
 
   // 获取用户事件统计数据
   const {
@@ -104,14 +107,17 @@ const UserEventStats = () => {
   const hasMoreEvents = eventConfigs.length > showCount;
 
   // 动态生成 chartConfig
-  const chartConfig = eventConfigs.reduce((config, item, index) => {
-    const key = `event_${index}`;
-    config[key] = {
-      label: item.name,
-      color: item.color,
-    };
-    return config;
-  }, {} as Record<string, { label: string; color: string }>);
+  const chartConfig = eventConfigs.reduce(
+    (config, item, index) => {
+      const key = `event_${index}`;
+      config[key] = {
+        label: item.name,
+        color: item.color,
+      };
+      return config;
+    },
+    {} as Record<string, { label: string; color: string }>
+  );
 
   // 从配置中提取颜色数组
   const COLORS = eventConfigs.map((config) => config.color);
@@ -224,14 +230,19 @@ const UserEventStats = () => {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div
+      className={cn(
+        "grid gap-4 w-full",
+        isMobile ? "grid-cols-1" : "grid-cols-2"
+      )}
+    >
       <Card>
         <CardHeader>
           <CardTitle>事件类型分布</CardTitle>
           <CardDescription>用户各类操作事件的数量分布</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="w-full h-[300px]">
+          <div className="w-full h-[300px] flex items-center justify-center">
             <ChartContainer config={chartConfig} className="w-full h-full">
               <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                 <Pie

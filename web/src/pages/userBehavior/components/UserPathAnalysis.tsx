@@ -171,7 +171,7 @@ const UserPathAnalysis = () => {
                 pageStatsData.pageStats.map((stat, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow"
+                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow flex-wrap gap-4"
                   >
                     <div className="flex items-center gap-3">
                       <Badge variant="outline" className="text-xs">
@@ -179,7 +179,7 @@ const UserPathAnalysis = () => {
                       </Badge>
                       <div className="font-medium text-base">{stat.title}</div>
                     </div>
-                    <div className="flex gap-6 text-sm">
+                    <div className="flex gap-6 text-sm flex-wrap">
                       <div className="text-center">
                         <div className="font-semibold text-blue-600 text-lg">
                           {stat.visitCount}
