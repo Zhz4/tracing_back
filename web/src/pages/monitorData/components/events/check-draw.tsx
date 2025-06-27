@@ -1,10 +1,10 @@
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useMonitorData } from "../../context/monitor-data-context";
 import EventClickPage from "./Event-click";
 import EventRoutePage from "./Event-route";
@@ -61,12 +61,15 @@ const CheckDialog = () => {
   });
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} direction="right">
-      <DrawerContent className="fixed right-0 top-0 w-full !max-w-[700px] h-[98vh] overflow-y-auto overflow-x-hidden  rounded-2xl my-2">
-        <DrawerHeader className="sticky w-full top-0 z-10 bg-background">
-          <DrawerTitle>查看操作事件</DrawerTitle>
-          <DrawerDescription>查看用户操作事件详情</DrawerDescription>
-        </DrawerHeader>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetContent
+        side="right"
+        className="w-full !max-w-[700px] overflow-y-auto overflow-x-hidden"
+      >
+        <SheetHeader className="sticky w-full top-0 z-10 bg-background">
+          <SheetTitle>查看操作事件</SheetTitle>
+          <SheetDescription>查看用户操作事件详情</SheetDescription>
+        </SheetHeader>
         <div className="p-4 w-full">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-8 space-y-4">
@@ -83,8 +86,8 @@ const CheckDialog = () => {
             ))
           )}
         </div>
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 };
 
