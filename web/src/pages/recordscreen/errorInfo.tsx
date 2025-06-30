@@ -99,7 +99,7 @@ const ErrorInfo = ({ event }: MycomponentProps) => {
             <>
               {renderField(
                 "错误信息",
-                JSON.stringify(JSON.parse(event.errMessage || ""), null, 2)
+                JSON.stringify(event.errMessage || "", null, 2)
               )}
               {renderField("错误堆栈", event.errStack || "")}
               {renderField("行号", event.line || "")}
@@ -115,7 +115,7 @@ const ErrorInfo = ({ event }: MycomponentProps) => {
               {renderField("响应状态", event.responseStatus || "")}
               {renderField(
                 "错误信息",
-                JSON.stringify(JSON.parse(event.errMessage || ""), null, 2)
+                JSON.stringify(event.errMessage || "", null, 2)
               )}
             </>
           )}
